@@ -1,4 +1,50 @@
 .bio_container
   width: 300px
+  height: 423px
+  //border: 1px dotted red
+  position: relative
+  box-sizing: border-box
+
+.measurement
+  position: absolute
+  bottom: 0
+  text-align: center
+  border-right: 1px solid gray
+  border-left: 1px solid gray
+  width: 100%
+  height: 23px
+  span
+    background: white
+    position: relative
+    top: -10px
+    padding: 0 5px
+  hr
+    position: relative
+    top: 8px
+
+.bar_container
+  //display: flex
+  //align-items: center
+  //flex-direction: row
+  //flex-wrap: wrap
   height: 400px
-  background: red
+  transform: rotate(180deg)
+
+  .entry
+    text-align: center
+    margin: 0 auto
+    position: relative
+    &.odd
+      background: lightgrey
+    &.even
+      background: darkgrey
+    transform: rotate(180deg)
+
+    .persons
+      height: 100%
+      margin: 0 auto
+      &.odd
+        background: yellow
+      &.even
+        background: lightyellow
+      opacity: 0.8
