@@ -25,12 +25,18 @@ SECRET_KEY = '44c5k3p++z4&kow5(s!g#5)vu#)+l%=7n@o$z%+8cq_cyp2l_2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+
+    # needs to be loaded before staticfiles
+    'livereload',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +46,7 @@ INSTALLED_APPS = [
 
     'compressor',
     'django_extensions',
+
 
     'areas',
 ]
@@ -52,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'livereload.middleware.LiveReloadScript',
 ]
 
 ROOT_URLCONF = 'BDA.urls'
@@ -60,7 +68,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -68,6 +76,14 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'loaders': [
+                # PyPugJS part:   ##############################
+                ('pypugjs.ext.django.Loader', (
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                ))
+            ],
+            'builtins': ['pypugjs.ext.django.templatetags'],
         },
     },
 ]
@@ -136,5 +152,9 @@ STATICFILES_FINDERS = (
     # other finders..
     'compressor.finders.CompressorFinder',
 )
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "assets"),
+]
+print(STATICFILES_DIRS)
 
 COMPRESS_ROOT = os.path.join(BASE_DIR, 'assets')

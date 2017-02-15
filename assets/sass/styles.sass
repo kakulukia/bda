@@ -1,3 +1,13 @@
+@font-face
+  font-family: "Franziska"
+  src: url("/static/fonts/Franziska.otf") format("opentype")
+
+//colors
+$red: #ff1236
+
+body
+  font-family: "Franziska", serif
+
 .bio_container
   width: 300px
   height: 423px
@@ -44,7 +54,7 @@
       height: 100%
       margin: 0 auto
       &.odd
-        background: yellow
+        background: $red
       &.even
-        background: lightyellow
-      opacity: 0.8
+        background: $red
+      opacity: 0.7
