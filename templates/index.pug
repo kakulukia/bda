@@ -1,0 +1,13 @@
+-load compress static
+
+html
+  head
+    -compress css
+      link(rel="stylesheet", href="{% static 'js/bootstrap.min.css' %}")
+      link(rel='stylesheet', type='text/x-sass', href='{% static "sass/styles.sass" %}')
+    -compress js
+      script(src="{% static 'js/jquery-3.1.1.slim.min.js' %}")
+      script(src="{% static 'js/tether.min.js' %}")
+      script(src="{% static 'js/bootstrap.min.js' %}")
+body
+  block content

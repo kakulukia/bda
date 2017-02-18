@@ -16,9 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from areas.views import AreaBioView
+from areas.views import AreaBioView, BioListView
 
 urlpatterns = [
+    url(r'^$', BioListView.as_view(), name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^(?P<pk>\d+)/', AreaBioView.as_view()),
 ]

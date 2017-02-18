@@ -155,6 +155,5 @@ STATICFILES_FINDERS = (
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
 ]
-print(STATICFILES_DIRS)
 
 COMPRESS_ROOT = os.path.join(BASE_DIR, 'assets')
