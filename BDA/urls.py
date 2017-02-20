@@ -16,12 +16,16 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework_swagger.views import get_swagger_view
 
 from areas.views import BioListView, AreaBioView, add_bio, AreaBioViewSet
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'area-bio', AreaBioViewSet)
+
+
+schema_view = get_swagger_view(title='AREA BIO API')
 
 
 urlpatterns = [
@@ -32,6 +36,7 @@ urlpatterns = [
 
     # REST API
     url(r'^api/', include(router.urls)),
+    url(r'^api/docs/', schema_view),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     # VIEWS

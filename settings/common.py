@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'rosetta',
     'rest_framework',
 
+    'rest_framework_swagger',
+
     'areas',
 ]
 

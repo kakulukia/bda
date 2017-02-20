@@ -1,3 +1,5 @@
+
+
 var app = new Vue({
   el: '#app',
   data: {
@@ -13,9 +15,7 @@ var app = new Vue({
 
 });
 
-superagent.get('http://localhost:8000/api/area-bio/1/?format=json').end(function(err, res){
+superagent.get('http://localhost:8000/api/area-bio/1/').end(function(err, res){
   // Calling the end function will send the request
-  console.log('done2');
-  console.log(res);
-
+  console.log(JSON.parse(res.text));
 });

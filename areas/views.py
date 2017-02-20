@@ -5,9 +5,10 @@ from django.views.generic import ListView
 from django.views.generic import TemplateView
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route
+from rest_framework.response import Response
 
 from areas.forms import EmailForm, AreaBioForm, EntryForm
-from areas.serializers import AreaBioSerializer
+from areas.serializers import AreaBioSerializer, EntrySerializer
 from areas.models import AreaBio, BioEntry
 
 
@@ -69,9 +70,8 @@ class AreaBioViewSet(viewsets.ModelViewSet):
     queryset = AreaBio.data.all()
     serializer_class = AreaBioSerializer
 
-    @detail_route(methods=['get',])
+    @detail_route(methods=['get', 'post'])
     def entries(self, request, pk=None):
         bio = AreaBio.data.get(pk=pk)
         entries = bio.entries.all()
-
-        return
+        return Response(EntrySerializer(entries, many=True).data)
