@@ -1,0 +1,8 @@
+.bio_container
+  .bar_container
+    -for entry in graph.entries.all
+      .entry(class="{% cycle 'odd' 'even' %}", style='height: {{ entry.years }}px; width: {{ entry.percentage }}%;')
+        .persons(class="{% cycle 'odd' 'even' %}", style='width: {{ entry.person_percentage }}%')
+  .measurement
+    hr
+    span {{ graph.max_space }} m²

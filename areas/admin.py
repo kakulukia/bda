@@ -6,9 +6,10 @@ from .models import AreaBio, BioEntry
 
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['id', '__str__']
 
 
 @admin.register(BioEntry)
 class BioEntryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['__str__', 'description']
+    actions = None

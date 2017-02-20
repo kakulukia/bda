@@ -13,13 +13,29 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
+from rest_framework import routers
 
-from areas.views import AreaBioView, BioListView
+from areas.views import BioListView, AreaBioView, add_bio, AreaBioViewSet
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r'area-bio', AreaBioViewSet)
+
 
 urlpatterns = [
-    url(r'^$', BioListView.as_view(), name='index'),
+
+    # ADMIN
     url(r'^admin/', admin.site.urls),
-    url(r'^(?P<pk>\d+)/', AreaBioView.as_view()),
+    url(r'^admin/translate/', include('rosetta.urls')),
+
+    # REST API
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    # VIEWS
+    url(r'^$', BioListView.as_view(), name='index'),
+    url(r'^graph/add/', add_bio),
+    url(r'^graph/(?P<pk>[\w-]+)/', AreaBioView.as_view(), name='detail'),
 ]

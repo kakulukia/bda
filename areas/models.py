@@ -1,5 +1,9 @@
+import uuid
+
 from django.db import models
 from django.db.models import Max
+from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 
 
 class AreaBioManager(models.Manager):
@@ -8,9 +12,11 @@ class AreaBioManager(models.Manager):
 
 
 class AreaBio(models.Model):
-    name = models.CharField(max_length=150)
-    age = models.IntegerField()
-    country = models.CharField(max_length=150)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    name = models.CharField(verbose_name=_('Name'), max_length=150, null=True)
+    age = models.IntegerField(verbose_name=_('Age'), null=True)
+    country = models.CharField(verbose_name=_('Country'), max_length=150, null=True)
 
     published = models.BooleanField(default=False)
     data = AreaBioManager()
@@ -21,12 +27,16 @@ class AreaBio(models.Model):
     def max_space(self):
         return self.entries.aggregate(Max('living_space'))['living_space__max']
 
+    def bare_display(self):
+        return render_to_string('partials/bare_graph.pug', {'graph': self})
+
 
 class BioEntry(models.Model):
-    living_space = models.IntegerField()
-    number_of_people = models.IntegerField()
-    year_from = models.IntegerField()
-    year_to = models.IntegerField()
+    living_space = models.IntegerField(verbose_name=_('Living space'))
+    number_of_people = models.IntegerField(verbose_name=_('Number of people'))
+    year_from = models.IntegerField(verbose_name=_('From'))
+    year_to = models.IntegerField(verbose_name=_('To'))
+    description = models.CharField(verbose_name=_('Reason'), max_length=142)
 
     area_bio = models.ForeignKey('areas.AreaBio', related_name='entries')
 

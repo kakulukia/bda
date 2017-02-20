@@ -1,0 +1,91 @@
+-extends 'index.pug'
+  -load crispy_forms_tags i18n static
+
+block extra_script
+  script(src="{% static 'js/vue.js' %}")
+
+
+block content
+  #app.editor-container
+    .editor
+
+      .left
+        h2 DEINE FLÄCHENBIOGRAFIE
+
+        p Fülle die Tabelle aus.
+          br
+          | Benutze eine neue Zeile, wenn die Wohnfläche oder die Anzahl der Personen wechselt.
+
+        hr
+
+        form#area_bio(method='post')
+
+          #div_id_name.form-group
+            label.form-control-label(for='id_name', @click="updateBio")
+              | Name
+            div
+              input#id_name.textInput.form-control(maxlength='150', name='name', required='', type='text', v-model='name')
+          #div_id_age.form-group
+            label.form-control-label(for='id_age')
+              | Alter
+            div
+              input#id_age.numberinput.form-control(name='age', required='', type='number', v-model='age')
+          #div_id_country.form-group
+            label.form-control-label(for='id_country')
+              | Land
+            div
+              input#id_country.textinput.form-control(maxlength='150', name='country', required='', type='text', v-model='country')
+
+
+        script.
+
+          var app = new Vue({
+            el: '#app',
+            data: {
+              name: 'Andy',
+              age: '36',
+              country: 'Germany'
+            },
+            methods: {
+              updateBio: function () {
+                console.log(this);
+                console.log(this._data);
+                alert(this.name);
+              }
+            }
+
+          })
+
+        hr
+        h3 Geburt bis heute
+        hr
+
+        table(cellpadding=0, cellspacing=0)
+          thead
+            td
+              -trans 'Living space'
+            td
+              -trans 'Number of people'
+            td
+              -trans 'Timespan'
+            td
+              -trans 'Reason'
+            td
+              | &nbsp;
+            tr
+              td
+                | 1
+              td
+                | 2
+              td
+                | 3
+              td
+                | 4
+              td
+                | 5
+
+
+
+
+      .right
+        h3 JANA, 30, SCHWEIZ

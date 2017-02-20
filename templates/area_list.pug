@@ -1,6 +1,19 @@
-extends 'index.pug'
+-extends 'index.pug'
 
 block content
-  .row
-    .xs-4
-      span blub
+  .app
+    // navigation pane
+    .navigation
+      a(href='/')
+        h1 FLÄCHEN-BIOGRAFIEN
+
+      a(href='/add')
+        h3 eigene Flächenbiografie erstellen
+
+      a(href='#')
+        h3 Stöbern
+
+    // graph area
+    .graph-area
+      -for graph in object_list
+        {{ graph.bare_display }}

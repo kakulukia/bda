@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -46,7 +47,9 @@ INSTALLED_APPS = [
 
     'compressor',
     'django_extensions',
-
+    'crispy_forms',
+    'rosetta',
+    'rest_framework',
 
     'areas',
 ]
@@ -124,16 +127,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'de-de'
 
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'CET'
 USE_I18N = True
-
-USE_L10N = True
-
+USE_L10N = False
 USE_TZ = True
-
+LANGUAGES = [
+    ('de', 'German'),
+    ('en', 'English'),
+]
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locales'),
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
@@ -157,3 +163,20 @@ STATICFILES_DIRS = [
 ]
 
 COMPRESS_ROOT = os.path.join(BASE_DIR, 'assets')
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
