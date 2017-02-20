@@ -3,6 +3,8 @@
 
 block extra_script
   script(src="{% static 'js/vue.js' %}")
+  script(src="{% static 'js/superagent.js' %}")
+  script(src="{% static 'js/detail.js' %}")
 
 
 block content
@@ -35,26 +37,6 @@ block content
               | Land
             div
               input#id_country.textinput.form-control(maxlength='150', name='country', required='', type='text', v-model='country')
-
-
-        script.
-
-          var app = new Vue({
-            el: '#app',
-            data: {
-              name: 'Andy',
-              age: '36',
-              country: 'Germany'
-            },
-            methods: {
-              updateBio: function () {
-                console.log(this);
-                console.log(this._data);
-                alert(this.name);
-              }
-            }
-
-          })
 
         hr
         h3 Geburt bis heute
