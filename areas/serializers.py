@@ -13,6 +13,7 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BioEntry
         fields = (
+            'id',
             'living_space',
             'number_of_people',
             'year_from',

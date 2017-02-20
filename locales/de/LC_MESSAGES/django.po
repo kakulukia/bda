@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-18 15:48+0100\n"
-"PO-Revision-Date: 2017-02-18 17:17+0100\n"
+"POT-Creation-Date: 2017-02-20 15:02+0100\n"
+"PO-Revision-Date: 2017-02-20 15:02+0100\n"
 "Last-Translator: b'  <>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -30,3 +30,27 @@ msgstr "Alter"
 #: areas/models.py:19
 msgid "Country"
 msgstr "Land"
+
+#: areas/models.py:35
+msgid "Living space"
+msgstr "Wohnraum m²"
+
+#: areas/models.py:36
+msgid "Number of people"
+msgstr "Anzahl Personen"
+
+#: areas/models.py:37
+msgid "From"
+msgstr "Von"
+
+#: areas/models.py:38
+msgid "To"
+msgstr "Bis"
+
+#: areas/models.py:39
+msgid "Reason"
+msgstr "Grund"
+
+#: templates/detail.pug:56
+msgid "Timespan"
+msgstr "Zeitraum"

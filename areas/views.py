@@ -14,14 +14,16 @@ from areas.serializers import AreaBioSerializer, EntrySerializer
 class AreaBioView(TemplateView):
     template_name = 'detail.pug'
 
-    def get(self, request, *args, **kwags):
+    def get(self, request, pk, *args, **kwargs):
 
+        bio = AreaBio.objects.get(id=pk)
         user = request.user
         # import ipdb; ipdb.set_trace()
         if user.is_anonymous:
             user = User.objects.get(username__exact='andy')
         context = {
-            'token': Token.objects.get_or_create(user=user)[0].key
+            'token': Token.objects.get_or_create(user=user)[0].key,
+            'bio': bio
         }
         print(context)
 
