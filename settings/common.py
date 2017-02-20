@@ -49,8 +49,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'rosetta',
-    'rest_framework',
 
+    'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_swagger',
 
     'areas',
@@ -180,5 +181,19 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ),
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
 }

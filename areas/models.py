@@ -19,7 +19,7 @@ class AreaBio(models.Model):
     country = models.CharField(verbose_name=_('Country'), max_length=150, null=True)
 
     published = models.BooleanField(default=False)
-    data = AreaBioManager()
+    objects = AreaBioManager()
 
     def __str__(self):
         return '{}, {}, {}'.format(self.name, self.age, self.country)

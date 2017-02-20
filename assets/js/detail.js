@@ -3,19 +3,27 @@
 var app = new Vue({
   el: '#app',
   data: {
-    name: 'Andy',
-    age: '36',
-    country: 'Germany'
+    user: {
+      name: '',
+      age: 0,
+      country: ''
+    }
   },
   methods: {
     updateBio: function () {
-      alert('hallo');
+
+      superagent.put('/api/area-bios/1/').send(app.user).end(function(err, res){
+        console.log(res.text);
+      });
+      console.log('changed');
+
     }
   }
 
 });
 
-superagent.get('http://localhost:8000/api/area-bio/1/').end(function(err, res){
+//  init user data
+superagent.get('/api/area-bios/1/').end(function(err, res){
   // Calling the end function will send the request
-  console.log(JSON.parse(res.text));
+  app.user = JSON.parse(res.text);
 });

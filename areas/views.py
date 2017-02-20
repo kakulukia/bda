@@ -1,53 +1,35 @@
-from django.forms import modelformset_factory
+from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic import TemplateView
-from rest_framework import viewsets
-from rest_framework.decorators import list_route, detail_route
-from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework.authtoken.models import Token
 
-from areas.forms import EmailForm, AreaBioForm, EntryForm
-from areas.serializers import AreaBioSerializer, EntrySerializer
 from areas.models import AreaBio, BioEntry
+from areas.serializers import AreaBioSerializer, EntrySerializer
 
 
 class AreaBioView(TemplateView):
     template_name = 'detail.pug'
 
     def get(self, request, *args, **kwags):
-        context = {}
+
+        user = request.user
+        # import ipdb; ipdb.set_trace()
+        if user.is_anonymous:
+            user = User.objects.get(username__exact='andy')
+        context = {
+            'token': Token.objects.get_or_create(user=user)[0].key
+        }
+        print(context)
 
         return self.render_to_response(context)
-    # queryset = AreaBio.data.all()
-    #
-    # def get_context_data(self, **kwargs):
-    #     context = super(AreaBioView, self).get_context_data(**kwargs)
-    #
-    #     # EMAIL FORM
-    #     context['email_form'] = EmailForm(initial=self.request.user.email)
-    #
-    #     # AREA BIO FORM
-    #     context['form'] = AreaBioForm(instance=self.object)
-    #
-    #     # ENTRY FORMSET
-    #     entries = self.object.entries.count()
-    #     extra = max(entries, 4) + 1
-    #
-    #     # noinspection PyPep8Naming
-    #     EntryFormSet = modelformset_factory(BioEntry, form=EntryForm, extra=extra)
-    #     entry_formset = EntryFormSet(queryset=self.object.entries.all())
-    #     context['entry_formset'] = entry_formset
-    #
-    #     return context
-    #
-    # def post(self):
-    #     context
-    #     return render(request, self.template_name, context)
 
 
 class BioListView(ListView):
-    queryset = AreaBio.data.all()
+    queryset = AreaBio.objects.all()
     context_object_name = 'book_list'
     template_name = 'area_list.pug'
 
@@ -61,17 +43,18 @@ def add_bio(request):
         request.session['bio_uuid'] = str(bio.uuid)
         bio_uuid = request.session.get('bio_uuid')
 
-    bio = AreaBio.data.get(uuid=bio_uuid)
+    bio = AreaBio.objects.get(uuid=bio_uuid)
 
     return redirect(reverse('detail', args=[bio.id]))
 
 
-class AreaBioViewSet(viewsets.ModelViewSet):
-    queryset = AreaBio.data.all()
+class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
+    queryset = AreaBio.objects.all()
     serializer_class = AreaBioSerializer
 
-    @detail_route(methods=['get', 'post'])
-    def entries(self, request, pk=None):
-        bio = AreaBio.data.get(pk=pk)
-        entries = bio.entries.all()
-        return Response(EntrySerializer(entries, many=True).data)
+
+class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
+    queryset = BioEntry.objects.all()
+    serializer_class = EntrySerializer
+
+
