@@ -28,52 +28,61 @@ block content
               | Name
             div
               input#id_name.textInput.form-control(@change="updateBio", maxlength='150', name='name',
-                required='', type='text', v-model='user.name')
+                required='', type='text', v-model='bio.name')
           #div_id_age.form-group
             label.form-control-label(for='id_age')
               | Alter
             div
-              input#id_age.numberinput.form-control(@change="updateBio", name='age', required='',
-                type='number', v-model='user.age')
+              input#id_age.textinput.form-control(@change="updateBio", name='age', required='',
+                type='number', v-model='bio.age')
           #div_id_country.form-group
             label.form-control-label(for='id_country')
               | Land
             div
               input#id_country.textinput.form-control(@change="updateBio", maxlength='150',
-                name='country', required='', type='text', v-model='user.country')
+                name='country', required='', type='text', v-model='bio.country')
 
         hr
         h3 Geburt bis heute
         hr
 
-        //table(cellpadding=0, cellspacing=0)
-        //  thead
-        //    td
-        //      -trans 'Living space'
-        //    td
-        //      -trans 'Number of people'
-        //    td
-        //      -trans 'Timespan'
-        //    td
-        //      -trans 'Reason'
-        //    td
-        //      | &nbsp;
-        //    tr
-        //      td
-        //        | 1
-        //      td
-        //        | 2
-        //      td
-        //        | 3
-        //      td
-        //        | 4
-        //      td
-        //        | 5
+        table(cellpadding=0, cellspacing=0)
+          thead
+            td
+              -trans 'Living space'
+            td
+              -trans 'Number of people'
+            td
+              {% trans 'Timespan' %}
+            td
+              -trans 'Reason'
+            td
+              | &nbsp;
+          tr(v-for='entry in entries')
+            td
+              input.textInput.form-control(maxlength='150', name='name', required='',
+                type='text', v-model='entry.living_space', @change="updateEntry(entry)")
+            td
+              input.textInput.form-control(maxlength='150', name='name', required='',
+                type='text', v-model='entry.number_of_people', @change='updateEntry(entry)')
+            td
+              input.textInput.form-control(maxlength='150', name='name', required='',
+                type='text', v-model='entry.range')
+            td
+              input.textInput.form-control(maxlength='150', name='name', required='',
+                type='text', v-model='entry.description', @change='updateEntry(entry)')
+            td
+              i.fa.fa-times
+            tr
+              td(colspan=5)
+                .new-entry
+                  i.fa.fa-plus
 
 
       .right
         -verbatim
-          h3 {{ user.name }}, {{ user.age }}, {{ user.country }}
+          h3 {{ bio.name | caps }}, {{ bio.age }}, {{ bio.country | caps }}
 
   script.
-    var auth_token = "{{ token }}";
+    var auth_token = "Token {{ token }}";
+    var bio_id = {{ bio.id }};
