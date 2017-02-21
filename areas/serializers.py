@@ -9,7 +9,7 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('name', 'age', 'country', 'id')
 
 
-class EntrySerializer(serializers.HyperlinkedModelSerializer):
+class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = BioEntry
         fields = (
@@ -19,4 +19,5 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
             'year_from',
             'year_to',
             'description',
+            'area_bio',
         )
