@@ -94,6 +94,7 @@ var app = new Vue({
       }
       _.pull(this.entries, entry);
       this.entries.splice(this.entries.length);
+      setTimeout(this.loadGraph, 200);
     },
     updateRange: function(entry){
 

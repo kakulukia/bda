@@ -56,7 +56,8 @@ class BioEntry(models.Model):
             self.year_from, self.year_to, self.number_of_people, self.living_space)
 
     def years(self):
-        return float(self.year_to - self.year_from) / 0.8
+        diff = self.year_to - self.year_from
+        return float(diff) / 0.8
 
     def percentage(self):
         max_value = self.area_bio.max_space()

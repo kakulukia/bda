@@ -62,6 +62,6 @@ class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
 
 def get_graph(request, pk):
     context = {
-        'graph': get_object_or_404(AreaBio.objects.published(), pk=pk)
+        'graph': get_object_or_404(AreaBio.objects.all(), pk=pk)
     }
     return render(request, 'partials/full_graph.pug', context)
