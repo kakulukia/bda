@@ -26,29 +26,38 @@ var app = new Vue({
     },
     updateEntry: function (entry) {
       if (entry.id){
+        console.log('we have id');
         superagent.put('/api/area-bios/'+ this.bio.id +'/entries/'+ entry.id +'/')
             .send(entry)
             .set('Authorization', auth_token)
             .end(function(err, res){
-              console.log(res.text);
-              console.log(err);
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(res.text);
+              }
             });
         console.log('changed entry');
       } else {
-        superagent.post('/api/area-bios/'+ this.bio.id +'/entries/')
-            .send(entry)
-            .set('Authorization', auth_token)
-            .end(function(err, res){
-              console.log(res.text);
-              console.log(err);
-            });
-        console.log('changed added');
+        if (entry.living_space && entry. number_of_people && entry.year_from && entry.year_to){
+          superagent.post('/api/area-bios/'+ this.bio.id +'/entries/')
+              .send(entry)
+              .set('Authorization', auth_token)
+              .end(function(err, res){
+                if (err){
+                  console.log(err);
+                } else {
+                  console.log(res.text);
+                  entry.id = JSON.parse(res.text).id;
+                }
+              });
+          console.log('changed added');
+        }
       }
     },
     getLastYear: function(){
       var max_year = 0;
       _.forEach(app.entries, function(entry){
-        console.log(entry.year_to);
         if (entry.year_to > max_year){
           max_year = entry.year_to;
         }
@@ -63,7 +72,8 @@ var app = new Vue({
         number_of_people: null,
         year_from: null,
         year_to: null,
-        area_bio: bio_id
+        area_bio: bio_id,
+        range_error: false
       };
       entry.year_from = app.getLastYear() + 1;
       app.setRange(entry);
@@ -85,10 +95,22 @@ var app = new Vue({
       this.entries.splice(this.entries.length);
     },
     updateRange: function(entry){
-      var years = _.split(entry.range, '-', 2);
-      entry.year_from = parseInt(years[0]);
-      entry.year_to = parseInt(years[1]);
-      app.updateEntry(entry);
+
+      if(/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range)){
+        var years = _.split(entry.range, '-', 2);
+        entry.year_from = parseInt(years[0]);
+        entry.year_to = parseInt(years[1]);
+        app.updateEntry(entry);
+        entry.range_error = false;
+      } else {
+        entry.range_error = true;
+      }
+
+    },
+    loadGraph: function(){
+      $.get('/graph/' + this.bio.id + '/', function(data){
+        $('.graph-area').html(data);
+      });
     },
     setRange: function(entry) {
       if (entry.year_from){
