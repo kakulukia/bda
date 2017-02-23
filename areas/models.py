@@ -36,7 +36,7 @@ class BioEntry(models.Model):
     number_of_people = models.IntegerField(verbose_name=_('Number of people'))
     year_from = models.IntegerField(verbose_name=_('From'))
     year_to = models.IntegerField(verbose_name=_('To'))
-    description = models.CharField(verbose_name=_('Reason'), max_length=142)
+    description = models.CharField(verbose_name=_('Reason'), max_length=142, blank=True, null=True)
 
     area_bio = models.ForeignKey('areas.AreaBio', related_name='entries')
 

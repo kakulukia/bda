@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic import TemplateView
@@ -60,3 +60,8 @@ class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = EntrySerializer
 
 
+def get_graph(request, pk):
+    context = {
+        'graph': get_object_or_404(AreaBio.objects.published(), pk=pk)
+    }
+    return render(request, 'partials/full_graph.pug', context)
