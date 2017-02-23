@@ -15,6 +15,7 @@ django-livereload-server==0.2.3
 django-rest-swagger==2.1.1
 django-rosetta==0.7.12
 djangorestframework==3.5.4
+drf-extensions==0.3.1
 drf-nested-routers==0.11.1
 ipdb==0.10.2
 ipython==5.2.2
@@ -46,3 +47,4 @@ tornado==4.4.2
 traitlets==4.3.1
 uritemplate==3.0.0
 wcwidth==0.1.7
+Werkzeug==0.11.15

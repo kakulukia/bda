@@ -37,7 +37,7 @@ var app = new Vue({
                 console.log(res.text);
               }
             });
-        console.log('changed entry');
+        setTimeout(this.loadGraph, 200);
       } else {
         if (entry.living_space && entry. number_of_people && entry.year_from && entry.year_to){
           superagent.post('/api/area-bios/'+ this.bio.id +'/entries/')
@@ -51,10 +51,9 @@ var app = new Vue({
                   entry.id = JSON.parse(res.text).id;
                 }
               });
-          console.log('changed added');
+          setTimeout(this.loadGraph, 200);
         }
       }
-      setTimeout(this.loadGraph, 200);
     },
     getLastYear: function(){
       var max_year = 0;
@@ -76,7 +75,7 @@ var app = new Vue({
         area_bio: bio_id,
         range_error: false
       };
-      entry.year_from = app.getLastYear() + 1;
+      entry.year_from = app.getLastYear();
       app.setRange(entry);
       this.entries.push(entry);
       var row_name = '.row_' + this.entries.length + ' input';
@@ -88,9 +87,8 @@ var app = new Vue({
             .set('Authorization', auth_token)
             .end(function(err, res){
               console.log(res.text);
-              console.log(err);
+              if(err) console.log(err);
             });
-        console.log('changed deleted');
       }
       _.pull(this.entries, entry);
       this.entries.splice(this.entries.length);
@@ -112,9 +110,7 @@ var app = new Vue({
     loadGraph: function(){
       $.get('/graph/' + this.bio.id + '/', function(data){
         $('.graph-area').html(data);
-        console.log('geladen!');
       });
-      console.log('angestoßen');
     },
     setRange: function(entry) {
       if (entry.year_from){
