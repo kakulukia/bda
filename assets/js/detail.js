@@ -145,6 +145,7 @@ var app = new Vue({
 
       app.entries = entries;
     });
+    setTimeout(this.loadGraph, 500);
   }
 
 });
