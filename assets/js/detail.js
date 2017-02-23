@@ -54,6 +54,7 @@ var app = new Vue({
           console.log('changed added');
         }
       }
+      setTimeout(this.loadGraph, 200);
     },
     getLastYear: function(){
       var max_year = 0;
@@ -110,7 +111,9 @@ var app = new Vue({
     loadGraph: function(){
       $.get('/graph/' + this.bio.id + '/', function(data){
         $('.graph-area').html(data);
+        console.log('geladen!');
       });
+      console.log('angestoßen');
     },
     setRange: function(entry) {
       if (entry.year_from){

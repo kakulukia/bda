@@ -179,42 +179,88 @@ h2
       text-decoration: none
 
 .graph-area
-  background: red
   //border: 1px dotted red
   display: flex
-  flex-direction: column-reverse
+  flex-direction: column
+  align-items: center
 
-  .bar_container
-    background: blue
+  .graph-container
     flex-grow: 1
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+    width: 100%
+    position: relative
+    .descriptions
+      height: 100%
+      width: 100%
+      position: absolute
+      top: 0
+      left: 0
 
-    .entry
-      text-align: center
+      .desc_5, .desc_10, .desc_30, .desc_60, .desc_0
+        position: absolute
+        bottom: 0
+        border-top: 1px solid black
+        width: 100%
+
+        .desc
+          position: absolute
+          top: -10px
+          left: -20px
+          width: 17px
+          text-align: right
+          font-size: 12px
+
+      .desc_0
+        height: 1%
+        border-top: none
+        border-bottom: 2px solid black
+      .desc_5
+        height: 6.25%
+      .desc_10
+        height: 12.5%
+      .desc_30
+        height: 37.5%
+      .desc_60
+        height: 75%
+
+    .bar-container
+      width: 90%
       margin: 0 auto
-      position: relative
-      &.odd
-        background: lightgrey
-      &.even
-        background: darkgrey
-      transform: rotate(180deg)
+      display: flex
+      align-items: flex-start
+      flex-direction: column
+      flex-grow: 1
 
-      .persons
-        height: 100%
+      .entry
+        width: 100%
+        text-align: center
         margin: 0 auto
         &.odd
-          background: $red
+          background: lightgrey
         &.even
-          background: $red
-        opacity: 0.5
+          background: darkgrey
+
+        &.empty
+          flex-grow: 1
+
+        .persons
+          height: 100%
+          margin: 0 auto
+          &.odd
+            background: $red
+          &.even
+            background: $red
+          opacity: 0.5
 
   .measurement
-    background: cyan
+    width: 90%
+    margin: 0 auto
     text-align: center
     border-right: 1px solid $lines-gray
     border-left: 1px solid $lines-gray
-    width: 100%
     height: 23px
-    flex-grow: 0
     span
       background: white
       padding: 0 5px

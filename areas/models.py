@@ -31,6 +31,13 @@ class AreaBio(models.Model):
         return render_to_string('partials/bare_graph.pug', {'graph': self})
 
 
+class EntryManager(models.Manager):
+    use_for_related_fields = True
+
+    def reversed(self):
+        return self.order_by('-year_from')
+
+
 class BioEntry(models.Model):
     living_space = models.IntegerField(verbose_name=_('Living space'))
     number_of_people = models.IntegerField(verbose_name=_('Number of people'))
@@ -39,6 +46,7 @@ class BioEntry(models.Model):
     description = models.CharField(verbose_name=_('Reason'), max_length=142, blank=True, null=True)
 
     area_bio = models.ForeignKey('areas.AreaBio', related_name='entries')
+    objects = EntryManager()
 
     class Meta:
         ordering = ['year_from']
@@ -48,7 +56,7 @@ class BioEntry(models.Model):
             self.year_from, self.year_to, self.number_of_people, self.living_space)
 
     def years(self):
-        return (self.year_to - self.year_from) * 5
+        return float(self.year_to - self.year_from) / 0.8
 
     def percentage(self):
         max_value = self.area_bio.max_space()
