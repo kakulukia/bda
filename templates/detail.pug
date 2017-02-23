@@ -63,7 +63,8 @@ block content
                   type='text', v-model='entry.number_of_people', @change='updateEntry(entry)')
               .cell.three
                 input.textInput.form-control(maxlength='150', name='name', required='',
-                  type='text', v-model='entry.range', @change="updateRange(entry)")
+                  type='text', v-model='entry.range', @change="updateRange(entry)",
+                  :class="{ 'has-error': entry.range_error }")
               .cell.four
                 input.textInput.form-control(maxlength='150', name='name', required='',
                   type='text', v-model='entry.description', @change='updateEntry(entry)')
@@ -80,6 +81,7 @@ block content
 
         .right
           h3 {{ bio.name | caps }}, {{ bio.age }}, {{ bio.country | caps }}
+          .graph-area
 
   script.
     var auth_token = "Token {{ token }}";
