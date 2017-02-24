@@ -1,4 +1,4 @@
-appdirs==1.4.0
+appdirs==1.4.1
 appnope==0.1.0
 beautifulsoup4==4.5.3
 coreapi==2.2.4
@@ -35,7 +35,7 @@ prompt-toolkit==1.0.13
 ptyprocess==0.5.1
 Pygments==2.2.0
 pyparsing==2.1.10
--e git+https://github.com/0x255/pypugjs@d8fb1105551736254e0b496b592c096824dc69a7#egg=pypugjs
+-e git+https://github.com/kakulukia/pypugjs@66eb3db8c87dc08cbeba44655fb4e02b701231cb#egg=pypugjs
 rcssmin==1.0.6
 requests==2.13.0
 rjsmin==1.0.12

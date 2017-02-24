@@ -13,7 +13,12 @@ block content
       a(href='#')
         h3 Stöbern
 
-    // graph area
-    .graph-area
+    .list-area
       -for graph in object_list
-        {{ graph.bare_display }}
+        .list-item
+          .graph-area
+            .graph-container
+              {{ graph.bare_display }}
+          .description
+            {{ graph.description }}
+

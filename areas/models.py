@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.db.models import Max
+from django.template.defaultfilters import upper
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
@@ -29,6 +30,15 @@ class AreaBio(models.Model):
 
     def bare_display(self):
         return render_to_string('partials/bare_graph.pug', {'graph': self})
+
+    def description(self):
+        print(self.name, self.age, self.country)
+        desc = self.name
+        if self.name and self.age:
+            desc += ', {}'.format(self.age)
+        if self.age and self.country:
+            desc += ', {}'.format(self.country)
+        return upper(desc)
 
 
 class EntryManager(models.Manager):

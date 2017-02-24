@@ -48,6 +48,21 @@ h2
       border-bottom: 7px $red solid
       padding-bottom: 10px
 
+.list-area
+  overflow-y: auto
+  display: flex
+  flex-wrap: wrap
+  justify-content: flex-start
+  .list-item
+    width: 250px
+    height: 350px
+    flex-grow: 0
+    .graph-area
+      width: 90%
+      margin: 0 auto
+    .description
+      text-align: center
+      font-size: 12px
 
 // EDITOR PAGE
 .editor-container
@@ -178,6 +193,10 @@ h2
       color: black
       text-decoration: none
 
+  .graph-area
+    width: 50%
+    margin: 0 auto
+
 .graph-area
   //border: 1px dotted red
   display: flex
@@ -231,7 +250,7 @@ h2
       margin: 0 auto
       display: flex
       align-items: flex-start
-      flex-direction: column
+      flex-direction: column-reverse
       flex-grow: 1
 
       .entry
