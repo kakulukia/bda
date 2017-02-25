@@ -68,7 +68,7 @@ MIDDLEWARE = [
     'livereload.middleware.LiveReloadScript',
 ]
 
-ROOT_URLCONF = 'BDA.urls'
+ROOT_URLCONF = 'bda.urls'
 
 TEMPLATES = [
     {
