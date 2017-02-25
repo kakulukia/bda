@@ -94,7 +94,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'BDA.wsgi.application'
+WSGI_APPLICATION = 'bda.wsgi.application'
 
 
 # Database
