@@ -164,6 +164,9 @@ var app = new Vue({
         }
       });
       this.addEntry();
+    },
+    submitForm: function(){
+      $('form').submit();
     }
   },
   filters: {

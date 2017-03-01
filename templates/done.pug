@@ -10,10 +10,19 @@ block extra_script
 block content
     #app.popup-container
 
-      .popup
-
-        .left
+      .popup.done
+        .left.white
           h2 {{ graph }}
+
+          a(href="#")
+            h4 Zur Sammlung hinzufügen
+          a(href="#")
+            h4 Vergleichen
+          a(href="#")
+            h4 Per Email schicken
+          a(href="/")
+            h4 Stöbern
+
         .right
           .graph-area
             -include 'partials/full_graph.pug'
