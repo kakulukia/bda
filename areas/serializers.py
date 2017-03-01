@@ -6,7 +6,13 @@ from areas.models import AreaBio, BioEntry
 class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = AreaBio
-        fields = ('name', 'age', 'country', 'id')
+        fields = (
+            'name',
+            'age',
+            'country',
+            'id',
+            'uuid',
+        )
 
 
 class EntrySerializer(serializers.ModelSerializer):

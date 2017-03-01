@@ -30,7 +30,7 @@ class AreaBio(models.Model):
         return self.__str__()
 
     def max_space(self):
-        return self.entries.aggregate(Max('living_space'))['living_space__max']
+        return self.entries.aggregate(Max('living_space'))['living_space__max'] or 0
 
     def bare_display(self):
         return render_to_string('partials/bare_graph.pug', {'graph': self})
@@ -51,6 +51,8 @@ class AreaBio(models.Model):
         self._height = 0
         for entry in self.entries.all():
             self._height += entry.year_to - entry.year_from
+
+        self._height = max(self._height, 10)
         return self._height
 
     def axis_height(self):

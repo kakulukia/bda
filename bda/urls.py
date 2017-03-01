@@ -3,7 +3,7 @@ from django.contrib import admin
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 from rest_framework_swagger.views import get_swagger_view
 
-from areas.views import BioListView, AreaBioView, add_bio, AreaBioViewSet, BioEntryViewSet, get_graph
+from areas.views import BioListView, AreaBioView, add_bio, AreaBioViewSet, BioEntryViewSet, get_graph, PostedGraphView
 
 # construct API URLs
 router = ExtendedDefaultRouter()
@@ -27,6 +27,7 @@ urlpatterns = [
     # VIEWS
     url(r'^$', BioListView.as_view(), name='index'),
     url(r'^graph/add/', add_bio),
+    url(r'^graph/done/', PostedGraphView.as_view(), name='done'),
     url(r'^graph/edit/(?P<pk>[\w-]+)/', AreaBioView.as_view(), name='detail'),
     url(r'^graph/(?P<pk>[\w-]+)/', get_graph, name='show-graph'),
 ]

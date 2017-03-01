@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
+from django.views import View
 from django.views.generic import ListView
 from django.views.generic import TemplateView
 from rest_framework.viewsets import ModelViewSet
@@ -25,7 +26,6 @@ class AreaBioView(TemplateView):
             'token': Token.objects.get_or_create(user=user)[0].key,
             'bio': bio
         }
-        print(context)
 
         return self.render_to_response(context)
 
@@ -65,3 +65,9 @@ def get_graph(request, pk):
         'graph': get_object_or_404(AreaBio.objects.all(), pk=pk)
     }
     return render(request, 'partials/full_graph.pug', context)
+
+class PostedGraphView(View):
+    template_name = 'done.pug'
+    def post(self, request):
+        context = {'graph': AreaBio.objects.get(uuid=request.POST['graph_uuid'])}
+        return render(request, 'done.pug', context=context)

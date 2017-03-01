@@ -11,18 +11,30 @@ var app = new Vue({
       name: '',
       age: 0,
       country: '',
-      id: bio_id
+      id: bio_id,
+      uuid: null
     },
-    entries: []
+    entries: [],
+    bioFilled: false,
+    name_error: false,
+    age_error: false,
+    country_error: false
   },
   methods: {
     updateBio: function () {
-      superagent.put('/api/area-bios/' + this.bio.id + '/')
-          .send(this.bio)
-          .set('Authorization', auth_token)
-          .end(function (err, res) {
-          });
 
+      this.name_error = !this.bio.name;
+      this.age_error = !this.bio.age;
+      this.country_error = !this.bio.country;
+      this.bioFilled = !(this.name_error || this.age_error || this.country_error);
+
+      if (this.bioFilled){
+        superagent.put('/api/area-bios/' + this.bio.id + '/')
+            .send(this.bio)
+            .set('Authorization', auth_token)
+            .end(function (err, res) {
+          });
+      }
     },
     updateEntry: function (entry) {
 
