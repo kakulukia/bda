@@ -44,14 +44,23 @@ class AreaBio(models.Model):
             desc += u', {}'.format(self.country)
         return upper(desc)
 
+    def height(self):
+        if hasattr(self, '_height'):
+            return self._height
+
+        self._height = 0
+        for entry in self.entries.all():
+            self._height += entry.year_to - entry.year_from
+        return self._height
+
     def axis_height(self):
-        return (self.age + 3) / .8
+        return (self.height() + 3) / .8
 
     def show_30(self):
-        return 'gray' if self.age + 7 < 30 else ''
+        return 'gray' if self.height() + 7 < 30 else ''
 
     def show_60(self):
-        return 'gray' if self.age + 7 < 60 else ''
+        return 'gray' if self.height() + 7 < 60 else ''
 
 
 class EntryManager(models.Manager):
