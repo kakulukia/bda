@@ -16,15 +16,18 @@ class AreaBioManager(models.Manager):
 class AreaBio(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
-    name = models.CharField(verbose_name=_('Name'), max_length=150, null=True)
-    age = models.IntegerField(verbose_name=_('Age'), null=True)
-    country = models.CharField(verbose_name=_('Country'), max_length=150, null=True)
+    name = models.CharField(verbose_name=_(u'Name'), max_length=150, null=True)
+    age = models.IntegerField(verbose_name=_(u'Age'), null=True)
+    country = models.CharField(verbose_name=_(u'Country'), max_length=150, null=True)
 
     published = models.BooleanField(default=False)
     objects = AreaBioManager()
 
     def __str__(self):
-        return '{}, {}, {}'.format(self.name, self.age, self.country)
+        return u'{}, {}, {}'.format(self.name, self.age, self.country)
+
+    def __unicode__(self):
+        return self.__str__()
 
     def max_space(self):
         return self.entries.aggregate(Max('living_space'))['living_space__max']
@@ -36,9 +39,9 @@ class AreaBio(models.Model):
         print(self.name, self.age, self.country)
         desc = self.name
         if self.name and self.age:
-            desc += ', {}'.format(self.age)
+            desc += u', {}'.format(self.age)
         if self.age and self.country:
-            desc += ', {}'.format(self.country)
+            desc += u', {}'.format(self.country)
         return upper(desc)
 
 
@@ -63,7 +66,7 @@ class BioEntry(models.Model):
         ordering = ['year_from']
 
     def __str__(self):
-        return '{}-{}, {} in {} m²'.format(
+        return u'{}-{}, {} in {} m²'.format(
             self.year_from, self.year_to, self.number_of_people, self.living_space)
 
     def years(self):

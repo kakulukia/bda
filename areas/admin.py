@@ -6,7 +6,10 @@ from .models import AreaBio, BioEntry
 
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
-    list_display = ['id', '__str__']
+    list_display = ['id', '__str__', 'entries_count']
+
+    def entries_count(self, obj):
+        return obj.entries.count()
 
 
 @admin.register(BioEntry)
