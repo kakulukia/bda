@@ -44,6 +44,15 @@ class AreaBio(models.Model):
             desc += u', {}'.format(self.country)
         return upper(desc)
 
+    def axis_height(self):
+        return (self.age + 3) / .8
+
+    def show_30(self):
+        return 'gray' if self.age + 7 < 30 else ''
+
+    def show_60(self):
+        return 'gray' if self.age + 7 < 60 else ''
+
 
 class EntryManager(models.Manager):
     use_for_related_fields = True

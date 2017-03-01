@@ -7,10 +7,11 @@
       .desc 5
     .desc_10
       .desc 10
-    .desc_30
+    .desc_30(class="{{ graph.show_30 }}")
       .desc 30
-    .desc_60
+    .desc_60(class="{{ graph.show_60 }}")
       .desc 60
+    .middle_axis(style="height: {{ graph.axis_height }}%")
 .measurement
   hr
   span {{ graph.max_space }} m²

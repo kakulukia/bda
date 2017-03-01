@@ -6,7 +6,8 @@
 $red: #ff1236
 $bg-gray: #E4E4E3
 $bg-light-gray: #eceeef
-$lines-gray: gray
+$lines-gray: #444
+$lines-light-gray: #aaa
 
 body
   font-family: "Franziska", serif
@@ -65,7 +66,7 @@ h2
       font-size: 12px
 
 // EDITOR PAGE
-.editor-container
+.popup-container
   height: 100%
   display: flex
   justify-content: center
@@ -75,7 +76,7 @@ h2
     border-top: 4px solid $red
     margin: 10px 0
 
-  .editor
+  .popup
     width: 95%
     height: 95%
     box-shadow: 5px 5px 24px 3px rgba(0,0,0,0.42)
@@ -217,11 +218,13 @@ h2
       position: absolute
       top: 0
       left: 0
+      display: flex
+      flex-direction: column-reverse
 
       .desc_5, .desc_10, .desc_30, .desc_60, .desc_0
         position: absolute
         bottom: 0
-        border-top: 1px solid black
+        border-top: 1px solid $lines-gray
         width: 100%
 
         .desc
@@ -235,15 +238,26 @@ h2
       .desc_0
         height: 1%
         border-top: none
-        border-bottom: 2px solid black
+        border-bottom: 2px solid $lines-gray
       .desc_5
         height: 6.25%
       .desc_10
         height: 12.5%
       .desc_30
         height: 37.5%
+        &.gray
+          border-color: $lines-light-gray
+          color: $lines-light-gray
       .desc_60
         height: 75%
+        &.gray
+          border-color: $lines-light-gray
+          color: $lines-light-gray
+      .middle_axis
+        width: 0
+        border-right: 1px solid $lines-gray
+        margin: 0 auto
+        flex
 
     .bar-container
       width: 90%

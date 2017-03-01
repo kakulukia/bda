@@ -1,0 +1,19 @@
+-extends 'index.pug'
+-load crispy_forms_tags i18n static
+
+block extra_script
+  script(src="{% static 'js/vue.js' %}")
+  script(src="{% static 'js/superagent.js' %}")
+  script(src="{% static 'js/done.js' %}")
+
+
+block content
+    #app.popup-container
+
+      .popup
+
+        .left
+          h2 {{ graph }}
+        .right
+          .graph-area
+            -include 'partials/full_graph.pug'
