@@ -27,12 +27,8 @@ var app = new Vue({
     updateEntry: function (entry) {
 
       this.testEntry(entry);
-      console.log(entry);
-      console.log(entry.ok);
       if (entry.ok) {
-        console.log('inside');
         if (entry.id) {
-          console.log('we have id');
           superagent.put('/api/area-bios/' + this.bio.id + '/entries/' + entry.id + '/')
               .send(entry)
               .set('Authorization', auth_token)
@@ -40,7 +36,7 @@ var app = new Vue({
                 if (err) {
                   console.log(err);
                 } else {
-                  console.log(res.text);
+                  // console.log(res.text);
                 }
               });
           setTimeout(this.loadGraph, 200);
@@ -52,7 +48,7 @@ var app = new Vue({
                 if (err) {
                   console.log(err);
                 } else {
-                  console.log(res.text);
+                  // console.log(res.text);
                   entry.id = JSON.parse(res.text).id;
                 }
               });
@@ -62,14 +58,19 @@ var app = new Vue({
 
     },
     getLastYear: function (entry) {
-      var max_year = 0;
-      _.forEach(app.entries, function (entry) {
-        if (entry.year_to > max_year) {
-          max_year = entry.year_to;
-        }
-      });
-      entry.year_from = max_year;
-      this.setRange(entry);
+
+      if (!/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range)){
+        var max_year = new Date().getFullYear() - app.bio.age;
+        _.forEach(app.entries, function (entry) {
+          if (entry.year_to > max_year) {
+            max_year = entry.year_to;
+          }
+        });
+        entry.year_from = max_year;
+        entry.range_error = true;
+        this.setRange(entry);
+        this.entries.splice();
+      }
     },
     testEntry: function (entry) {
 
@@ -77,7 +78,7 @@ var app = new Vue({
       entry.number_of_people_error = !entry.number_of_people;
       entry.range_error = !/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range);
 
-      entry.ok = !(entry.range_error && entry.number_of_people_error && entry.living_space_error);
+      entry.ok = !(entry.range_error || entry.number_of_people_error || entry.living_space_error);
 
     },
     addEntry: function () {
@@ -103,7 +104,7 @@ var app = new Vue({
         superagent.delete('/api/area-bios/' + this.bio.id + '/entries/' + entry.id + '/')
             .set('Authorization', auth_token)
             .end(function (err, res) {
-              console.log(res.text);
+              // console.log(res.text);
               if (err) console.log(err);
             });
       }
@@ -142,6 +143,15 @@ var app = new Vue({
       entry.number_of_people_error = false;
       entry.range_error = false;
       this.setRange(entry);
+    },
+    nextRow: function(entry){
+      _.forEach($('.one input'), function (entry) {
+        if(!$(entry).val()) {
+          entry.focus();
+          return false
+        }
+      });
+      this.addEntry();
     }
   },
   filters: {
@@ -176,7 +186,14 @@ var app = new Vue({
         app.initEntry(entry);
       });
 
-      app.entries = entries;
+      if (entries.length > 0){
+        app.entries = entries;
+      }
+      else {
+        app.addEntry();
+        app.addEntry();
+        app.addEntry();
+      }
     });
     setTimeout(this.loadGraph, 500);
   }

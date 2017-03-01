@@ -70,7 +70,8 @@ block content
                   @focus="getLastYear(entry)")
               .cell.four
                 input.textInput.form-control(maxlength='150', name='name', required='',
-                  type='text', v-model='entry.description', @change='updateEntry(entry)')
+                  type='text', v-model='entry.description', @change='updateEntry(entry)',
+                  @keyup.enter="nextRow(entry)")
               .cell.five
                 i.fa.fa-times.delete(@click="deleteEntry(entry)")
 
