@@ -14,15 +14,46 @@ block content
         .left.white
           h2 {{ graph }}
 
-          a(href="#")
+          a(href="#", @click="show('.publish')")
             h4 Zur Sammlung hinzufügen
-          a(href="#")
+          .publish
+            p Deine Flächenbiografie wird veröffentlicht und für Vergleiche bereitegestellt.
+            .buttons
+              a.button(href="#", onclick="$('.publish').slideUp()") Doch nicht
+              a.button(href="#") Okay
+
+
+          a(href="#", @click="show('.compare')")
             h4 Vergleichen
-          a(href="#")
+          .compare
+            p Vergleiche Dich mit anderen.
+            .input-group
+              span.input-group-addon +/-
+              input.textInput.form-control(maxlength='150', name='name', type='text', v-model='range')
+              span.input-group-addon Jahre
+
+            .buttons
+              a.button(href="#") Anzeigen
+
+
+
+          a(href="#", @click="show('.email')")
             h4 Per Email schicken
-          a(href="/")
+          .email
+            p Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie zuzusenden.
+
+
+          a(href="#", @click="show('.discard')")
             h4 Stöbern
+          .discard
+            p Deine Flächenbiografie wird nicht veröffentlicht. Hier geht es zurück zur Startseite.
+            p(v-if="!mail_sent") Sende Dir Deine Flächenbiographie vorher zu, um sie Dir später noch mal
+              |  ansehen zu können, alle Daten gehen sonst verlohren.
+            .buttons
+              a.button(href="#", onclick="$('.discard').slideUp()") Noch nicht
+              a.button(href="/") Okay
 
         .right
-          .graph-area
-            -include 'partials/full_graph.pug'
+          .charts
+            .graph-area
+              -include 'partials/full_graph.pug'

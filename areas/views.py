@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic import TemplateView
+from rest_framework.decorators import detail_route
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from rest_framework.authtoken.models import Token
@@ -32,7 +34,6 @@ class AreaBioView(TemplateView):
 
 class BioListView(ListView):
     queryset = AreaBio.objects.all()
-    context_object_name = 'book_list'
     template_name = 'area_list.pug'
 
 
@@ -54,6 +55,14 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
     queryset = AreaBio.objects.all()
     serializer_class = AreaBioSerializer
 
+    @detail_route(methods=['get'])
+    def compare(self, request, pk=None):
+        range_param = int(request.query_params['range'])
+        myself = self.get_object()
+        range_tuple = (max(0, myself.age - range_param), myself.age + range_param)
+        query = AreaBio.objects.filter(age__range=range_tuple).exclude(id=pk)
+        return Response(AreaBioSerializer(query[:3], many=True).data)
+
 
 class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
     queryset = BioEntry.objects.all()
@@ -66,8 +75,11 @@ def get_graph(request, pk):
     }
     return render(request, 'partials/full_graph.pug', context)
 
+
 class PostedGraphView(View):
     template_name = 'done.pug'
-    def post(self, request):
+
+    @staticmethod
+    def post(request):
         context = {'graph': AreaBio.objects.get(uuid=request.POST['graph_uuid'])}
         return render(request, 'done.pug', context=context)
