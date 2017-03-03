@@ -89,6 +89,9 @@ class BioEntry(models.Model):
         return u'{}-{}, {} in {} m²'.format(
             self.year_from, self.year_to, self.number_of_people, self.living_space)
 
+    def __unicode__(self):
+        return self.__str__()
+
     def years(self):
         diff = self.year_to - self.year_from
         return float(diff) / 0.8
