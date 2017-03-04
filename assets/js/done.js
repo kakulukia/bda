@@ -9,7 +9,7 @@ var app = new Vue({
   data: {
     mail_sent: false,
     range: 10,
-    open_tab: undefined,
+    open_tab: undefined
 
   },
   methods: {
@@ -26,17 +26,21 @@ var app = new Vue({
       this.open_tab = whichOne;
     },
     compare: function(){
-      superagent.get('/api/area-bios/' + this.bio.id + '/entries/').end(function (err, res) {
-        if (err) console.log(err);
-        else {
-          var bios = JSON.parse(res.text);
-          _.forEach(bios, function (bio) {
-            $.get('/graph/' + bio.id + '/', function (data) {
-              $('.graph-area').html(data);
-            });
-          })
-        }
-      });
+      $('.charts').html('');
+      superagent.get('/api/area-bios/' + graph_id + '/compare/')
+        .query({ range: this.range })
+        .end(function (err, res) {
+          if (err) console.log(err);
+          else {
+            var bios = JSON.parse(res.text);
+            $('.right').html("<div class='charts'></div>");
+            _.forEach(bios, function (bio) {
+              $.get('/graph/' + bio.id + '/bare/', function (data) {
+                $('.charts').append(data);
+              });
+            })
+          }
+        });
     }
   },
   filters: {

@@ -65,6 +65,34 @@ a, a:visited, a:hover, a:focus
     .button
       background: white
 
+  .charts
+    display: flex
+    flex-direction: column
+    position: relative
+    flex-grow: 1
+    .graph-area
+      position: absolute
+      opacity: 0.5
+      bottom: 0
+      width: 100%
+      height: 100%
+
+      .entry
+        &.odd
+          background: transparent
+          border: 1px solid lightgrey
+        &.even
+          background: transparent
+          border: 1px solid darkgrey
+
+        .persons
+          &.odd
+            background: transparent
+            border: 1px solid $red
+          &.even
+            background: transparent
+            border: 1px solid $red
+
 .list-area
   overflow-y: auto
   display: flex

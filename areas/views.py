@@ -69,11 +69,12 @@ class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = EntrySerializer
 
 
-def get_graph(request, pk):
+def get_graph(request, pk, bare=False):
+    template_name = 'partials/naked_graph.pug' if bare else 'partials/full_graph.pug'
     context = {
         'graph': get_object_or_404(AreaBio.objects.all(), pk=pk)
     }
-    return render(request, 'partials/full_graph.pug', context)
+    return render(request, template_name, context)
 
 
 class PostedGraphView(View):
