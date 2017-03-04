@@ -54,7 +54,9 @@ block content
         a(href="#", @click="show('.discard')")
           h4 Stöbern
         .discard
-          p Deine Flächenbiografie wird nicht veröffentlicht. Hier geht es zurück zur Startseite.
+          p
+            span(v-show="!bio.published") Deine Flächenbiografie wird nicht veröffentlicht.
+            | Hier geht es zurück zur Startseite.
           p(v-if="!mail_sent") Sende Dir Deine Flächenbiographie vorher zu, um sie Dir später noch mal
             |  ansehen zu können, alle Daten gehen sonst verlohren.
           .buttons

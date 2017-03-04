@@ -39,7 +39,6 @@ class AreaBio(models.Model):
         return render_to_string('partials/bare_graph.pug', {'graph': self})
 
     def description(self):
-        print(self.name, self.age, self.country)
         desc = self.name
         if self.name and self.age:
             desc += u', {}'.format(self.age)
