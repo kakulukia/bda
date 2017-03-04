@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import uuid
 
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models import Max
 from django.template.defaultfilters import upper
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+
+from areas.utils import guess_name
 
 
 class AreaBioManager(models.Manager):
@@ -63,6 +66,15 @@ class AreaBio(models.Model):
 
     def show_60(self):
         return 'gray' if self.height() + 7 < 60 else ''
+
+    def send_to(self, email):
+        context = {'name': guess_name(email), 'graph': self}
+        send_mail(
+            _(u'Deine Flächenbiografie'),
+            render_to_string('messages/send_graph.txt', context),
+            'do-not-reply@pepperz.de',
+            [email],
+        )
 
 
 class EntryManager(models.Manager):

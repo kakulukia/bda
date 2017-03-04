@@ -183,7 +183,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -200,3 +200,9 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+EMAIL_HOST = 'pepperz.de'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'do-not-reply@pepperz.de'
+EMAIL_HOST_PASSWORD = 'q4nfgtui5le4567kt'
+EMAIL_USE_TLS = True

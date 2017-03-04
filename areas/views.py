@@ -1,10 +1,15 @@
+import re
+
 from django.contrib.auth.models import User
+from django.http.response import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
+from django.utils.html import simple_email_re
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic import TemplateView
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -48,7 +53,7 @@ def add_bio(request):
 
     bio = AreaBio.objects.get(uuid=bio_uuid)
 
-    return redirect(reverse('detail', args=[bio.id]))
+    return redirect(reverse('edit-graph', args=[bio.id]))
 
 
 class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
@@ -69,13 +74,42 @@ class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = EntrySerializer
 
 
-def get_graph(request, pk, bare=False):
+def get_graph(request, pk, bare=False, original= False):
     template_name = 'partials/naked_graph.pug' if bare else 'partials/full_graph.pug'
     context = {
-        'graph': get_object_or_404(AreaBio.objects.all(), pk=pk)
+        'graph': get_object_or_404(AreaBio.objects.all(), pk=pk),
+        'original': original,
     }
     return render(request, template_name, context)
 
+
+@csrf_exempt
+def publish_graph(request, pk):
+
+    if not request.method == 'POST':
+        return HttpResponse(status=400)
+
+    graph = get_object_or_404(AreaBio, pk=pk)
+    graph.published = True
+    graph.save()
+    return HttpResponse()
+
+
+@csrf_exempt
+def send_graph(request, pk):
+
+    if not request.method == 'POST':
+        return HttpResponse(status=400)
+
+    graph = get_object_or_404(AreaBio, pk=pk)
+
+    # check email
+    email = request.POST['email']
+    if not simple_email_re.match(email):
+        return HttpResponse(status=400)
+
+    graph.send_to(email)
+    return HttpResponse()
 
 class PostedGraphView(View):
     template_name = 'done.pug'

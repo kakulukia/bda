@@ -12,6 +12,7 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
             'country',
             'id',
             'uuid',
+            'published',
         )
 
 

@@ -17,10 +17,13 @@ block content
         a(href="#", @click="show('.publish')")
           h4 Zur Sammlung hinzufügen
         .publish
-          p Deine Flächenbiografie wird veröffentlicht und für Vergleiche bereitegestellt.
-          .buttons
-            a.button(href="#", onclick="$('.publish').slideUp()") Doch nicht
-            a.button(href="#") Okay
+          .unpublished(v-show="!bio.published")
+            p Deine Flächenbiografie wird veröffentlicht und für Vergleiche bereitegestellt.
+            .buttons
+              a.button(href="#", onclick="$('.publish').slideUp()") Doch nicht
+              a.button(href="#", @click="publish") Okay
+          .published(v-show="bio.published")
+            p Deine Flächenbiografie wurde bereits veröffentlicht.
 
 
         a(href="#", @click="show('.compare')")
@@ -31,17 +34,22 @@ block content
             span.input-group-addon +/-
             input.textInput.form-control(maxlength='150', name='name', type='text', v-model='range')
             span.input-group-addon Jahre
-
           .buttons
             a.button(href="#", @click="compare") Anzeigen
-
 
 
         a(href="#", @click="show('.email')")
           h4 Per Email schicken
         .email
-          p Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie zuzusenden.
-
+          .send-mail(v-show='!mail_sent')
+            p Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie zuzusenden.
+            .input-group
+              span.input-group-addon @
+              input.textInput.form-control(maxlength='150', name='email', type='text', v-model='email')
+            .buttons
+              a.button(href="#", @click="sendGraph") Zusenden
+          .mail-sent(v-show='mail_sent')
+            p Deine Flächenbiografie wurde versendet.
 
         a(href="#", @click="show('.discard')")
           h4 Stöbern
