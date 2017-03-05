@@ -1,17 +1,12 @@
 # coding=utf-8
-import re
-import boto3
-from boto3.session import Session
 from fabric.context_managers import cd
 from fabric.state import env
-from git import Repo
-from fabric.operations import local, run
-from fabric.colors import green, yellow
-
-from core import secrets
+from fabric.operations import run
+from fabric.colors import green
 
 PROJECT_PATH = '/home/andy/www/bda'
 env.hosts = ['pepperz.de']
+MANAGE = '/home/andy/.virtualenvs/bda/bin/python manage.py '
 
 # T A S K S
 # =========
@@ -21,16 +16,18 @@ def deploy_only():
     with cd(PROJECT_PATH):
         print green('updating from repository ..')
         run('git pull' )
+        run(MANAGE + 'collectstatic')
 
 
 def restart():
     """ Restart nginx and the backend worker. """
     print green('restarting server ..')
-    run('sudo service uwsgi retart')
+    run('sudo service uwsgi restart')
 
 
 def deploy():
     deploy_only()
+
     restart()
 
 

@@ -105,6 +105,8 @@ class BioEntry(models.Model):
 
     def years(self):
         diff = self.year_to - self.year_from
+        if diff == 0:
+            diff = 0.25
         return float(diff) / 0.8
 
     def percentage(self):

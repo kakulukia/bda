@@ -64,6 +64,7 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
         queryset = AreaBio.objects.all()
         params = self.request.query_params
         if 'minAge' in params and 'maxAge' in params:
+            queryset = AreaBio.objects.published()
             maxAge = params['maxAge']
             if maxAge == 100:
                 maxAge = 130
