@@ -38,7 +38,7 @@ class AreaBioView(TemplateView):
 
 
 class BioListView(ListView):
-    queryset = AreaBio.objects.all()
+    queryset = AreaBio.objects.published()
     template_name = 'area_list.pug'
 
 
@@ -60,6 +60,16 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
     queryset = AreaBio.objects.all()
     serializer_class = AreaBioSerializer
 
+    def get_queryset(self):
+        queryset = AreaBio.objects.all()
+        params = self.request.query_params
+        if 'minAge' in params and 'maxAge' in params:
+            maxAge = params['maxAge']
+            if maxAge == 100:
+                maxAge = 130
+            queryset = queryset.filter(age__range=(params['minAge'], maxAge))
+        return queryset
+
     @detail_route(methods=['get'])
     def compare(self, request, pk=None):
         range_param = int(request.query_params['range'])
@@ -74,8 +84,10 @@ class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = EntrySerializer
 
 
-def get_graph(request, pk, bare=False, original= False):
+def get_graph(request, pk, bare=False, original= False, list_display=False):
     template_name = 'partials/naked_graph.pug' if bare else 'partials/full_graph.pug'
+    if list_display:
+        template_name = 'partials/naked_graph_with_name.pug'
     context = {
         'graph': get_object_or_404(AreaBio.objects.all(), pk=pk),
         'original': original,

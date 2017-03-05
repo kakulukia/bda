@@ -6,7 +6,8 @@ from .models import AreaBio, BioEntry
 
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
-    list_display = ['id', '__str__', 'entries_count']
+    list_display = ['id', '__str__', 'entries_count', 'published']
+    list_editable = ['published']
 
     def entries_count(self, obj):
         return obj.entries.count()

@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^graph/(?P<pk>[\w-]+)/publish/$', publish_graph, name='show-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/send/$', send_graph, name='send-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/bare/$', get_graph, {'bare': True}, name='show-bare-graph'),
+    url(r'^graph/(?P<pk>[\w-]+)/bare-name/$', get_graph, {'list_display': True}, name='show-bare-name-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/bare/original/$', get_graph, {'bare': True, 'original': True}, name='show-bare-graph'),
 ]
 

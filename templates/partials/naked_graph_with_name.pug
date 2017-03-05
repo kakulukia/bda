@@ -1,0 +1,6 @@
+.list-item
+  .graph-area(class="{% if not original %}comparable{% endif %}")
+    .graph-container
+      -include 'partials/bare_graph.pug'
+  .description
+    {{ graph.description }}
