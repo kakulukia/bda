@@ -15,20 +15,6 @@ env.hosts = ['pepperz.de']
 
 # T A S K S
 # =========
-def update_dev():
-    """
-    Push current branch to DEV.
-    Use fab dev deploy to actually deploy the changes manually if needed, but jenkins shall do the heavy lifting ;) """
-
-    current_branch = local('git rev-parse --abbrev-ref HEAD', capture=True)
-
-    local('git push origin %s' % current_branch)
-    local('git checkout dev')
-    local('git pull')
-    local('git merge %s' % current_branch)
-    local('git push origin dev')
-    local('git checkout %s' % current_branch)
-
 
 def deploy_only():
     """ Pull all updates from the remote repository. """
@@ -41,7 +27,7 @@ def restart():
     """ Restart nginx and the backend worker. """
     print green('restarting server ..')
     run('sudo service uwsgi retart')
-    
+
 
 def deploy():
     deploy_only()
