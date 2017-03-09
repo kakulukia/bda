@@ -1,6 +1,7 @@
 .bar-container
   -for entry in graph.entries.all
-    .entry(class="{% cycle 'odd' 'even' %}", style='height: {{ entry.years }}%; width: {{ entry.percentage }}%;')
+    .entry(class="{% cycle 'odd' 'even' %}",
+           style='height: {{ entry.years }}%; width: {{ entry.percentage }}%;')
       .persons(class="{% cycle 'odd' 'even' %}", style='width: {{ entry.person_percentage }}%') &nbsp;
   .entry.empty
 

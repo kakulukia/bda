@@ -16,17 +16,24 @@ var app = new Vue({
     },
     entries: [],
     bioFilled: false,
+    noErrors: false,
     name_error: false,
     age_error: false,
     country_error: false
   },
   methods: {
-    updateBio: function () {
-
+    hasErrors: function () {
+      return !this.bioFilled || !this.noErrors
+    },
+    checkBio: function() {
       this.name_error = !this.bio.name;
       this.age_error = !this.bio.age;
       this.country_error = !this.bio.country;
       this.bioFilled = !(this.name_error || this.age_error || this.country_error);
+    },
+    updateBio: function (justCheck) {
+
+      this.checkBio();
 
       if (this.bioFilled){
         superagent.put('/api/area-bios/' + this.bio.id + '/')
@@ -164,8 +171,7 @@ var app = new Vue({
         }
       });
 
-      if (retval) return false;
-      else {this.addEntry();}
+      if (!retval) this.addEntry();
     },
     submitForm: function(){
       $('form').submit();
@@ -194,6 +200,8 @@ var app = new Vue({
     superagent.get('/api/area-bios/' + this.bio.id + '/').end(function (err, res) {
       // Calling the end function will send the request
       app.bio = JSON.parse(res.text);
+      app.checkBio();
+
     });
     superagent.get('/api/area-bios/' + this.bio.id + '/entries/').end(function (err, res) {
       // Calling the end function will send the request
@@ -205,6 +213,7 @@ var app = new Vue({
 
       if (entries.length > 0){
         app.entries = entries;
+        app.noErrors = true;
       }
       else {
         app.addEntry();

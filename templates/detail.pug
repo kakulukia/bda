@@ -81,12 +81,12 @@ block content
             {% csrf_token %}
             input(type="hidden", name="graph_uuid", :value="bio.uuid")
             a.button(href="/") Zurück
-            a.button(href="#", :class="{'deactivated' : !bioFilled }", @click="submitForm") Fertig
+            a.button(href="#", :class="{'deactivated' : hasErrors() }", @click="submitForm") Fertig
 
 
       .right
         -verbatim
-          h3 {{ bio | extractName | caps }}
+          h3 {{ bio | extractName | caps }} {{ hasErrors() }}
           .graph-area
 
   script.
