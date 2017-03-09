@@ -322,6 +322,7 @@ a, a:visited, a:hover, a:focus
         margin: 0 auto
 
     .bar-container
+      overflow: hidden
       width: 90%
       margin: 0 auto
       display: flex
@@ -385,3 +386,16 @@ span.input-group-addon
     &:active
       border-color: $red
     top: -0.6rem
+
+.modal-dialog
+  margin: 30% auto
+.modal-content
+  border-radius: 0
+.modal-header
+  border-bottom: 3px solid $red
+.modal-footer
+  border-top: none
+  button
+    width: 150px
+    cursor: pointer
+

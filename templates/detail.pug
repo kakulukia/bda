@@ -86,8 +86,18 @@ block content
 
       .right
         -verbatim
-          h3 {{ bio | extractName | caps }} {{ hasErrors() }}
+          h3 {{ bio | extractName | caps }}
           .graph-area
+
+          #errorDialog.modal.fade(role="dialog")
+            .modal-dialog
+              .modal-content
+                .modal-header
+                  h4.modal-title Bitte korigieren:
+                .modal-body
+                  p {{ errorText }}
+                .modal-footer
+                  button.btn.btn-default(type="button", data-dismiss="modal") OK
 
   script.
     var auth_token = "Token {{ token }}";

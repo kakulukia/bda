@@ -19,9 +19,17 @@ var app = new Vue({
     noErrors: false,
     name_error: false,
     age_error: false,
-    country_error: false
+    country_error: false,
+    errorText: ""
   },
   methods: {
+    displayError: function(err){
+      var error = JSON.parse(err.response.text);
+      if (error.non_field_errors) {
+        this.errorText = error.non_field_errors[0];
+        $('#errorDialog').modal('show');
+      }
+    },
     hasErrors: function () {
       return !this.bioFilled || !this.noErrors
     },
@@ -58,11 +66,7 @@ var app = new Vue({
               .send(entry)
               .set('Authorization', auth_token)
               .end(function (err, res) {
-                if (err) {
-                  console.log(err);
-                } else {
-                  // console.log(res.text);
-                }
+                if (err) app.displayError(err);
               });
           setTimeout(this.loadGraph, 200);
         } else {
@@ -71,9 +75,8 @@ var app = new Vue({
               .set('Authorization', auth_token)
               .end(function (err, res) {
                 if (err) {
-                  console.log(err);
+                  app.displayError(err);
                 } else {
-                  // console.log(res.text);
                   entry.id = JSON.parse(res.text).id;
                 }
               });
@@ -187,7 +190,7 @@ var app = new Vue({
       if (!retval) this.addEntry();
     },
     submitForm: function(){
-      $('form').submit();
+      if (this.noErrors) $('form').submit();
     }
   },
   filters: {
