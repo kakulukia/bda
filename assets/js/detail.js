@@ -31,6 +31,12 @@ var app = new Vue({
       this.country_error = !this.bio.country;
       this.bioFilled = !(this.name_error || this.age_error || this.country_error);
     },
+    checkEntries: function () {
+      var entriesNotOk = _.some(this.entries, function(entry){
+        return !app.testEntry(entry);
+      })
+      this.noErrors = !entriesNotOk;
+    },
     updateBio: function (justCheck) {
 
       this.checkBio();
@@ -45,7 +51,7 @@ var app = new Vue({
     },
     updateEntry: function (entry) {
 
-      this.testEntry(entry);
+      this.checkEntries();
       if (entry.ok) {
         if (entry.id) {
           superagent.put('/api/area-bios/' + this.bio.id + '/entries/' + entry.id + '/')
@@ -93,11 +99,17 @@ var app = new Vue({
     },
     testEntry: function (entry) {
 
+      if (entry.range == undefined && !entry.number_of_people && !entry.living_space){
+        entry.ok = true;
+        return true;
+      }
+
       entry.living_space_error = !entry.living_space;
       entry.number_of_people_error = !entry.number_of_people;
       entry.range_error = !/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range);
 
       entry.ok = !(entry.range_error || entry.number_of_people_error || entry.living_space_error);
+      return entry.ok
 
     },
     addEntry: function () {
@@ -128,6 +140,7 @@ var app = new Vue({
             });
       }
       _.pull(this.entries, entry);
+      this.checkEntries();
       this.entries.splice(this.entries.length);
       setTimeout(this.loadGraph, 200);
     },
