@@ -157,13 +157,15 @@ var app = new Vue({
       this.setRange(entry);
     },
     nextRow: function(entry){
-      _.forEach($('.one input'), function (entry) {
+      var retval = _.some($('.one input'), function (entry) {
         if(!$(entry).val()) {
           entry.focus();
-          return false
+          return true
         }
       });
-      this.addEntry();
+
+      if (retval) return false;
+      else {this.addEntry();}
     },
     submitForm: function(){
       $('form').submit();

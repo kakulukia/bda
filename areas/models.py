@@ -32,10 +32,22 @@ class AreaBio(models.Model):
     def __unicode__(self):
         return self.__str__()
 
-    def max_space(self):
-        return self.entries.aggregate(Max('living_space'))['living_space__max'] or 0
+    def max_space(self, stretched=False):
+        if hasattr(self, '_max_space'):
+            return self._max_space
 
-    def bare_display(self):
+        if stretched:
+            max_space = BioEntry.objects.all().aggregate(Max('living_space'))
+        else:
+            max_space = self.entries.aggregate(Max('living_space'))
+
+        if max_space['living_space__max']:
+            self._max_space = max_space['living_space__max']
+            return self._max_space
+        else:
+            return 0
+
+    def bare_display(self, stretched=False):
         return render_to_string('partials/bare_graph.pug', {'graph': self})
 
     def description(self):
@@ -109,10 +121,13 @@ class BioEntry(models.Model):
             diff = 0.25
         return float(diff) / 0.8
 
-    def percentage(self):
-        max_value = self.area_bio.max_space()
+    def percentage(self, stretched=False):
+        max_value = self.area_bio.max_space(stretched=stretched)
         percentage = int(float(self.living_space) / float(max_value) * 100)
         return percentage
+
+    def percentage_stretched(self):
+        self.percentage(stretched=True)
 
     def person_percentage(self):
         return int(float(100) / float(self.number_of_people))

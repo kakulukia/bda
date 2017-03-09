@@ -16,7 +16,7 @@ def deploy_only():
     with cd(PROJECT_PATH):
         print green('updating from repository ..')
         run('git pull' )
-        run(MANAGE + 'collectstatic')
+        run(MANAGE + 'collectstatic --noinput')
 
 
 def restart():
