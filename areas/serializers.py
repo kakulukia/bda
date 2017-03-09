@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from rest_framework import serializers
 
 from areas.models import AreaBio, BioEntry
@@ -28,3 +29,11 @@ class EntrySerializer(serializers.ModelSerializer):
             'description',
             'area_bio',
         )
+    def validate(self, attrs):
+
+        bio = attrs['area_bio']
+
+        if bio.to_many_entries():
+            raise serializers.ValidationError(u"Die Einträge überschreiten Dein Alter.")
+
+        return attrs

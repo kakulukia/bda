@@ -24,11 +24,21 @@ var app = new Vue({
   },
   methods: {
     displayError: function(err){
-      var error = JSON.parse(err.response.text);
-      if (error.non_field_errors) {
-        this.errorText = error.non_field_errors[0];
-        $('#errorDialog').modal('show');
+      try {
+        var error = JSON.parse(err.response.text);
+
+        if (error.non_field_errors) {
+          this.errorText = error.non_field_errors[0];
+        }
       }
+      catch(error){
+        this.errorText = _.truncate(err.response.text, {
+          'length': 177,
+          'separator': /Request Method.*/
+        });
+
+      }
+      $('#errorDialog').modal('show');
     },
     hasErrors: function () {
       return !this.bioFilled || !this.noErrors
