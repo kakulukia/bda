@@ -207,7 +207,8 @@ EMAIL_HOST_USER = 'do-not-reply@pepperz.de'
 EMAIL_HOST_PASSWORD = 'q4nfgtui5le4567kt'
 EMAIL_USE_TLS = True
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 77
-}
+# TODO: das muessen wir aktivieren und mit rumspielen, wenn wir mal genuegend Daten haben
+# REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+#     'PAGE_SIZE': 77
+# }

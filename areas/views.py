@@ -72,7 +72,7 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
             if maxAge == 100:
                 maxAge = 130
             queryset = queryset.filter(age__range=(params['minAge'], maxAge))
-        return queryset[:77]
+        return queryset
 
     @detail_route(methods=['get'])
     def compare(self, request, pk=None):
