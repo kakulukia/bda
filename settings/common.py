@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'crispy_forms',
     'rosetta',
+    'django_countries',
 
     'rest_framework',
     'rest_framework.authtoken',

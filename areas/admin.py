@@ -8,6 +8,7 @@ from .models import AreaBio, BioEntry
 class AreaBioAdmin(admin.ModelAdmin):
     list_display = ['id', '__str__', 'entries_count', 'published']
     list_editable = ['published']
+    list_filter = ['country']
 
     def entries_count(self, obj):
         return obj.entries.count()

@@ -64,9 +64,12 @@ var app = new Vue({
             .send(this.bio)
             .set('Authorization', auth_token)
             .end(function (err, res) {
-              _.forEach(app.entries, function(entry){
-                if (entry.living_space) app.updateEntry(entry);
-              });
+              if (err) app.displayError(err);
+              else {
+                _.forEach(app.entries, function(entry){
+                  if (entry.living_space) app.updateEntry(entry);
+                });
+              }
           });
       }
     },
@@ -248,9 +251,10 @@ var app = new Vue({
         app.addEntry();
         app.addEntry();
         app.addEntry();
+        setTimeout(function() { $('#id_name').focus(); }, 500);
       }
     });
-    setTimeout(this.loadGraph, 500);
+    setTimeout(this.loadGraph, 200);
   }
 
 });

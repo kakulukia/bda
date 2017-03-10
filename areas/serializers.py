@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import activate
 from rest_framework import serializers
+from django_countries import countries
 
 from areas.models import AreaBio, BioEntry
 
@@ -15,6 +17,22 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
             'uuid',
             'published',
         )
+
+    def validate(self, data):
+        country = data['country'].capitalize()
+        data['country'] = country
+        if not country in dict(countries).values():
+            activate('en')
+            if not country in dict(countries).values():
+                raise serializers.ValidationError('Das Land ist unbekannt.')
+            else:
+                for code, name in dict(countries).iteritems():
+                    if name == country:
+                        activate('de')
+                        print(dict(countries)[code])
+                        data['country'] = dict(countries)[code]
+
+        return data
 
 
 class EntrySerializer(serializers.ModelSerializer):
