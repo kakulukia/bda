@@ -85,12 +85,14 @@ class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
     serializer_class = EntrySerializer
 
 
-def get_graph(request, pk, bare=False, original= False, list_display=False):
+def get_graph(request, pk, bare=False, original=False, list_display=False, stretched=True):
     template_name = 'partials/naked_graph.pug' if bare else 'partials/full_graph.pug'
     if list_display:
         template_name = 'partials/naked_graph_with_name.pug'
+    bio = get_object_or_404(AreaBio.objects.all(), pk=pk)
+    bio._stretched = stretched
     context = {
-        'graph': get_object_or_404(AreaBio.objects.all(), pk=pk),
+        'graph': bio,
         'original': original,
     }
     return render(request, template_name, context)
@@ -127,7 +129,8 @@ def send_graph(request, pk):
 class PostedGraphView(View):
     template_name = 'done.pug'
 
-    @staticmethod
-    def post(request):
-        context = {'graph': AreaBio.objects.get(uuid=request.POST['graph_uuid'])}
-        return render(request, 'done.pug', context=context)
+    def post(self, request):
+        bio = AreaBio.objects.get(uuid=request.POST['graph_uuid'])
+        bio._stretched = False
+        context = {'graph': bio}
+        return render(request, self.template_name, context=context)

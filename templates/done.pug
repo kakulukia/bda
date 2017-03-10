@@ -32,7 +32,7 @@ block content
           p Vergleiche Dich mit anderen.
           .input-group
             span.input-group-addon +/-
-            input.textInput.form-control(maxlength='150', name='name', type='text', v-model='range')
+            input.textInput.form-control(maxlength='150', name='name', type='text', v-model='range', @keyup.enter="compare")
             span.input-group-addon Jahre
           .buttons
             a.button(href="#", @click="compare") Anzeigen
@@ -45,7 +45,8 @@ block content
             p Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie zuzusenden.
             .input-group
               span.input-group-addon @
-              input.textInput.form-control(maxlength='150', name='email', type='text', v-model='email')
+              input.textInput.form-control(maxlength='150', name='email',
+                                           type='text', v-model='email', @keyup.enter="sendGraph")
             .buttons
               a.button(href="#", @click="sendGraph") Zusenden
           .mail-sent(v-show='mail_sent')
@@ -54,11 +55,15 @@ block content
         a(href="#", @click="show('.discard')")
           h4 Stöbern
         .discard
+          p Hier geht es zurück zur Startseite.
           p
-            span(v-show="!bio.published") Deine Flächenbiografie wird nicht veröffentlicht.
-            | Hier geht es zurück zur Startseite.
-          p(v-if="!mail_sent") Sende Dir Deine Flächenbiographie vorher zu, um sie Dir später noch mal
-            |  ansehen zu können, alle Daten gehen sonst verlohren.
+            span(v-show="!bio.published") Deine Flächenbiografie wird nicht
+              a(href='#', @click="show('.publish')")
+                |  veröffentlicht
+            | werden.
+          p(v-if="!mail_sent")
+            a(href="#", @click="show('.email')") Sende Dir Deine Flächenbiographie vorher zu
+            | , um sie Dir später noch mal ansehen zu können, alle Daten gehen sonst verlohren.
           .buttons
             a.button(href="#", onclick="$('.discard').slideUp(); app.open_tab=undefined;") Noch nicht
             a.button(href="/") Okay

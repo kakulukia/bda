@@ -48,7 +48,11 @@ class AreaBio(models.Model):
             return 0
 
     def bare_display(self, stretched=False):
+        self._stretched = stretched
         return render_to_string('partials/bare_graph.pug', {'graph': self})
+
+    def bare_display_stretched(self):
+        return self.bare_display(stretched=True)
 
     def description(self):
         desc = self.name
@@ -135,7 +139,7 @@ class BioEntry(models.Model):
         return float(diff) / 0.8
 
     def percentage(self, stretched=False):
-        max_value = self.area_bio.max_space(stretched=stretched)
+        max_value = self.area_bio.max_space(stretched=self.area_bio._stretched)
         percentage = int(float(self.living_space) / float(max_value) * 100)
         return percentage
 

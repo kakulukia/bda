@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^graph/add/', add_bio),
     url(r'^graph/done/', PostedGraphView.as_view(), name='done'),
     url(r'^graph/edit/(?P<pk>[\w-]+)/$', AreaBioView.as_view(), name='edit-graph'),
-    url(r'^graph/(?P<pk>[\w-]+)/$', get_graph, name='show-graph'),
+    url(r'^graph/(?P<pk>[\w-]+)/$', get_graph, {'stretched': False}, name='show-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/publish/$', publish_graph, name='show-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/send/$', send_graph, name='send-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/bare/$', get_graph, {'bare': True}, name='show-bare-graph'),
