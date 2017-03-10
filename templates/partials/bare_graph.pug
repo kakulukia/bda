@@ -1,5 +1,5 @@
 .bar-container
-  -for entry in graph.entries.all
+  -for entry in graph.normalized_entries
     .entry(class="{% cycle 'odd' 'even' %}",
            style='height: {{ entry.years }}%; width: {{ entry.percentage }}%;')
       .persons(class="{% cycle 'odd' 'even' %}", style='width: {{ entry.person_percentage }}%') &nbsp;

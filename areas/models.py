@@ -106,6 +106,24 @@ class AreaBio(models.Model):
         print(years)
         return years > self.age / 0.8
 
+    def normalized_entries(self):
+
+        entries = []
+        last_year = 0
+        for entry in self.entries.all():
+            if last_year and entry.year_from > last_year:
+                space = BioEntry(
+                    living_space=0,
+                    number_of_people=0,
+                    year_from=last_year,
+                    year_to=entry.year_from
+                )
+                entries.append(space)
+            entries.append(entry)
+            last_year = entry.year_to
+
+        return entries
+
 
 class EntryManager(models.Manager):
     use_for_related_fields = True
@@ -142,6 +160,8 @@ class BioEntry(models.Model):
         return float(diff) / 0.8
 
     def percentage(self, stretched=False):
+        if not self.living_space:
+            return 0
         max_value = self.area_bio.max_space(stretched=self.area_bio._stretched)
         percentage = int(float(self.living_space) / float(max_value) * 100)
         return percentage
@@ -150,4 +170,6 @@ class BioEntry(models.Model):
         self.percentage(stretched=True)
 
     def person_percentage(self):
-        return int(float(100) / float(self.number_of_people))
+        if self.number_of_people:
+            return int(float(100) / float(self.number_of_people))
+        return 0

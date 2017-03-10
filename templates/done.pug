@@ -60,10 +60,12 @@ block content
             span(v-show="!bio.published") Deine Flächenbiografie wird nicht
               a(href='#', @click="show('.publish')")
                 |  veröffentlicht
-            | werden.
+              | werden.
           p(v-if="!mail_sent")
             a(href="#", @click="show('.email')") Sende Dir Deine Flächenbiographie vorher zu
-            | , um sie Dir später noch mal ansehen zu können, alle Daten gehen sonst verlohren.
+            | , um sie Dir später noch mal ansehen zu können
+            span(v-show="!bio.published"), alle Daten gehen sonst verlohren.
+            span(v-show="bio.published") .
           .buttons
             a.button(href="#", onclick="$('.discard').slideUp(); app.open_tab=undefined;") Noch nicht
             a.button(href="/") Okay
