@@ -3,7 +3,7 @@ Hi {{ name }},
 Danke, dass Du Dir die Zeit genommen hast, Deine Flächenbiografie einzutragen!
 Mit diesem Link, kannst Du weiterhin darauf zugreifen:
 
-http://bda.pepperz.de{% url 'edit-graph' graph.id %}
+http://bda.pepperz.de{% url 'edit-graph' graph.uuid %}
 
 Mit besten Grüßen
 Deine Architekten

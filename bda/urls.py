@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^$', BioListView.as_view(), name='index'),
     url(r'^graph/add/', add_bio),
     url(r'^graph/done/', PostedGraphView.as_view(), name='done'),
-    url(r'^graph/edit/(?P<pk>[\w-]+)/$', AreaBioEditView.as_view(), name='edit-graph'),
+    url(r'^graph/edit/(?P<uuid>[\w-]+)/$', AreaBioEditView.as_view(), name='edit-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/publish/$', publish_graph, name='publish-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/send/$', send_graph, name='send-graph'),
 

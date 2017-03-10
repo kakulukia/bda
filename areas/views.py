@@ -36,9 +36,9 @@ class AreaBioView(TemplateView):
 class AreaBioEditView(TemplateView):
     template_name = 'detail.pug'
 
-    def get(self, request, pk, *args, **kwargs):
+    def get(self, request, uuid, *args, **kwargs):
 
-        bio = AreaBio.objects.get(id=pk)
+        bio = AreaBio.objects.get(uuid=uuid)
         user = request.user
         # import ipdb; ipdb.set_trace()
         if user.is_anonymous:
@@ -70,7 +70,7 @@ def add_bio(request):
 
     bio = AreaBio.objects.get(uuid=bio_uuid)
 
-    return redirect(reverse('edit-graph', args=[bio.id]))
+    return redirect(reverse('edit-graph', args=[bio.uuid]))
 
 
 class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
