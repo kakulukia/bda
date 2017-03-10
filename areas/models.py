@@ -87,6 +87,18 @@ class AreaBio(models.Model):
             [email],
         )
 
+    def to_many_entries(self, exclude=None, add=0):
+        years = 0
+        qs = self.entries.all()
+        if exclude:
+            qs = qs.exclude(id=exclude.id)
+        for entry in qs:
+            if entry.years >= 1:
+                years += entry.years
+        years += add
+        print(years)
+        return years > self.age / 0.8
+
 
 class EntryManager(models.Manager):
     use_for_related_fields = True
@@ -115,6 +127,7 @@ class BioEntry(models.Model):
     def __unicode__(self):
         return self.__str__()
 
+    @property
     def years(self):
         diff = self.year_to - self.year_from
         if diff == 0:

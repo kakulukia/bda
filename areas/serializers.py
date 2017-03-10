@@ -31,9 +31,11 @@ class EntrySerializer(serializers.ModelSerializer):
         )
     def validate(self, attrs):
 
-        bio = attrs['area_bio']
+        if attrs['year_from'] > attrs['year_to']:
+            raise serializers.ValidationError(u'Der Zeitraum ist ungültig.')
 
-        if bio.to_many_entries():
+        bio = attrs['area_bio']
+        if bio.to_many_entries(exclude=self.instance, add=attrs['year_to']-attrs['year_from']):
             raise serializers.ValidationError(u"Die Einträge überschreiten Dein Alter.")
 
         return attrs
