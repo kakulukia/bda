@@ -38,8 +38,11 @@ class AreaBioView(TemplateView):
 
 
 class BioListView(ListView):
-    queryset = AreaBio.objects.published()
     template_name = 'area_list.pug'
+
+    def get_queryset(self):
+        queryset = AreaBio.objects.published()
+        return queryset[:77]
 
 
 def add_bio(request):
@@ -69,7 +72,7 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
             if maxAge == 100:
                 maxAge = 130
             queryset = queryset.filter(age__range=(params['minAge'], maxAge))
-        return queryset
+        return queryset[:77]
 
     @detail_route(methods=['get'])
     def compare(self, request, pk=None):

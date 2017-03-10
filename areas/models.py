@@ -37,15 +37,18 @@ class AreaBio(models.Model):
             return self._max_space
 
         if stretched:
-            max_space = BioEntry.objects.all().aggregate(Max('living_space'))
-        else:
-            max_space = self.entries.aggregate(Max('living_space'))
+            max_space_all = BioEntry.objects.all().aggregate(Max('living_space'))['living_space__max']
+            max_space_self = self.entries.aggregate(Max('living_space'))['living_space__max']
 
-        if max_space['living_space__max']:
-            self._max_space = max_space['living_space__max']
-            return self._max_space
+            capped_max = min(max_space_all, 300)
+            max_space = max(max_space_self, capped_max)
+
         else:
-            return 0
+            max_space = self.entries.aggregate(Max('living_space'))['living_space__max'] or 0
+
+        if max_space:
+            self._max_space = max_space
+        return max_space
 
     def bare_display(self, stretched=False):
         self._stretched = stretched

@@ -206,3 +206,8 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'do-not-reply@pepperz.de'
 EMAIL_HOST_PASSWORD = 'q4nfgtui5le4567kt'
 EMAIL_USE_TLS = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 77
+}

@@ -15,5 +15,6 @@ class AreaBioAdmin(admin.ModelAdmin):
 
 @admin.register(BioEntry)
 class BioEntryAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'description']
+    list_display = ['__str__', 'description', 'area_bio']
     actions = None
+    search_fields = ['area_bio__name']
