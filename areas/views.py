@@ -24,10 +24,11 @@ class AreaBioView(TemplateView):
 
     def get(self, request, uuid, *args, **kwargs):
 
-        bio = AreaBio.objects.get(uuid=uuid)
-        bio._stretched = False
+        graph = AreaBio.objects.get(uuid=uuid)
+        graph._stretched = False
+        graph.show_descriptions = True
         context = {
-            'graph': bio
+            'graph': graph
         }
         return self.render_to_response(context)
 

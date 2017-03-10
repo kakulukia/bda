@@ -327,7 +327,7 @@ a, a:visited, a:hover, a:focus
         margin: 0 auto
 
     .bar-container
-      overflow: hidden
+      //overflow: hidden
       width: 90%
       margin: 0 auto
       display: flex
@@ -335,6 +335,9 @@ a, a:visited, a:hover, a:focus
       flex-direction: column-reverse
       flex-grow: 1
 
+      .entry-container
+        width: 100%
+        position: relative
       .entry
         width: 100%
         text-align: center
@@ -408,3 +411,37 @@ span.input-group-addon
     font-family: "Franziska", serif
     background: transparent
 
+.entry-container
+  .description
+    color: dimgrey
+    font-size: 12px
+    position: absolute
+    top: 0
+    left: 100%
+    width: 150px
+    .line
+      border-top: 1px solid dimgray
+      width: 50px
+      &.small-entry
+        width: 150px
+    .text
+      position: absolute
+      top: -9px
+      left: 55px
+      width: 150px
+      &.small-entry
+        left: 155px
+  .description-line
+    z-index: 17
+    border-top: 1px solid dimgray
+    position: absolute
+    top: 0
+    right: 0
+    .line-dot
+      z-index: 17
+      width: 8px
+      height: 8px
+      background: dimgray
+      border-radius: 5px
+      position: absolute
+      top: -4px

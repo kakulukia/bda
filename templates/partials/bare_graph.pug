@@ -1,7 +1,14 @@
 .bar-container
   -for entry in graph.normalized_entries
-    .entry(class="{% cycle 'odd' 'even' %}",
-           style='height: {{ entry.years }}%; width: {{ entry.percentage }}%;')
-      .persons(class="{% cycle 'odd' 'even' %}", style='width: {{ entry.person_percentage }}%') &nbsp;
+    .entry-container(id="entry-{{ graph.id }}-{{ entry.id }}")
+      .entry(class="{% cycle 'odd' 'even' %}",
+             style='height: {{ entry.years }}%; width: {{ entry.percentage }}%;')
+        .persons(class="{% cycle 'odd' 'even' %}", style='width: {{ entry.person_percentage }}%') &nbsp;
+      -if graph.show_descriptions and entry.description
+        .description
+          .line(class="{{ entry.small_entry }}")
+          .text(class="{{ entry.small_entry }}") {{ entry.description }}
+        .description-line(style="width: {{ entry.description_percentage }}%")
+          .line-dot
   .entry.empty
 

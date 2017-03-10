@@ -70,7 +70,7 @@ class AreaBio(models.Model):
             return self._height
 
         self._height = 0
-        for entry in self.entries.all():
+        for entry in self.normalized_entries():
             self._height += entry.year_to - entry.year_from
 
         self._height = max(self._height, 10)
@@ -159,6 +159,9 @@ class BioEntry(models.Model):
             diff = 0.25
         return float(diff) / 0.8
 
+    def small_entry(self):
+        return 'small-entry' if not bool(self.year_to - self.year_from) else ''
+
     def percentage(self, stretched=False):
         if not self.living_space:
             return 0
@@ -173,3 +176,8 @@ class BioEntry(models.Model):
         if self.number_of_people:
             return int(float(100) / float(self.number_of_people))
         return 0
+
+    def description_percentage(self):
+
+        bar_length = (100 - self.percentage()) / 2 + 5
+        return bar_length
