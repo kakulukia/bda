@@ -3,4 +3,4 @@
     .graph-container
       -include 'partials/bare_graph.pug'
   .description
-    {{ graph.description }}
+    a(href="{% url 'view-graph' graph.uuid %}") {{ graph.description }}

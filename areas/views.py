@@ -20,6 +20,19 @@ from areas.serializers import AreaBioSerializer, EntrySerializer
 
 
 class AreaBioView(TemplateView):
+    template_name = 'view.pug'
+
+    def get(self, request, uuid, *args, **kwargs):
+
+        bio = AreaBio.objects.get(uuid=uuid)
+        bio._stretched = False
+        context = {
+            'graph': bio
+        }
+        return self.render_to_response(context)
+
+
+class AreaBioEditView(TemplateView):
     template_name = 'detail.pug'
 
     def get(self, request, pk, *args, **kwargs):

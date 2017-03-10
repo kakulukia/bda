@@ -25,7 +25,7 @@ block content
             .graph-container
               {{ graph.bare_display_stretched }}
           .description
-            {{ graph.description }}
+            a(href="{% url 'view-graph' graph.uuid %}") {{ graph.description }}
 
 block extra_script
   script(src="{% static 'js/omni-slider.js' %}")

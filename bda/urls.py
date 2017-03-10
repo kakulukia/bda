@@ -4,7 +4,7 @@ from rest_framework_extensions.routers import ExtendedDefaultRouter
 from rest_framework_swagger.views import get_swagger_view
 
 from areas.views import BioListView, AreaBioView, add_bio, AreaBioViewSet, BioEntryViewSet, get_graph, PostedGraphView, \
-    publish_graph, send_graph
+    publish_graph, send_graph, AreaBioEditView
 
 # construct API URLs
 router = ExtendedDefaultRouter()
@@ -29,10 +29,13 @@ urlpatterns = [
     url(r'^$', BioListView.as_view(), name='index'),
     url(r'^graph/add/', add_bio),
     url(r'^graph/done/', PostedGraphView.as_view(), name='done'),
-    url(r'^graph/edit/(?P<pk>[\w-]+)/$', AreaBioView.as_view(), name='edit-graph'),
-    url(r'^graph/(?P<pk>[\w-]+)/$', get_graph, {'stretched': False}, name='show-graph'),
-    url(r'^graph/(?P<pk>[\w-]+)/publish/$', publish_graph, name='show-graph'),
+    url(r'^graph/edit/(?P<pk>[\w-]+)/$', AreaBioEditView.as_view(), name='edit-graph'),
+    url(r'^graph/(?P<pk>[\w-]+)/publish/$', publish_graph, name='publish-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/send/$', send_graph, name='send-graph'),
+
+    url(r'^view-graph/(?P<uuid>[\w-]+)/$', AreaBioView.as_view(), name='view-graph'),
+
+    url(r'^graph/(?P<pk>[\w-]+)/$', get_graph, {'stretched': False}, name='show-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/bare/$', get_graph, {'bare': True}, name='show-bare-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/bare-name/$', get_graph, {'list_display': True}, name='show-bare-name-graph'),
     url(r'^graph/(?P<pk>[\w-]+)/bare/original/$', get_graph, {'bare': True, 'original': True}, name='show-bare-graph'),
