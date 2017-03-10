@@ -25,7 +25,15 @@ block content
             .graph-container
               {{ graph.bare_display_stretched }}
           .description
-            a(href="{% url 'view-graph' graph.uuid %}") {{ graph.description }}
+            a(href="#", @click="viewGraph('{{graph.uuid}}')") {{ graph.description }}
+
+    #graphView.modal.fade(role="dialog", tabindex="-1")
+      .modal-dialog
+        .modal-content
+          .modal-body
+            button.close(type="button", data-dismiss="modal", aria-label="Close")
+              span(aria-hidden="true") &times;
+            .graph-area
 
 block extra_script
   script(src="{% static 'js/omni-slider.js' %}")

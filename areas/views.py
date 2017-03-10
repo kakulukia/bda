@@ -20,7 +20,7 @@ from areas.serializers import AreaBioSerializer, EntrySerializer
 
 
 class AreaBioView(TemplateView):
-    template_name = 'view.pug'
+    template_name = 'partials/full_graph.pug'
 
     def get(self, request, uuid, *args, **kwargs):
 

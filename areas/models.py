@@ -77,7 +77,7 @@ class AreaBio(models.Model):
         return self._height
 
     def axis_height(self):
-        return (self.height() + 3) / .8
+        return (min(80, self.height() + 3)) / .8
 
     def show_30(self):
         return 'gray' if self.height() + 7 < 30 else ''

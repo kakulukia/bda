@@ -6,7 +6,12 @@ var app = new Vue({
     maxAge: 100
   },
   methods: {
-
+    viewGraph: function (uuid) {
+      $.get('view-graph/' + uuid + '/', function (data) {
+        $('#graphView .graph-area').html(data);
+      });
+      $('#graphView').modal('show');
+    }
   },
   filters: {
 
