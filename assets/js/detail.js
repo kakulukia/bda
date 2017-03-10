@@ -64,6 +64,9 @@ var app = new Vue({
             .send(this.bio)
             .set('Authorization', auth_token)
             .end(function (err, res) {
+              _.forEach(app.entries, function(entry){
+                if (entry.living_space) app.updateEntry(entry);
+              });
           });
       }
     },
@@ -97,7 +100,7 @@ var app = new Vue({
     },
     getLastYear: function (entry) {
 
-      if (!/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range)){
+      if (!/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range) && app.bio.age){
         var max_year = new Date().getFullYear() - app.bio.age;
         _.forEach(app.entries, function (entry) {
           if (entry.year_to > max_year) {
