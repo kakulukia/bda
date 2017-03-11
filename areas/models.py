@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models import Max
 from django.template.defaultfilters import upper
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from areas.utils import guess_name
@@ -123,6 +124,9 @@ class AreaBio(models.Model):
             last_year = entry.year_to
 
         return entries
+
+    def get_absolute_url(self):
+        return reverse('edit-graph', args=[self.uuid])
 
 
 class EntryManager(models.Manager):
