@@ -1,6 +1,7 @@
 import re
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
@@ -58,6 +59,19 @@ class BioListView(ListView):
         queryset = AreaBio.objects.published()
         return queryset[:77]
 
+    def get_context_data(self, **kwargs):
+        context = super(BioListView, self).get_context_data()
+
+        countries = cache.get('countries')
+        if not countries:
+            countries = set(AreaBio.objects.published().values_list('country', flat=True))
+            if None in countries:
+                countries.remove(None)
+            cache.set('countries', countries, 60*60)
+
+        context['countries'] = countries
+        return context
+
 
 def add_bio(request):
 
@@ -86,6 +100,10 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
             if maxAge == 100:
                 maxAge = 130
             queryset = queryset.filter(age__range=(params['minAge'], maxAge))
+
+        if 'country' in params and params['country']:
+            queryset = queryset.filter(country=params['country'])
+
         return queryset
 
     @detail_route(methods=['get'])

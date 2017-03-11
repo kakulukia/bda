@@ -11,10 +11,14 @@ block content
       a(href='/graph/add')
         h3 eigene Flächenbiografie erstellen
 
-      a(href='#')
-        h3 Stöbern
-      -verbatim
-        .controls
+      h3 Stöbern
+      .controls
+        p Land:
+          select(v-model="country", @change="updateGraphs")
+            option(value="") Alle
+            - for country in countries
+              option {{ country }}
+        -verbatim
           p Alter: {{ minAge }} - {{ maxAge }} Jahre
           #age-slider.fly.wrap
 

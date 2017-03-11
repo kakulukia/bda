@@ -3,7 +3,8 @@ var app = new Vue({
   el: '.app',
   data: {
     minAge: 0,
-    maxAge: 100
+    maxAge: 100,
+    country: ""
   },
   methods: {
     viewGraph: function (uuid) {
@@ -11,6 +12,26 @@ var app = new Vue({
         $('#graphView .graph-area').html(data);
         $('#graphView').modal('show');
       });
+    },
+    updateGraphs: function () {
+      superagent.get('/api/area-bios/')
+          .query({
+            minAge: app.minAge,
+            maxAge: app.maxAge,
+            country: app.country
+          })
+          .end(function (err, res) {
+            if (err) console.log(err);
+            else {
+              var bios = JSON.parse(res.text);
+              $('.list-area').html('');
+              _.forEach(bios, function (bio) {
+                $.get('/graph/' + bio.id + '/bare-name/', function (data) {
+                  $('.list-area').append(data);
+                });
+              })
+            }
+          });
     }
   },
   filters: {
@@ -36,18 +57,5 @@ ageSlider.subscribe('moving', function(data) {
   app.maxAge = Math.round(data.right);
 });
 ageSlider.subscribe('stop', function(data) {
-  superagent.get('/api/area-bios/')
-      .query({ minAge: app.minAge, maxAge: app.maxAge })
-      .end(function (err, res) {
-        if (err) console.log(err);
-        else {
-          var bios = JSON.parse(res.text);
-          $('.list-area').html('');
-          _.forEach(bios, function (bio) {
-            $.get('/graph/' + bio.id + '/bare-name/', function (data) {
-              $('.list-area').append(data);
-            });
-          })
-        }
-      });
+  app.updateGraphs();
 });
