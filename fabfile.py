@@ -16,7 +16,9 @@ def deploy_only():
     with cd(PROJECT_PATH):
         print green('updating from repository ..')
         run('git pull' )
+        print green('compressing files ..')
         run(MANAGE + 'compress --force -e pug')
+        print green('collectiing static files ..')
         run(MANAGE + 'collectstatic --noinput')
 
 
