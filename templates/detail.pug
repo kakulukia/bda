@@ -37,6 +37,7 @@ block content
             div
               select#id_country(@change="updateBio", name='country',
                                 v-model='bio.country', :class="{ 'has-error': country_error }")
+                option(value="")
                 -for country in countries
                   option {{ country.1 }}
 
