@@ -10,6 +10,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic import TemplateView
+from django_countries import countries
 from rest_framework.decorators import detail_route, api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -41,12 +42,14 @@ class AreaBioEditView(TemplateView):
 
         bio = AreaBio.objects.get(uuid=uuid)
         user = request.user
-        # import ipdb; ipdb.set_trace()
+
         if user.is_anonymous:
             user = User.objects.get(username__exact='andy')
+
         context = {
             'token': Token.objects.get_or_create(user=user)[0].key,
-            'bio': bio
+            'bio': bio,
+            'countries': list(countries)
         }
 
         return self.render_to_response(context)
