@@ -44,7 +44,8 @@ block content
           .send-mail(v-show='!mail_sent')
             p Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie zuzusenden.
             .input-group
-              span.input-group-addon @
+              span.input-group-addon
+                i.fa.fa-envelope
               input.textInput.form-control(maxlength='150', name='email',
                                            type='text', v-model='email', @keyup.enter="sendGraph")
             .buttons

@@ -1,6 +1,5 @@
-.list-item
+.list-item(onclick="app.viewGraph('{{graph.uuid}}')")
   .graph-area(class="{% if not original %}comparable{% endif %}")
     .graph-container
       -include 'partials/bare_graph.pug'
-  .description
-    a(href="{% url 'view-graph' graph.uuid %}") {{ graph.description }}
+  .description {{ graph.description }}

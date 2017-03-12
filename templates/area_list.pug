@@ -24,12 +24,11 @@ block content
 
     .list-area
       -for graph in object_list
-        .list-item
+        .list-item(@click="viewGraph('{{graph.uuid}}')")
           .graph-area
             .graph-container
               {{ graph.bare_display_stretched }}
-          .description
-            a(href="#", @click="viewGraph('{{graph.uuid}}')") {{ graph.description }}
+          .description {{ graph.description }}
 
     #graphView.modal.fade(role="dialog", tabindex="-1")
       .modal-dialog
