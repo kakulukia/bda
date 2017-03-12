@@ -9,7 +9,7 @@ var app = new Vue({
   data: {
     bio: {
       name: '',
-      age: 0,
+      age: null,
       country: '',
       id: bio_id,
       uuid: null
