@@ -215,7 +215,7 @@ var app = new Vue({
       if (this.noErrors) $('form').submit();
     },
     getPlaceholder: function (index) {
-      if (index == 0) return "z.B. Elternahaus";
+      if (index == 0) return "z.B. Elternhaus";
       return ""
     }
   },
