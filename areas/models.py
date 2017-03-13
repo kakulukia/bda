@@ -26,6 +26,12 @@ class AreaBio(models.Model):
 
     published = models.BooleanField(default=False)
     objects = AreaBioManager()
+    created = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+
+    class Meta:
+        verbose_name = u'Flächenbiografie'
+        verbose_name_plural = u'Flächenbiografien'
+        ordering = ['-created']
 
     def __str__(self):
         return u'{}, {}, {}'.format(self.name, self.age, self.country)
