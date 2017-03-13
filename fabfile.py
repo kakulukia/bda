@@ -18,6 +18,10 @@ def deploy_only():
         run('git pull' )
         print green('compressing files ..')
         run(MANAGE + 'compress --force -e pug')
+
+        print green('applying migrations ..')
+        run(MANAGE + 'migrate')
+
         print green('collectiing static files ..')
         run(MANAGE + 'collectstatic --noinput')
 
