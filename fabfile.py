@@ -17,13 +17,13 @@ def deploy_only():
         print green('updating from repository ..')
         run('git pull' )
         print green('compressing files ..')
-        run(MANAGE + 'compress --force -e pug')
+        manage('compress --force -e pug')
 
         print green('applying migrations ..')
-        run(MANAGE + 'migrate')
+        manage('migrate')
 
         print green('collectiing static files ..')
-        run(MANAGE + 'collectstatic --noinput')
+        manage('collectstatic --noinput')
 
 
 def restart():
@@ -103,3 +103,6 @@ class Colors:
         purple = '\033[45m'
         cyan = '\033[46m'
         light_grey = '\033[47m'
+
+def manage(command):
+    run(MANAGE + command)
