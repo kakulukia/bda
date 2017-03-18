@@ -1,5 +1,5 @@
 -extends 'index.pug'
--load static
+-load static i18n
 
 block content
   .app
@@ -11,7 +11,8 @@ block content
       a(href='/graph/add')
         h3 eigene Flächenbiografie erstellen
 
-      h3.browse Stöbern
+      h3.browse
+        -trans "Browse"
       .controls
         p Land:
           select(v-model="country", @change="updateGraphs")

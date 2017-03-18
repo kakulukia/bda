@@ -116,7 +116,7 @@ class AreaBio(models.Model):
     def normalized_entries(self):
 
         entries = []
-        last_year = 0
+        last_year = self.created.year - self.age if self.age else 0
         for entry in self.entries.all():
             if last_year and entry.year_from > last_year:
                 space = BioEntry(

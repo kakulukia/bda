@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+# import pug loader for translation
+import pypugjs.ext.django
 
 ADMINS = (
     ('Andy', 'kakulukia@gmail.com'),

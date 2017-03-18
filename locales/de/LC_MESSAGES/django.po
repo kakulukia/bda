@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-20 15:02+0100\n"
-"PO-Revision-Date: 2017-02-20 15:02+0100\n"
-"Last-Translator: b'  <>'\n"
+"POT-Creation-Date: 2017-03-17 16:43+0100\n"
+"PO-Revision-Date: 2017-03-17 16:42+0100\n"
+"Last-Translator:   <andy@freilandkiwis.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -19,38 +19,45 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Translated-Using: django-rosetta 0.7.12\n"
 
-#: areas/models.py:17
+#: areas/models.py:23
 msgid "Name"
 msgstr "Name"
 
-#: areas/models.py:18
+#: areas/models.py:24
 msgid "Age"
 msgstr "Alter"
 
-#: areas/models.py:19
+#: areas/models.py:25
 msgid "Country"
 msgstr "Land"
 
-#: areas/models.py:35
+#: areas/models.py:98
+msgid "Deine Flächenbiografie"
+msgstr ""
+
+#: areas/models.py:146
 msgid "Living space"
 msgstr "Wohnraum m²"
 
-#: areas/models.py:36
+#: areas/models.py:147
 msgid "Number of people"
 msgstr "Anzahl Personen"
 
-#: areas/models.py:37
+#: areas/models.py:148
 msgid "From"
 msgstr "Von"
 
-#: areas/models.py:38
+#: areas/models.py:149
 msgid "To"
 msgstr "Bis"
 
-#: areas/models.py:39
+#: areas/models.py:150
 msgid "Reason"
 msgstr "Grund"
 
-#: templates/detail.pug:56
-msgid "Timespan"
-msgstr "Zeitraum"
+#: templates/area_list.pug:7
+msgid "Browse"
+msgstr "Stöbern"
+
+#~ msgid "Timespan"
+#~ msgstr "Zeitraum"
