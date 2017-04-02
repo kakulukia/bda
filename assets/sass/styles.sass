@@ -255,29 +255,29 @@ a, a:visited, a:hover, a:focus
   .one input
     text-align: right
 
-  .buttons
-    display: flex
-    justify-content: flex-end
-
-    .button
-      border: 3px solid $red
-      background: $bg-gray
-      margin-left: 7px
-      outline: none
-      padding: 3px 7px
-      min-width: 80px
-      text-align: center
-      color: black
-      text-decoration: none
-      height: 34px
-      margin-bottom: 1em
-      &.deactivated
-        border: 3px solid gray
-        cursor: not-allowed
-
   .graph-area
     width: 50%
     margin: 0 auto
+
+.buttons
+  display: flex
+  justify-content: flex-end
+
+  .button
+    border: 3px solid $red
+    background: white
+    margin-left: 7px
+    outline: none
+    padding: 3px 17px
+    min-width: 80px
+    text-align: center
+    color: black
+    text-decoration: none
+    height: 34px
+    margin-bottom: 1em
+    &.deactivated
+      border: 3px solid gray
+      cursor: not-allowed
 
 .graph-area
   //border: 1px dotted red
@@ -497,3 +497,14 @@ h3.browse
   margin-top: 1em
   padding-bottom: 10px
   margin-bottom: 1em
+.title
+  position: absolute
+  top: 10px
+  left: 10px
+  font-size: 26px
+
+#intro .modal-dialog
+  max-width: 80%
+
+.modal-dialog
+  margin: 10% auto

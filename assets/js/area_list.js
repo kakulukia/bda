@@ -4,14 +4,17 @@ var app = new Vue({
   data: {
     minAge: 0,
     maxAge: 100,
-    country: ""
+    country: "",
+    currentGraph: ''
   },
   methods: {
-    viewGraph: function (uuid) {
+    viewGraph: function (uuid, title) {
+      this.currentGraph = title;
       $.get('view-graph/' + uuid + '/', function (data) {
         $('#graphView .graph-area').html(data);
         $('#graphView').modal('show');
       });
+
     },
     updateGraphs: function () {
       superagent.get('/api/area-bios/')
@@ -32,6 +35,15 @@ var app = new Vue({
               })
             }
           });
+    },
+    openIntro: function() {
+      if (!localStorage.introTimer || (parseInt(localStorage.introTimer) < new Date().getTime())){
+        this.resetIntroTimer();
+        $('#intro').modal('show');
+      }
+    },
+    resetIntroTimer: function(){
+      localStorage.introTimer = new Date().getTime() + 60 * 5 * 1000;
     }
   },
   filters: {
@@ -59,3 +71,5 @@ ageSlider.subscribe('moving', function(data) {
 ageSlider.subscribe('stop', function(data) {
   app.updateGraphs();
 });
+
+app.openIntro();

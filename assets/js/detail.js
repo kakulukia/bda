@@ -57,7 +57,7 @@ var app = new Vue({
     checkEntries: function () {
       var entriesNotOk = _.some(this.entries, function(entry){
         return !app.testEntry(entry);
-      })
+      });
       this.noErrors = !entriesNotOk;
     },
     updateBio: function (justCheck) {
@@ -130,7 +130,7 @@ var app = new Vue({
 
       entry.living_space_error = !entry.living_space;
       entry.number_of_people_error = !entry.number_of_people;
-      entry.range_error = !/^[12][980][0-9]{2}-[12][980][0-9]{2}$/.test(entry.range);
+      entry.range_error = !/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range);
 
       entry.ok = !(entry.range_error || entry.number_of_people_error || entry.living_space_error);
       return entry.ok
@@ -170,7 +170,7 @@ var app = new Vue({
     },
     updateRange: function (entry) {
 
-      if (/^[12][980][0-9]{2}-[12][980][0-9]{2}$/.test(entry.range)) {
+      if (/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range)) {
         var years = _.split(entry.range, '-', 2);
         entry.year_from = parseInt(years[0]);
         entry.year_to = parseInt(years[1]);

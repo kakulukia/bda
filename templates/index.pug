@@ -16,8 +16,9 @@ html
 body
   block content
 
+
   -compress js
     script(src="{% static 'js/jquery-3.1.1.js' %}")
-    script(src="{% static 'js/lodash.js' %}")
     script(src="{% static 'js/bootstrap.min.js' %}")
+    script(src="{% static 'js/lodash.js' %}")
     block extra_script
