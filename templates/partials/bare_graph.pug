@@ -9,7 +9,7 @@
         .description
           .line(class="{{ entry.small_entry }}")
           .text(class="{{ entry.small_entry }}") {{ entry.description }}
-        .description-line(style="width: {{ entry.description_percentage }}%")
-          .line-dot
+        .description-line(style="width: {{ entry.description_percentage }}%", class="{{ entry.small_entry }}")
+          .line-dot(class="{{ entry.small_entry }}")
   .entry.empty
 
