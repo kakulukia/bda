@@ -39,6 +39,9 @@ block content
             button.close(type="button", data-dismiss="modal", aria-label="Close")
               span(aria-hidden="true") &times;
             .graph-area
+            #legend(v-show='showLegend')
+              | Kurze Lebensabschnitte (Alter)
+              .entries
   #intro.modal.fade(role="dialog", tabindex="-1")
     .modal-dialog
       .modal-content

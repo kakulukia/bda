@@ -5,13 +5,28 @@ var app = new Vue({
     minAge: 0,
     maxAge: 100,
     country: "",
-    currentGraph: ''
+    currentGraph: '',
+    showLegend: false
   },
   methods: {
     viewGraph: function (uuid, title) {
       this.currentGraph = title;
       $.get('view-graph/' + uuid + '/', function (data) {
         $('#graphView .graph-area').html(data);
+        var smallEntries = $('#graphView .description .text.small-entry');
+        var legend = $('#legend .entries');
+
+        // reset the legend text
+        legend.html('');
+
+        // set the current entries
+        _.forEach(smallEntries, function(value) {
+          var elem = $(value);
+          elem.removeClass();
+          elem.appendTo(legend);
+        });
+
+        app.showLegend = smallEntries.length > 0;
         $('#graphView').modal('show');
       });
 

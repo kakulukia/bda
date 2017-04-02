@@ -191,3 +191,8 @@ class BioEntry(models.Model):
 
         bar_length = (100 - self.percentage()) / 2 + 5
         return bar_length
+
+    def age(self):
+        if self.area_bio.age:
+            return self.area_bio.age - (self.area_bio.created.year - self.year_from)
+        return ''
