@@ -49,7 +49,10 @@ block content
               input.textInput.form-control(maxlength='150', name='email',
                                            type='text', v-model='email', @keyup.enter="sendGraph")
             .buttons
-              a.button(href="#", @click="sendGraph") Zusenden
+              a.button.sending-mail(href="#", @click="sendGraph")
+                span(v-show="!sending") Zusenden
+                span(v-show="sending")
+                  i.fa.fa-spin.fa-cog
           .mail-sent(v-show='mail_sent')
             p Deine Flächenbiografie wurde versendet.
 

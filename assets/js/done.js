@@ -13,7 +13,8 @@ var app = new Vue({
     bio: {
       published: false
     },
-    email: ''
+    email: '',
+    sending: false
 
   },
   methods: {
@@ -58,12 +59,14 @@ var app = new Vue({
       });
     },
     sendGraph: function () {
+      this.sending = true;
       superagent.post('/graph/' + graph_id + '/send/').type('form')
         .send({email: app.email}).end(function (err, res) {
-        if (err) console.log(err);
-        else {
-          app.mail_sent = true;
-        }
+          if (err) console.log(err);
+          else {
+            app.mail_sent = true;
+            this.sending = false;
+          }
       });
     }
   },
