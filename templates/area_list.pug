@@ -24,7 +24,7 @@ block content
 
     .list-area
       -for graph in object_list
-        .list-item(@click="viewGraph('{{ graph.uuid }}', '{{ graph.description }}')")
+        .list-item(@click="viewGraph('{{ graph.uuid }}', '{{ graph.description }}', '{{ graph.median_usage}}')")
           .graph-area
             .graph-container
               {{ graph.bare_display_stretched }}
@@ -38,9 +38,13 @@ block content
             button.close(type="button", data-dismiss="modal", aria-label="Close")
               span(aria-hidden="true") &times;
             .graph-area
-            #legend(v-show='showLegend')
-              | Kurze Lebensabschnitte (Alter)
-              .entries
+            #legend
+              | persönlicher Flächenverbrauch:
+              span(v-text="' ' +median_usage")
+              | m²
+              div(v-show='showLegend')
+                | Kurze Lebensabschnitte (Alter)
+                .entries
   #intro.modal.fade(role="dialog", tabindex="-1")
     .modal-dialog
       .modal-content

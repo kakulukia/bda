@@ -6,7 +6,8 @@ var app = new Vue({
     maxAge: 100,
     country: "",
     currentGraph: '',
-    showLegend: false
+    showLegend: false,
+    median_usage: 0
   },
   methods: {
     createNewBio: function(){
@@ -14,9 +15,11 @@ var app = new Vue({
 
       $('#newBio').modal('show');
     },
-    viewGraph: function (uuid, title) {
+    viewGraph: function (uuid, title, median) {
       resetIntroTimer();
+
       this.currentGraph = title;
+      this.median_usage = median;
       $.get('view-graph/' + uuid + '/', function (data) {
         $('#graphView .graph-area').html(data);
         var smallEntries = $('#graphView .description .text.small-entry');

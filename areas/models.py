@@ -133,6 +133,15 @@ class AreaBio(models.Model):
     def get_absolute_url(self):
         return reverse('edit-graph', args=[self.uuid])
 
+    def median_usage(self):
+        years = 0
+        used = 0
+        for entry in self.entries.all():
+            years += entry.years
+            used += entry.years * entry.living_space / entry.number_of_people
+
+        return int(round(used / years))
+
 
 class EntryManager(models.Manager):
     use_for_related_fields = True
