@@ -110,8 +110,7 @@ class AreaBio(models.Model):
             if entry.years >= 1:
                 years += entry.years
         years += add
-        print(years)
-        return years > self.age / 0.8
+        return years > self.age
 
     def normalized_entries(self):
 
@@ -194,5 +193,7 @@ class BioEntry(models.Model):
 
     def age(self):
         if self.area_bio.age:
-            return self.area_bio.age - (self.area_bio.created.year - self.year_from)
+            calculated = self.area_bio.age - (self.area_bio.created.year - self.year_from)
+            # might return -1 depending on day of year (pre/post birthday)
+            return max(calculated, 0)
         return ''
