@@ -61,6 +61,7 @@ var app = new Vue({
       this.noErrors = !entriesNotOk;
     },
     updateBio: function (justCheck) {
+      resetIntroTimer();
 
       this.checkBio();
 
@@ -79,6 +80,7 @@ var app = new Vue({
       }
     },
     updateEntry: function (entry) {
+      resetIntroTimer();
 
       this.checkEntries();
       if (entry.ok) {
@@ -107,6 +109,7 @@ var app = new Vue({
 
     },
     getLastYear: function (entry) {
+      resetIntroTimer();
 
       if (!/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range) && app.bio.age){
         var max_year = new Date().getFullYear() - app.bio.age;
@@ -122,6 +125,7 @@ var app = new Vue({
       }
     },
     testEntry: function (entry) {
+      resetIntroTimer();
 
       if (entry.range == undefined && !entry.number_of_people && !entry.living_space && !entry.description){
         entry.ok = true;
@@ -137,6 +141,8 @@ var app = new Vue({
 
     },
     addEntry: function () {
+      resetIntroTimer();
+
       var entry = {
         description: '',
         id: 0,
@@ -155,6 +161,8 @@ var app = new Vue({
       setTimeout(focus_element, 200, row_name);
     },
     deleteEntry: function (entry) {
+      resetIntroTimer();
+
       if (entry.id > 0) {
         superagent.delete('/api/area-bios/' + this.bio.id + '/entries/' + entry.id + '/')
             .set('Authorization', auth_token)
@@ -169,6 +177,8 @@ var app = new Vue({
       setTimeout(this.loadGraph, 200);
     },
     updateRange: function (entry) {
+      resetIntroTimer();
+
 
       if (/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range)) {
         var years = _.split(entry.range, '-', 2);
@@ -202,6 +212,8 @@ var app = new Vue({
       this.setRange(entry);
     },
     nextRow: function(entry){
+      resetIntroTimer();
+
       var retval = _.some($('.one input'), function (entry) {
         if(!$(entry).val()) {
           entry.focus();
@@ -212,6 +224,8 @@ var app = new Vue({
       if (!retval) this.addEntry();
     },
     submitForm: function(){
+      resetIntroTimer();
+
       if (this.noErrors) $('form').submit();
     },
     getPlaceholder: function (index) {

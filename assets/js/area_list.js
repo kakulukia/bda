@@ -9,7 +9,13 @@ var app = new Vue({
     showLegend: false
   },
   methods: {
+    createNewBio: function(){
+      resetIntroTimer();
+
+      $('#newBio').modal('show');
+    },
     viewGraph: function (uuid, title) {
+      resetIntroTimer();
       this.currentGraph = title;
       $.get('view-graph/' + uuid + '/', function (data) {
         $('#graphView .graph-area').html(data);
@@ -32,6 +38,7 @@ var app = new Vue({
 
     },
     updateGraphs: function () {
+      resetIntroTimer();
       superagent.get('/api/area-bios/')
           .query({
             minAge: app.minAge,
@@ -50,16 +57,8 @@ var app = new Vue({
               })
             }
           });
-    },
-    openIntro: function() {
-      if (!localStorage.introTimer || (parseInt(localStorage.introTimer) < new Date().getTime())){
-        this.resetIntroTimer();
-        $('#intro').modal('show');
-      }
-    },
-    resetIntroTimer: function(){
-      localStorage.introTimer = new Date().getTime() + 60 * 5 * 1000;
     }
+
   },
   filters: {
 
@@ -86,5 +85,3 @@ ageSlider.subscribe('moving', function(data) {
 ageSlider.subscribe('stop', function(data) {
   app.updateGraphs();
 });
-
-app.openIntro();

@@ -5,10 +5,9 @@ block content
   .app
     // navigation pane
     .navigation
-      a(href='/')
-        h1 FLÄCHEN-BIOGRAFIEN
+      h1 FLÄCHEN-BIOGRAFIEN
 
-      a(href='#', onclick="$('#newBio').modal('show');")
+      a(href='#', @click="createNewBio")
         h3 eigene Flächenbiografie erstellen
 
       h3.browse

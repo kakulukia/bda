@@ -19,6 +19,7 @@ var app = new Vue({
   },
   methods: {
     show: function(whichOne){
+      resetIntroTimer();
 
       if (whichOne == this.open_tab) return;
 
@@ -31,6 +32,8 @@ var app = new Vue({
       this.open_tab = whichOne;
     },
     compare: function(){
+      resetIntroTimer();
+
       $('.right').html("<div class='charts'></div>");
       $('.charts').html('');
       $.get('/graph/' + graph_id + '/bare/original/', function (data) {
@@ -51,6 +54,8 @@ var app = new Vue({
         });
     },
     publish: function () {
+      resetIntroTimer();
+
       superagent.post('/graph/' + graph_id + '/publish/').end(function (err, res) {
         if (err) console.log(err);
         else {
@@ -59,6 +64,8 @@ var app = new Vue({
       });
     },
     sendGraph: function () {
+      resetIntroTimer();
+
       this.sending = true;
       superagent.post('/graph/' + graph_id + '/send/').type('form')
         .send({email: app.email}).end(function (err, res) {
