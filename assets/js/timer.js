@@ -12,6 +12,9 @@ function openIntro() {
       if (($("#graphView").data('bs.modal') || {})._isShown) {
         $('#graphView').modal('hide');
       }
+      if (($("errorDialog").data('bs.modal') || {})._isShown) {
+        $('#errorDialog').modal('hide');
+      }
       if (!($("#intro").data('bs.modal') || {})._isShown) {
         $('#intro').modal('show');
       }

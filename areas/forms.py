@@ -9,7 +9,7 @@ class EmailForm(forms.Form):
     email = forms.EmailField()
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(EmailForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_id = "user_email"
         self.helper.layout = Layout(
@@ -24,7 +24,7 @@ class AreaBioForm(forms.ModelForm):
         fields = ['name', 'age', 'country']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(AreaBioForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_id = "area_bio"
         self.helper.layout = Layout(
