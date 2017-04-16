@@ -136,6 +136,10 @@ class AreaBio(models.Model):
     def median_usage(self):
         years = 0
         used = 0
+
+        if not self.entries.all():
+            return 0
+
         for entry in self.entries.all():
             years += entry.years
             used += entry.years * entry.living_space / entry.number_of_people
