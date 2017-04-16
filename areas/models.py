@@ -174,6 +174,11 @@ class BioEntry(models.Model):
     def __unicode__(self):
         return self.__str__()
 
+    def future(self):
+        if self.year_from >= self.area_bio.created.year:
+            return 'future'
+        return ''
+
     @property
     def years(self):
         diff = self.year_to - self.year_from

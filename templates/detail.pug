@@ -52,7 +52,10 @@ block content
             .cell.three Zeitraum
             .cell.four Grund
             .cell.five &nbsp;
-          li(v-for='(entry, index) in entries', :class="'row_' + (index + 1)", :key="index+1")
+          li(v-for='(entry, index) in entries', :class="'row_' + (index + 1)", :key="index+1", v-cloak)
+            span.future(v-if="entry.future", v-cloak)
+              h3 Zukunft
+              hr
             .cell.one
               .input-group
                 input.textInput.form-control(maxlength='150', name='name', required='',
@@ -89,7 +92,7 @@ block content
 
       .right
         -verbatim
-          h3 {{ bio | extractName | caps }}
+          h3(v-cloak) {{ bio | extractName | caps }}
           .graph-area
 
           #errorDialog.modal.fade(role="dialog", tabindex="-1")

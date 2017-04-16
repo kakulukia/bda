@@ -106,7 +106,18 @@ var app = new Vue({
           setTimeout(this.loadGraph, 200);
         }
       }
+      this.addTheFuture();
+    },
+    addTheFuture: function(){
+      var markTheNextOne = false;
+      _.forEach(this.entries, function(entry, index){
+        if (entry.year_to == new Date().getFullYear()){
+          if (!entry.future && index == app.entries.length - 1){
+            app.addEntry(true);
+          }
 
+        }
+      });
     },
     getLastYear: function (entry) {
       resetIntroTimer();
@@ -140,7 +151,7 @@ var app = new Vue({
       return entry.ok
 
     },
-    addEntry: function () {
+    addEntry: function (markTheFuture) {
       resetIntroTimer();
 
       var entry = {
@@ -153,7 +164,8 @@ var app = new Vue({
         area_bio: bio_id,
         living_space_error: false,
         number_of_people_error: false,
-        range_error: false
+        range_error: false,
+        future: markTheFuture === true
       };
       app.setRange(entry);
       this.entries.push(entry);
@@ -209,7 +221,18 @@ var app = new Vue({
       entry.living_space_error = false;
       entry.number_of_people_error = false;
       entry.range_error = false;
+      entry.future = false;
       this.setRange(entry);
+    },
+    markTheFuture: function(){
+      var futureMarked = false;
+      _.forEach(this.entries, function(entry){
+        entry.future = false;
+        if (!futureMarked && entry.year_from >= new Date().getFullYear()){
+          entry.future = true;
+          futureMarked = true;
+        }
+      })
     },
     nextRow: function(entry){
       resetIntroTimer();
@@ -269,6 +292,7 @@ var app = new Vue({
 
       if (entries.length > 0){
         app.entries = entries;
+        app.markTheFuture();
         app.noErrors = true;
       }
       else {

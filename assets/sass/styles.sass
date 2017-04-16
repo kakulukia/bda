@@ -4,11 +4,14 @@
 
 //colors
 $red: #ff1236
-$yellow: #eee471
+$yellow: #fff9a0
 $bg-gray: #E4E4E3
 $bg-light-gray: #eceeef
 $lines-gray: #444
 $lines-light-gray: #ccc
+
+[v-cloak]
+  display: none
 
 body
   font-family: "Franziska", serif
@@ -236,7 +239,10 @@ a, a:visited, a:hover, a:focus
       box-sizing: content-box
     li
       display: flex
+      flex-wrap: wrap
 
+      .future
+        width: 100%
       div + div
         margin-left: 4px
       .cell
@@ -374,11 +380,13 @@ a, a:visited, a:hover, a:focus
         .persons
           height: 100%
           margin: 0 auto
-          &.odd
-            background: $red
-          &.even
-            background: $red
+          background: $red
           opacity: 0.5
+
+        &.future
+          .persons
+            background: $yellow
+            opacity: 0.8
 
   .measurement
     width: 90%
