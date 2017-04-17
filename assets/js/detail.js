@@ -239,7 +239,7 @@ var app = new Vue({
     markTheFuture: function(){
       var futureMarked = false;
       var gotLastYear = false;
-      var lastYear = this.getLastYear();
+      var lastYear = new Date().getFullYear();
 
       _.forEach(this.entries, function(entry){
         entry.future = false;
