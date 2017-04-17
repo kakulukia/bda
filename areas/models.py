@@ -28,6 +28,8 @@ class AreaBio(models.Model):
     objects = AreaBioManager()
     created = models.DateTimeField(auto_now_add=True, null=True, editable=False)
 
+    mailed_to = models.CharField(max_length=200, null=True, blank=True)
+
     class Meta:
         verbose_name = u'Flächenbiografie'
         verbose_name_plural = u'Flächenbiografien'
@@ -94,6 +96,9 @@ class AreaBio(models.Model):
 
     def send_to(self, email):
         context = {'name': guess_name(email), 'graph': self}
+        self.mailed_to = email
+        self.save()
+
         send_mail(
             _(u'Deine Flächenbiografie'),
             render_to_string('messages/send_graph.txt', context),
