@@ -70,7 +70,7 @@ block content
               input.textInput.form-control(maxlength='150', name='name', required='',
                 type='text', v-model='entry.range', @change="updateRange(entry)",
                 :class="{ 'has-error': entry.range_error }",
-                @focus="getLastYear(entry)", @mousedown="$event.preventDefault(); $event.target.focus()")
+                @focus="setLastYear(entry)", @mousedown="$event.preventDefault(); $event.target.focus()")
             .cell.four
               input.textInput.form-control(maxlength='150', name='name', required='',
                 type='text', v-model='entry.description', @change='updateEntry(entry)',

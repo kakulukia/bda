@@ -119,16 +119,20 @@ var app = new Vue({
         }
       });
     },
-    getLastYear: function (entry) {
+    getLastYear: function(){
+      var max_year = new Date().getFullYear() - app.bio.age;
+      _.forEach(app.entries, function (entry) {
+        if (entry.year_to > max_year) {
+          max_year = entry.year_to;
+        }
+      });
+      return max_year;
+    },
+    setLastYear: function (entry) {
       resetIntroTimer();
 
       if (!/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range) && app.bio.age){
-        var max_year = new Date().getFullYear() - app.bio.age;
-        _.forEach(app.entries, function (entry) {
-          if (entry.year_to > max_year) {
-            max_year = entry.year_to;
-          }
-        });
+        var max_year = this.getLastYear();
         entry.year_from = max_year;
         entry.range_error = true;
         this.setRange(entry);
@@ -137,6 +141,7 @@ var app = new Vue({
     },
     testEntry: function (entry) {
       resetIntroTimer();
+      this.markTheFuture();
 
       if (entry.range == undefined && !entry.number_of_people && !entry.living_space && !entry.description){
         entry.ok = true;
@@ -153,6 +158,11 @@ var app = new Vue({
     },
     addEntry: function (markTheFuture) {
       resetIntroTimer();
+
+      var lastYear = this.getLastYear();
+      if (lastYear == new Date().getFullYear()){
+        markTheFuture = true;
+      }
 
       var entry = {
         description: '',
@@ -179,7 +189,6 @@ var app = new Vue({
         superagent.delete('/api/area-bios/' + this.bio.id + '/entries/' + entry.id + '/')
             .set('Authorization', auth_token)
             .end(function (err, res) {
-              // console.log(res.text);
               if (err) console.log(err);
             });
       }
@@ -226,9 +235,25 @@ var app = new Vue({
     },
     markTheFuture: function(){
       var futureMarked = false;
+      var gotLastYear = false;
+      var lastYear = this.getLastYear();
+
       _.forEach(this.entries, function(entry){
         entry.future = false;
-        if (!futureMarked && entry.year_from >= new Date().getFullYear()){
+
+        // if this entry is in the future, mark it
+        if(!futureMarked && entry.year_from >= new Date().getFullYear()){
+          entry.future = true;
+          futureMarked = true;
+        }
+
+        // if the next entry will be in the future, remember it
+        if(entry.year_to == lastYear){
+          gotLastYear = true;
+        }
+
+        // if we have an empty row and the last one had the last year, mark it
+        if(!futureMarked && gotLastYear && !entry.year_from){
           entry.future = true;
           futureMarked = true;
         }
