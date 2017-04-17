@@ -213,5 +213,6 @@ class BioEntry(models.Model):
         if self.area_bio.age:
             calculated = self.area_bio.age - (self.area_bio.created.year - self.year_from)
             # might return -1 depending on day of year (pre/post birthday)
-            return max(calculated, 0)
+            age = max(calculated, 0)
+            return age if age else 'Baby'
         return ''
