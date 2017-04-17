@@ -120,6 +120,9 @@ var app = new Vue({
       });
     },
     getLastYear: function(){
+
+      if (!app.bio.age) return 0;
+
       var max_year = new Date().getFullYear() - app.bio.age;
       _.forEach(app.entries, function (entry) {
         if (entry.year_to > max_year) {
