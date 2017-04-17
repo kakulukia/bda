@@ -26,12 +26,12 @@ block content
             div
               input#id_name.textInput.form-control(@change="updateBio", maxlength='150', name='name',
                 required='', type='text', v-model='bio.name', :class="{ 'has-error': name_error }",
-                maxlength="15")
+                maxlength="15", autocomplete="off")
           #div_id_age.form-group
             label.form-control-label(for='id_age') Alter
             div
               input#id_age.textinput.form-control(@change="updateBio", name='age', required='',
-                type='number', v-model='bio.age', :class="{ 'has-error': age_error }")
+                type='number', v-model='bio.age', :class="{ 'has-error': age_error }", autocomplete="off")
           #div_id_country.form-group
             label.form-control-label(for='id_country') Land
             div
@@ -58,23 +58,24 @@ block content
               hr
             .cell.one
               .input-group
-                input.textInput.form-control(maxlength='150', name='name', required='',
+                input.textInput.form-control(name='name', required='', autocomplete="off",
                   type='text', v-model='entry.living_space', @change="updateEntry(entry)",
                   :class="{ 'has-error': entry.living_space_error }")
                 span.input-group-addon m²
             .cell.two
               input.textInput.form-control(maxlength='150', name='name', required='',
                 type='text', v-model='entry.number_of_people', @change='updateEntry(entry)',
-                :class="{ 'has-error': entry.number_of_people_error }")
+                :class="{ 'has-error': entry.number_of_people_error }", autocomplete="off")
             .cell.three
               input.textInput.form-control(maxlength='150', name='name', required='',
                 type='text', v-model='entry.range', @change="updateRange(entry)",
-                :class="{ 'has-error': entry.range_error }",
+                :class="{ 'has-error': entry.range_error }", autocomplete="off",
                 @focus="setLastYear(entry)", @mousedown="$event.preventDefault(); $event.target.focus()")
             .cell.four
               input.textInput.form-control(maxlength='25', name='name', required='',
                 type='text', v-model='entry.description', @change='updateEntry(entry)',
-                @keyup.enter="nextRow(entry)", :placeholder="getPlaceholder(index)", maxlength="25")
+                @keyup.enter="nextRow(entry)", :placeholder="getPlaceholder(index)", maxlength="25",
+                autocomplete="off")
             .cell.five
               i.fa.fa-times.delete(@click="deleteEntry(entry)")
 

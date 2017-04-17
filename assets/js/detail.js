@@ -60,7 +60,7 @@ var app = new Vue({
       });
       this.noErrors = !entriesNotOk;
     },
-    updateBio: function (justCheck) {
+    updateBio: function () {
       resetIntroTimer();
 
       this.checkBio();
@@ -212,7 +212,7 @@ var app = new Vue({
         entry.range_error = false;
       } else {
         entry.range_error = true;
-        this.displayError("Der Zeitraum kann maximal von 1800 bis heute eingegeben werden.")
+        this.displayError("Der Zeitraum kann maximal zwischen 1900 und 2099 liegen.")
       }
 
     },
