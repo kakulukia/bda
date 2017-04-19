@@ -114,8 +114,8 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
         range_param = int(request.query_params['range'])
         myself = self.get_object()
         range_tuple = (max(0, myself.age - range_param), myself.age + range_param)
-        query = AreaBio.objects.filter(age__range=range_tuple).exclude(id=pk)
-        return Response(AreaBioSerializer(query[:3], many=True).data)
+        query = AreaBio.objects.published().filter(age__range=range_tuple).exclude(id=pk)
+        return Response(AreaBioSerializer(query[:30], many=True).data)
 
 
 class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
