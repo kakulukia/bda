@@ -30,4 +30,5 @@ function runTimer(){
   setTimeout(runTimer, 5000);
   openIntro();
 }
+resetIntroTimer();
 runTimer();
