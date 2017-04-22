@@ -152,14 +152,18 @@ var app = new Vue({
       }
 
       entry.living_space_error = !entry.living_space;
-      entry.number_of_people_error = !entry.number_of_people;
+      entry.number_of_people_error = !entry.number_of_people || !Number.isInteger(parseInt(entry.number_of_people));
       entry.range_error = !/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range);
+
+      if (entry.number_of_people_error && entry.number_of_people){
+        this.displayError("Trage bitte die Anzahl der Personen ein. Füge eine neue Zeile hinzu, wenn sich die Anzahl der Personen ändert.");
+      }
 
       entry.ok = !(entry.range_error || entry.number_of_people_error || entry.living_space_error);
       return entry.ok
 
     },
-    addEntry: function (markTheFuture) {
+    addEntry: function (markTheFuture, placeholder) {
       resetIntroTimer();
 
       var lastYear = this.getLastYear();
@@ -178,7 +182,8 @@ var app = new Vue({
         living_space_error: false,
         number_of_people_error: false,
         range_error: false,
-        future: markTheFuture === true
+        future: markTheFuture === true,
+        placeholder: placeholder
       };
       app.setRange(entry);
       this.entries.push(entry);
@@ -203,6 +208,10 @@ var app = new Vue({
     updateRange: function (entry) {
       resetIntroTimer();
 
+      if (!entry.range){
+        entry.range_error = false;
+        return
+      }
 
       if (/^[12][90][0-9]{2}-[12][90][0-9]{2}$/.test(entry.range)) {
         var years = _.split(entry.range, '-', 2);
@@ -278,10 +287,6 @@ var app = new Vue({
       resetIntroTimer();
 
       if (this.noErrors) $('form').submit();
-    },
-    getPlaceholder: function (index) {
-      if (index == 0) return "z.B. Elternhaus";
-      return ""
     }
   },
   filters: {
@@ -324,9 +329,9 @@ var app = new Vue({
         app.noErrors = true;
       }
       else {
-        app.addEntry();
-        app.addEntry();
-        app.addEntry();
+        app.addEntry(null, 'z.B. Elternhaus');
+        app.addEntry(null, 'z.B. Studium / WG');
+        app.addEntry(null, 'z.B. Wohnheim / Soziales Jahr');
         setTimeout(function() { $('#id_name').focus(); }, 500);
       }
     });

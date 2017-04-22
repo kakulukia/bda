@@ -50,7 +50,7 @@ block content
             .cell.one Wohnraum
             .cell.two Personen
             .cell.three Zeitraum
-            .cell.four Grund
+            .cell.four Grund für Veränderung
             .cell.five &nbsp;
           li(v-for='(entry, index) in entries', :class="'row_' + (index + 1)", :key="index+1", v-cloak)
             span.future(v-if="entry.future", v-cloak)
@@ -74,7 +74,7 @@ block content
             .cell.four
               input.textInput.form-control(maxlength='25', name='name', required='',
                 type='text', v-model='entry.description', @change='updateEntry(entry)',
-                @keyup.enter="nextRow(entry)", :placeholder="getPlaceholder(index)", maxlength="25",
+                @keyup.enter="nextRow(entry)", :placeholder="entry.placeholder", maxlength="25",
                 autocomplete="off")
             .cell.five
               i.fa.fa-times.delete(@click="deleteEntry(entry)")
