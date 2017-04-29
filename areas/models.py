@@ -61,6 +61,7 @@ class AreaBio(models.Model):
 
     def bare_display(self, stretched=False):
         self._stretched = stretched
+        self.bare = True
         return render_to_string('partials/bare_graph.pug', {'graph': self})
 
     def bare_display_stretched(self):
