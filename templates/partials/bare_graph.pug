@@ -5,7 +5,7 @@
       .entry(class="{% cycle 'odd' 'even' %} {{ entry.future }}",
              style='height: 100%; width: {{ entry.percentage }}%;')
         .persons(style='width: {{ entry.person_percentage }}%') &nbsp;
-      -if graph.show_descriptions and entry.description
+      -if entry.description and not graph.bare
         .description
           .line(class="{{ entry.small_entry }}")
           .text(class="{{ entry.small_entry }}")

@@ -226,7 +226,7 @@ var app = new Vue({
 
     },
     loadGraph: function () {
-      $.get('/graph/' + this.bio.id + '/', function (data) {
+      $.get('/view-graph/' + this.bio.uuid + '/', function (data) {
         $('.graph-area').html(data);
       });
     },

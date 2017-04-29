@@ -129,6 +129,7 @@ def get_graph(request, pk, bare=False, original=False, list_display=False, stret
         template_name = 'partials/naked_graph_with_name.pug'
     bio = get_object_or_404(AreaBio.objects.all(), pk=pk)
     bio._stretched = stretched
+    bio.bare = bare
     context = {
         'graph': bio,
         'original': original,
