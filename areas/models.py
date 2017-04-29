@@ -121,6 +121,7 @@ class AreaBio(models.Model):
     def normalized_entries(self):
 
         entries = []
+        remaining_years = 80
         last_year = self.created.year - self.age if self.age else 0
         for entry in self.entries.all():
             if last_year and entry.year_from > last_year:
@@ -131,8 +132,16 @@ class AreaBio(models.Model):
                     year_to=entry.year_from
                 )
                 entries.append(space)
+
+            # fix the years
+            if entry.num_years > remaining_years:
+                entry.year_to = entry.year_from + remaining_years
+
             entries.append(entry)
             last_year = entry.year_to
+            remaining_years -= entry.num_years
+            if remaining_years <= 0:
+                break  # out of this loop because we hit the wall
 
         return entries
 
@@ -186,8 +195,12 @@ class BioEntry(models.Model):
         return ''
 
     @property
+    def num_years(self):
+        return self.year_to - self.year_from
+
+    @property
     def years(self):
-        diff = self.year_to - self.year_from
+        diff = self.num_years
         if diff == 0:
             diff = 0.25
         return float(diff) / 0.8
