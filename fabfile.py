@@ -1,5 +1,5 @@
 # coding=utf-8
-from fabric.context_managers import cd
+from fabric.context_managers import cd, prefix
 from fabric.state import env
 from fabric.operations import run
 from fabric.colors import green
@@ -18,9 +18,6 @@ def deploy_only():
         run('git pull' )
         print green('compressing files ..')
         manage('compress --force -e pug')
-
-        print green('applying migrations ..')
-        manage('migrate')
 
         print green('collectiing static files ..')
         manage('collectstatic --noinput')
@@ -47,13 +44,11 @@ def migrate():
     deploy_only()
     with cd(PROJECT_PATH):
         print green('updating packages ..')
-        run('pip install -r requirements.txt --upgrade')
+        run('/home/andy/.virtualenvs/bda/bin/pip install -r requirements.txt --upgrade')
 
         print green('migrating database ..')
-        run('./manage.py migrate --noinput')
+        manage('migrate --noinput')
 
-        print green('collecting static files ..')
-        run('./manage.py collectstatic --noinput')
 
     restart()
 
