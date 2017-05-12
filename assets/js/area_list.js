@@ -9,11 +9,6 @@ var app = new Vue({
     showLegend: false
   },
   methods: {
-    createNewBio: function(){
-      resetIntroTimer();
-
-      $('#newBio').modal('show');
-    },
     viewGraph: function (uuid, title) {
       resetIntroTimer();
 

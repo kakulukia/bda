@@ -5,9 +5,10 @@ block content
   .app
     // navigation pane
     .navigation
-      h1 FLÄCHEN-BIOGRAFIEN
+      a(href="/")
+        h1 FLÄCHEN-BIOGRAFIEN
 
-      a(href='#', @click="createNewBio")
+      a(href='/graph/add')
         h3 eigene Flächenbiografie erstellen
 
       h3.browse
@@ -23,6 +24,35 @@ block content
           #age-slider.fly.wrap
 
     .list-area
+      .intro-text
+        p.red
+          strong Wie viel Wohnfläche zu welchem Zeitpunkt?
+          br
+          | Wieviel Raum ist genug? 1991 lebte der »Durchschnittsbürger«
+          br
+          | auf rund 35 m² Wohnfläche und bis 2014 steigerte sich der Schnitt auf 46,5 m².
+        p.center.red
+          | Angesichts steigender Mietpreise sind Wohnformen gefragt, in denen der Einzelne auf einer
+          |  reduzierten Wohnfläche leben kann und im Gegenzug von der verschwenderischen Großzügigkeit
+          |  des gemeinschaftlichen Ganzen profitiert.
+        p.center
+          strong Individuelle Flächenbiografie erstellen:
+          |  Auf wieviel Fläche haben Sie in einzelnen Lebensphasen und im Durchschnitt bisher gewohnt
+          |  und was bringt der Ausblick in die Zukunft?
+
+        p.center In den Grafiken ist die
+          span.marker.bg-red Wohnfläche pro Person bis heute
+          |  rot dargestellt, gelb markiert ist der
+          span.marker.bg-yellow zukünftige persönliche Flächenverbrauch
+          |  und die
+          span.marker.bg-gray gesamte verfügbare Wohnfläche
+          |  ist grau markiert.
+        p.center.
+          Die Projektion in die Zukunft konfrontiert den Einzelnen mit seinem hypothetischen, individuellen
+          «Flächenschicksal». An «Sollbruchstellen» - wie die erste eigene Wohnung oder der Auszug der
+          Kinder – können innovative Wohnformen Fläche und Kosten einsparen und verringern so den
+          eigenen durchschnittlichen Flächenverbrauch.
+
       -for graph in object_list
         .list-item(@click="viewGraph('{{ graph.uuid }}', '{{ graph.description }}')")
           .graph-area
@@ -42,54 +72,6 @@ block content
               div(v-show='showLegend')
                 | Kurze Lebensabschnitte (Alter)
                 .entries
-  #intro.modal.fade(role="dialog", tabindex="-1")
-    .modal-dialog
-      .modal-content
-        .modal-body
-          button.close(type="button", data-dismiss="modal", aria-label="Close")
-            span(aria-hidden="true") &times;
-          h2 Wie viel Wohnfläche zu welchem Zeitpunkt?
-          p.
-            Wieviel Raum ist genug? 1991 lebte der »Durchschnittsbürger« auf rund 35 m² Wohnfläche,
-            2002 waren es schon 40 m² und bis 2014 steigerte sich der Schnitt auf 46,5 m².
-          p.
-            Angesichts steigender Mietpreise sind Wohnformen gefragt, in denen der Einzelne auf einer
-            reduzierten Wohnfläche leben kann und im Gegenzug von der verschwenderischen Großzügigkeit
-            des gemeinschaftlichen Ganzen profitiert.
-
-          .buttons
-            a.button(href="#", data-dismiss="modal") Weiter >>
-
-  #newBio.modal.fade(role="dialog", tabindex="-1")
-    .modal-dialog
-      .modal-content
-        .modal-body
-          button.close(type="button", data-dismiss="modal", aria-label="Close")
-            span(aria-hidden="true") &times;
-          h2 Individuelle Flächenbiografie erstellen
-          p.
-            Auf wieviel Fläche haben Sie in einzelnen Lebensphasen und im Durchschnitt bisher gewohnt
-            und was bringt der Ausblick in die Zukunft?
-          p.
-            Zur Erstellung der eigenen »Flächenbiografie» ist die (geschätzte) Gesamtwohnfläche in den
-            jeweiligen Lebensphasen anzugeben – von der Geburt bis heute und von heute bis in die Zukunft.
-          p
-            | In der Grafik ist die
-            span.marker.bg-red Wohnfläche pro Person bis heute
-            |  rot dargestellt, gelb markiert ist der
-            span.marker.bg-yellow zukünftige persönliche Flächenverbrauch
-            |  und die
-            span.marker.bg-gray gesamte verfügbare Wohnfläche
-            |  ist grau markiert.
-          p.
-            Die Projektion in die Zukunft konfrontiert den Einzelnen mit seinem hypothetischen, individuellen
-            «Flächenschicksal». An «Sollbruchstellen» - wie die erste eigene Wohnung oder der Auszug der
-            Kinder – können innovative Wohnformen Fläche und Kosten einsparen und verringern so den
-            eigenen durchschnittlichen Flächenverbrauch.
-
-          .buttons
-            a.button(href="/graph/add") Los geht's >>
-
 
 block extra_script
   script(src="{% static 'js/omni-slider.js' %}")

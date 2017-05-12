@@ -110,6 +110,7 @@ a, a:visited, a:hover, a:focus
   display: flex
   flex-wrap: wrap
   justify-content: flex-start
+  padding: 1em
   .list-item
     display: flex
     flex-direction: column
@@ -141,8 +142,8 @@ a, a:visited, a:hover, a:focus
     margin: 0 0 10px 0
 
   .popup
-    width: 95%
-    height: 95%
+    width: 98%
+    height: 98%
     box-shadow: 5px 5px 24px 3px rgba(0,0,0,0.42)
     display: flex
 
@@ -150,7 +151,7 @@ a, a:visited, a:hover, a:focus
       background: $bg-gray
       padding: 20px
       height: 100%
-      width: 500px
+      width: 600px
       overflow-y: auto
       position: relative
       display: flex
@@ -203,7 +204,7 @@ a, a:visited, a:hover, a:focus
   #id_age
     width: 85px
   #id_country
-    width: 188px
+    width: 288px
 
 
   input:focus
@@ -237,6 +238,7 @@ a, a:visited, a:hover, a:focus
     list-style: none
     padding: 0
     margin-bottom: 0
+    min-width: 560px
     ::before, &::after
       box-sizing: content-box
     li
@@ -455,14 +457,14 @@ span.input-group-addon
     width: 150px
     .line
       border-top: 1px solid dimgray
-      width: 50px
+      width: 35px
       &.small-entry
         width: 150px
     .text
       position: absolute
       top: -8px
-      left: 55px
-      width: 150px
+      left: 40px
+      width: 170px
       &.small-entry
         left: 155px
   .description-line
@@ -471,7 +473,7 @@ span.input-group-addon
     position: absolute
     bottom: 0
     right: 0
-    .line-dot
+    //.line-dot
       z-index: 17
       width: 7px
       height: 7px
@@ -552,8 +554,18 @@ h3.browse
   margin-left: 4px
   padding: 0 5px
 .bg-red
-  background: lighten($red, 10%)
+  background: lighten($red, 20%)
 .bg-yellow
   background: $yellow
 .bg-gray
   background: $bg-gray
+
+.red
+  color: $red
+
+p.center
+  margin: 0 auto
+  width: 70%
+
+.intro-text
+  margin-bottom: 2em
