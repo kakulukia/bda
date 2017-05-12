@@ -33,13 +33,10 @@ block content
               input#id_age.textinput.form-control(@change="updateBio", name='age', required='',
                 type='number', v-model='bio.age', :class="{ 'has-error': age_error }", autocomplete="off")
           #div_id_country.form-group
-            label.form-control-label(for='id_country') Land
+            label.form-control-label(for='id_country') Stadt
             div
-              select#id_country(@change="updateBio", name='country',
+              input#id_country(@change="updateBio", name='country',
                                 v-model='bio.country', :class="{ 'has-error': country_error }")
-                option(value="")
-                -for country in countries
-                  option {{ country.1 }}
 
         hr
         h3 Geburt bis heute

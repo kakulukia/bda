@@ -14,8 +14,14 @@ block content
       .left.white
         h2 {{ graph }}
 
+        a(href="{% url 'edit-graph' graph.uuid %}")
+          h4
+            i.fa.fa-angle-double-left.red
+            |  Weiter bearbeiten
         a(href="#", @click="show('.publish')")
-          h4 Zur Sammlung hinzufügen
+          h4
+            i.fa.fa-angle-right.red(:class='openPublish')
+            |  Zur Sammlung hinzufügen
         .publish
           .unpublished(v-show="!bio.published")
             p Deine Flächenbiografie wird veröffentlicht und für Vergleiche bereitegestellt.
@@ -27,9 +33,13 @@ block content
 
 
         a(href="#", @click="show('.compare')")
-          h4 Vergleichen
+          h4
+            i.fa.fa-angle-right.red(:class="openCompare")
+            |  Flächenbiografie vergleichen
         .compare
-          p Vergleiche Dich mit anderen.
+          p.
+            Im grafischen Vergleich lässt sich der eigene Flächenverbrauch, der im Hintergrund farbig dargestellt ist,
+            mit den Wohnflächenangaben anderer Nutzer vergleichen.
           .input-group
             span.input-group-addon +/-
             input.textInput.form-control(maxlength='150', name='name', type='text', v-model='range', @keyup.enter="compare")
@@ -39,14 +49,16 @@ block content
 
 
         a(href="#", @click="show('.email')")
-          h4 Per Email schicken
+          h4
+            i.fa.fa-angle-right.red(:class="openEmail")
+            |  Per Email schicken
         .email
           .send-mail(v-show='!mail_sent')
             p Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie zuzusenden.
             .input-group
               span.input-group-addon
                 i.fa.fa-envelope
-              input.textInput.form-control(maxlength='150', name='email',
+              input.textInput.form-control(maxlength='150', name='email', autocomplete="off",
                                            type='text', v-model='email', @keyup.enter="sendGraph")
             .buttons
               a.button.sending-mail(href="#", @click="sendGraph")
@@ -57,7 +69,9 @@ block content
             p Deine Flächenbiografie wurde versendet.
 
         a(href="#", @click="show('.discard')")
-          h4 Stöbern
+          h4
+            i.fa.fa-angle-double-left.red
+            |  Zurück zur Startseite
         .discard
           p Hier geht es zurück zur Startseite.
           p

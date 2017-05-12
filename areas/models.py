@@ -22,7 +22,7 @@ class AreaBio(models.Model):
 
     name = models.CharField(verbose_name=_(u'Name'), max_length=150, null=True)
     age = models.IntegerField(verbose_name=_(u'Age'), null=True)
-    country = models.CharField(verbose_name=_(u'Country'), max_length=150, null=True)
+    country = models.CharField(verbose_name=_(u'City'), max_length=150, null=True)
 
     published = models.BooleanField(default=False)
     objects = AreaBioManager()
@@ -96,13 +96,13 @@ class AreaBio(models.Model):
         return 'gray' if self.height() + 7 < 60 else ''
 
     def send_to(self, email):
-        context = {'name': guess_name(email), 'graph': self}
         self.mailed_to = email
         self.save()
 
+
         send_mail(
             _(u'Deine Flächenbiografie'),
-            render_to_string('messages/send_graph.txt', context),
+            render_to_string('messages/send_graph.txt', {'name': self.name, 'graph': self}),
             'do-not-reply@pepperz.de',
             [email],
         )

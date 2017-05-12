@@ -17,6 +17,11 @@ body
   font-family: "Franziska", serif
   color: #292b2c
 
+i.fa.fa-angle-right
+  transition: all 0.5s
+  &.active
+    transform: rotate(90deg)
+
 // INDEX PAGE
 .app
   display: flex
@@ -56,6 +61,11 @@ a, a:visited, a:hover, a:focus
     margin-top: 1em
 
 .popup.done
+
+  i.fa
+    width: 15px
+    text-align: center
+
   p
     a
       color: $red
@@ -66,7 +76,7 @@ a, a:visited, a:hover, a:focus
   h2
     margin-bottom: 1em
 
-  .publish, .discard, .email, .compare
+  .discard, .email, .compare
     display: none
 
   .buttons
@@ -329,8 +339,8 @@ a, a:visited, a:hover, a:focus
         .desc
           position: absolute
           top: -10px
-          left: -20px
-          width: 17px
+          left: -55px
+          width: 50px
           text-align: right
           font-size: 12px
 
@@ -526,6 +536,10 @@ h3.browse
   top: 10px
   left: 14px
   font-size: 26px
+.subtitle
+  position: absolute
+  top: 40px
+  left: 14px
 
 #intro .modal-dialog
   max-width: 75%
@@ -541,10 +555,19 @@ h3.browse
 
 #legend
   position: absolute
-  top: 50px
+  top: 60px
   .entries
     display: flex
     flex-direction: column-reverse
+    border-left: 2px solid $bg-light-gray
+    padding-left: 5px
+    color: dimgrey
+    font-size: 12px
+
+#main-legend
+  position: absolute
+  bottom: 40px
+  .entries
     border-left: 2px solid $bg-light-gray
     padding-left: 5px
     color: dimgrey

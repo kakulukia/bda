@@ -6,13 +6,15 @@ var app = new Vue({
     maxAge: 100,
     country: "",
     currentGraph: '',
+    currentMedian: '',
     showLegend: false
   },
   methods: {
-    viewGraph: function (uuid, title) {
+    viewGraph: function (uuid, title, median) {
       resetIntroTimer();
 
       this.currentGraph = title;
+      this.currentMedian = median;
       $.get('view-graph/' + uuid + '/', function (data) {
         $('#graphView .graph-area').html(data);
         var smallEntries = $('#graphView .description .text.small-entry');

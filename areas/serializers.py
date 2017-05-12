@@ -18,22 +18,9 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
             'published',
         )
 
-    def validate(self, data):
-        country = data['country'].capitalize()
-        data['country'] = country
-        if not country in dict(countries).values():
-            activate('en')
-            if not country in dict(countries).values():
-                raise serializers.ValidationError('Das Land ist unbekannt.')
-            else:
-                for code, name in dict(countries).iteritems():
-                    if name == country:
-                        activate('de')
-                        print(dict(countries)[code])
-                        data['country'] = dict(countries)[code]
-
-        return data
-
+    def validate(self, attrs):
+        attrs['country'] = attrs['country'].capitalize()
+        return attrs
 
 class EntrySerializer(serializers.ModelSerializer):
     class Meta:

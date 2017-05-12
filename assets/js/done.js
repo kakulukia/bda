@@ -9,7 +9,7 @@ var app = new Vue({
   data: {
     mail_sent: false,
     range: 10,
-    open_tab: undefined,
+    open_tab: '.publish',
     bio: {
       published: false
     },
@@ -17,7 +17,23 @@ var app = new Vue({
     sending: false
 
   },
+  computed: {
+    openPublish: function () {
+      return this.tabClass('.publish')
+    },
+    openCompare: function () {
+      return this.tabClass('.compare')
+    },
+    openEmail: function () {
+      return this.tabClass('.email')
+    }
+  },
   methods: {
+    tabClass: function(name){
+      return {
+        'active': this.open_tab == name
+      }
+    },
     show: function(whichOne){
       resetIntroTimer();
 

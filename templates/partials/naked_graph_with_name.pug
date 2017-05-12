@@ -1,4 +1,4 @@
-.list-item(onclick="app.viewGraph('{{graph.uuid}}', '{{ graph.description }}')")
+.list-item(onclick="app.viewGraph('{{graph.uuid}}', '{{ graph.description }}', '{{ graph.median_usage }}')")
   .graph-area(class="{% if not original %}comparable{% endif %}")
     .graph-container
       -include 'partials/bare_graph.pug'

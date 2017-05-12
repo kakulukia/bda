@@ -14,11 +14,11 @@ block content
       h3.browse
         -trans "Browse"
       .controls
-        p Land:
+        p Stadt:
           select(v-model="country", @change="updateGraphs")
             option(value="") Alle
-            - for country in countries
-              option {{ country }}
+            - for city in cities
+              option {{ city }}
         -verbatim
           p Alter: {{ minAge }} - {{ maxAge }} Jahre
           #age-slider.fly.wrap
@@ -54,7 +54,7 @@ block content
           eigenen durchschnittlichen Flächenverbrauch.
 
       -for graph in object_list
-        .list-item(@click="viewGraph('{{ graph.uuid }}', '{{ graph.description }}')")
+        .list-item(@click="viewGraph('{{ graph.uuid }}', '{{ graph.description }}', '{{ graph.median_usage }}')")
           .graph-area
             .graph-container
               {{ graph.bare_display_stretched }}
@@ -65,6 +65,9 @@ block content
         .modal-content
           .modal-body
             .title(v-text="currentGraph")
+            .subtitle wohnt auf durchschnittlich
+              span(v-text="' ' + currentMedian")
+              | m² im Jahr
             button.close(type="button", data-dismiss="modal", aria-label="Close")
               span(aria-hidden="true") &times;
             .graph-area
@@ -72,6 +75,16 @@ block content
               div(v-show='showLegend')
                 | Kurze Lebensabschnitte (Alter)
                 .entries
+            #main-legend Legende
+              .entries
+                span.marker.bg-gray &nbsp;
+                |  gesamte Wohnfläche
+                br
+                span.marker.bg-red &nbsp;
+                |  Wohnfläche pro Person
+                br
+                span.marker.bg-yellow &nbsp;
+                |  künftige Wohnfläche
 
 block extra_script
   script(src="{% static 'js/omni-slider.js' %}")

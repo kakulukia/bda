@@ -10,8 +10,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic import TemplateView
-from django_countries import countries
-from rest_framework.decorators import detail_route, api_view
+from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -49,7 +48,6 @@ class AreaBioEditView(TemplateView):
         context = {
             'token': Token.objects.get_or_create(user=user)[0].key,
             'bio': bio,
-            'countries': list(countries)
         }
 
         return self.render_to_response(context)
@@ -65,14 +63,14 @@ class BioListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(BioListView, self).get_context_data()
 
-        countries = cache.get('countries')
-        if not countries:
-            countries = set(AreaBio.objects.published().values_list('country', flat=True))
-            if None in countries:
-                countries.remove(None)
-            cache.set('countries', countries, 60*60)
+        cities = cache.get('cities')
+        if not cities:
+            cities = set(AreaBio.objects.published().values_list('country', flat=True))
+            if None in cities:
+                cities.remove(None)
+            cache.set('cities', cities, 60*60)
 
-        context['countries'] = countries
+        context['cities'] = cities
         return context
 
 
