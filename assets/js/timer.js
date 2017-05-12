@@ -31,4 +31,4 @@ function runTimer(){
   openIntro();
 }
 resetIntroTimer();
-// runTimer();
+runTimer();
