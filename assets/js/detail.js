@@ -330,8 +330,8 @@ var app = new Vue({
       }
       else {
         app.addEntry(null, 'z.B. Elternhaus');
-        app.addEntry(null, 'z.B. Studium / WG');
-        app.addEntry(null, 'z.B. Wohnheim / Soziales Jahr');
+        app.addEntry(null, 'z.B. Studium / WG im Altbau');
+        app.addEntry(null, 'z.B. Soziales Jahr / Wohnheim');
         setTimeout(function() { $('#id_name').focus(); }, 500);
       }
     });

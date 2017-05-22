@@ -43,11 +43,11 @@ block content
         hr
 
         ul.table-area
-          li(:key="0")
+          li.head(:key="0")
             .cell.one Wohnraum
             .cell.two Personen
             .cell.three Zeitraum
-            .cell.four Grund für Veränderung
+            .cell.four Grund der Veränderung / Wohnsituation
             .cell.five &nbsp;
           li(v-for='(entry, index) in entries', :class="'row_' + (index + 1)", :key="index+1", v-cloak)
             span.future(v-if="entry.future", v-cloak)
