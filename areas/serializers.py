@@ -22,6 +22,7 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
         attrs['country'] = attrs['country'].capitalize()
         return attrs
 
+
 class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = BioEntry
@@ -34,10 +35,14 @@ class EntrySerializer(serializers.ModelSerializer):
             'description',
             'area_bio',
         )
+
     def validate(self, attrs):
 
         if attrs['year_from'] > attrs['year_to']:
             raise serializers.ValidationError(u'Der Zeitraum ist ungültig.')
+
+        if attrs['year_from'] == attrs['year_to']:
+            raise serializers.ValidationError(u'Lasse bitte Einträge kürzer als ein Jahr aus, damit der Graph übersichtlich bleibt.')
 
         bio = attrs['area_bio']
         if not bio.age:
@@ -46,5 +51,10 @@ class EntrySerializer(serializers.ModelSerializer):
         # disabled for now .. macht nur aerger
         # if bio.to_many_entries(exclude=self.instance, add=attrs['year_to']-attrs['year_from']):
         #     raise serializers.ValidationError(u"Die Einträge überschreiten Dein Alter.")
+
+        if bio.entries.filter(year_from=attrs['year_from']).exclude(id=self.context['request'].data.get('id')).exists():
+            raise serializers.ValidationError(
+                u'Mehrere Einträge für das selbe Jahr sind nicht möglich. Bitte verschiebe die Änderung auf das '
+                u'nächste Jahr, oder lasse sie ggf. aus, weil die Darstellung des Graphen sonst unübersichtlich wird.')
 
         return attrs
