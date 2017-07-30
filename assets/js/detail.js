@@ -89,7 +89,10 @@ var app = new Vue({
               .send(entry)
               .set('Authorization', auth_token)
               .end(function (err, res) {
-                if (err) app.displayError(err);
+                if (err) {
+                  app.displayError(err);
+                  entry.range_error = true
+                }
               });
           setTimeout(this.loadGraph, 200);
         } else {
@@ -99,6 +102,7 @@ var app = new Vue({
               .end(function (err, res) {
                 if (err) {
                   app.displayError(err);
+                  entry.range_error = true
                 } else {
                   entry.id = JSON.parse(res.text).id;
                 }

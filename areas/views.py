@@ -63,8 +63,7 @@ class BioListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(BioListView, self).get_context_data()
 
-        # cities = cache.get('cities')
-        cities = None
+        cities = cache.get('cities')
         if not cities:
             unordered = AreaBio.objects.published().order_by('country').values_list(
                 'country', flat=True)
