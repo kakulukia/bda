@@ -9,7 +9,7 @@ var app = new Vue({
   data: {
     mail_sent: false,
     range: 10,
-    open_tab: '.publish',
+    open_tab: '.email',
     bio: {
       published: false
     },
@@ -88,7 +88,8 @@ var app = new Vue({
           if (err) console.log(err);
           else {
             app.mail_sent = true;
-            this.sending = false;
+            app.sending = false;
+            app.show('.publish');
           }
       });
     }

@@ -313,6 +313,7 @@ var app = new Vue({
       // Calling the end function will send the request
       app.bio = JSON.parse(res.text);
       app.checkBio();
+      app.loadGraph();
 
     });
     superagent.get('/api/area-bios/' + this.bio.id + '/entries/').end(function (err, res) {
@@ -335,7 +336,6 @@ var app = new Vue({
         setTimeout(function() { $('#id_name').focus(); }, 500);
       }
     });
-    setTimeout(this.loadGraph, 200);
   }
 
 });

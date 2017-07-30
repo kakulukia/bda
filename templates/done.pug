@@ -18,6 +18,29 @@ block content
           h4
             i.fa.fa-angle-double-left.red
             |  Weiter bearbeiten
+
+        a(href="#", @click="show('.email')")
+          h4
+            i.fa.fa-angle-right.red(:class="openEmail")
+            |  Per Email zusenden
+        .email
+          .send-mail(v-show='!mail_sent')
+            p.
+              Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie
+              zur späteren Bearbeitung zuzusenden.
+            .input-group
+              span.input-group-addon
+                i.fa.fa-envelope
+              input.textInput.form-control(maxlength='150', name='email', autocomplete="off",
+              type='text', v-model='email', @keyup.enter="sendGraph")
+            .buttons
+              a.button.sending-mail(href="#", @click="sendGraph")
+                span(v-show="!sending") Zusenden
+                span(v-show="sending")
+                  i.fa.fa-spin.fa-cog
+          .mail-sent(v-show='mail_sent')
+            p Deine Flächenbiografie wurde versendet.
+
         a(href="#", @click="show('.publish')")
           h4
             i.fa.fa-angle-right.red(:class='openPublish')
@@ -48,25 +71,6 @@ block content
             a.button(href="#", @click="compare") Anzeigen
 
 
-        a(href="#", @click="show('.email')")
-          h4
-            i.fa.fa-angle-right.red(:class="openEmail")
-            |  Per Email schicken
-        .email
-          .send-mail(v-show='!mail_sent')
-            p Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie zuzusenden.
-            .input-group
-              span.input-group-addon
-                i.fa.fa-envelope
-              input.textInput.form-control(maxlength='150', name='email', autocomplete="off",
-                                           type='text', v-model='email', @keyup.enter="sendGraph")
-            .buttons
-              a.button.sending-mail(href="#", @click="sendGraph")
-                span(v-show="!sending") Zusenden
-                span(v-show="sending")
-                  i.fa.fa-spin.fa-cog
-          .mail-sent(v-show='mail_sent')
-            p Deine Flächenbiografie wurde versendet.
 
         a(href="#", @click="show('.discard')")
           h4
