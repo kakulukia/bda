@@ -41,7 +41,7 @@ block content
             Im grafischen Vergleich lässt sich der eigene Flächenverbrauch, der im Hintergrund farbig dargestellt ist,
             mit den Wohnflächenangaben anderer Nutzer vergleichen.
           .input-group
-            span.input-group-addon +/-
+            span.input-group-addon {{ graph.age }} Jahre +/-
             input.textInput.form-control(maxlength='150', name='name', type='text', v-model='range', @keyup.enter="compare")
             span.input-group-addon Jahre
           .buttons
