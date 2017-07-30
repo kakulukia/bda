@@ -63,9 +63,13 @@ class BioListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(BioListView, self).get_context_data()
 
-        cities = cache.get('cities')
+        # cities = cache.get('cities')
+        cities = None
         if not cities:
-            cities = set(AreaBio.objects.published().values_list('country', flat=True))
+            unordered = AreaBio.objects.published().order_by('country').values_list(
+                'country', flat=True)
+            from collections import Counter
+            cities = [item for item, count in Counter(unordered).most_common()]
             if None in cities:
                 cities.remove(None)
             cache.set('cities', cities, 60*60)
