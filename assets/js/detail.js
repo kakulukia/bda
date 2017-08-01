@@ -20,7 +20,8 @@ var app = new Vue({
     name_error: false,
     age_error: false,
     country_error: false,
-    errorText: ""
+    errorText: "",
+    averageUsage: averageUsage
   },
   methods: {
     displayError: function(err){
@@ -59,6 +60,22 @@ var app = new Vue({
         return !app.testEntry(entry);
       });
       this.noErrors = !entriesNotOk;
+      this.calcAreaUsage();
+    },
+    calcAreaUsage: function () {
+
+      var years = 0;
+      var used = 0;
+
+      _.forEach(app.entries, function(entry){
+        if (entry.ok) {
+          var current_years = Math.abs(entry.year_to - entry.year_from);
+          years += current_years;
+          used += current_years * entry.living_space / entry.number_of_people;
+        }
+      });
+
+      app.averageUsage = Math.round(used / years)
     },
     updateBio: function () {
       resetIntroTimer();

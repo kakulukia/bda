@@ -156,10 +156,10 @@ class AreaBio(models.Model):
             return 0
 
         for entry in self.entries.all():
-            years += entry.years
-            used += entry.years * entry.living_space / entry.number_of_people
+            years += entry.num_years
+            used += entry.num_years * entry.living_space / entry.number_of_people
 
-        return int(round(used / years))
+        return int(round(float(used) / years))
 
 
 class EntryManager(models.Manager):

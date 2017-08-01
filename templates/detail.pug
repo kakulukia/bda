@@ -91,6 +91,7 @@ block content
       .right
         -verbatim
           h3(v-cloak) {{ bio | extractName | caps }}
+          span(v-cloak, v-if="averageUsage > 0") durchschnittliche persönliche Wohnfläche {{ averageUsage }}m²
           .graph-area
 
           #errorDialog.modal.fade(role="dialog", tabindex="-1")
@@ -106,3 +107,4 @@ block content
   script.
     var auth_token = "Token {{ token }}";
     var bio_id = {{ bio.id }};
+    var averageUsage = {{ bio.median_usage }};
