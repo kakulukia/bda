@@ -68,7 +68,7 @@ var app = new Vue({
       var used = 0;
 
       _.forEach(app.entries, function(entry){
-        if (entry.ok) {
+        if (entry.ok && entry.living_space > 0) {
           var current_years = Math.abs(entry.year_to - entry.year_from);
           years += current_years;
           used += current_years * entry.living_space / entry.number_of_people;
