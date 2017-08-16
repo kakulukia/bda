@@ -13,9 +13,25 @@ block content
     .popup
 
       .left
-        h2 DEINE FLÄCHENBIOGRAFIE
+        h2 Persönliche Flächenbiografie
 
-        p Fülle die Tabelle aus. Benutze eine neue Zeile, wenn die Wohnfläche oder die Anzahl der Personen wechselt.
+        p
+          | Tragen Sie Ihre persönliche Wohnbiografie in die Tabelle ein und
+          | bestimmen Sie so Ihren persönlichen Flächenverbrauch.
+          br
+          br
+          | Wagen Sie einen Blick in die Zukunft und prognostizieren Sie
+          | Ihre Wohnsituation der kommenden Jahre: Ziehen Ihre Kinder nach dem
+          | Schulabschluss aus, planen Sie den Einzug in eine Wohngemeinschaft
+          | oder übernehmen Sie Ihr Elternhaus? Wenn keine Veränderungen absehbar
+          | sind, lassen Sie entweder alles so wie es ist oder träumen Sie
+          | ungeniert drauflos.
+          br
+          br
+          i.fa.fa-times &nbsp;für das Löschen von Zeilen
+          br
+          i.fa.fa-plus &nbsp;für eine neue Zeile. Neue Zeilen fügen sich automatisch in die Chronologie ein.
+
 
         hr
 
@@ -91,7 +107,9 @@ block content
       .right
         -verbatim
           h3(v-cloak) {{ bio | extractName | caps }}
-          span(v-cloak, v-if="averageUsage > 0") durchschnittliche persönliche Wohnfläche {{ averageUsage }}m²
+          span(v-cloak, v-if="averageUsage > 0") Persönliche Wohnfläche: {{ averageUsage }}m² im Durchschnitt
+          | Zum Vergleich: Der »Durchschnittsbürger« lebt heute auf über 46 m², Tendenz steigend.
+
           .graph-area
 
           #errorDialog.modal.fade(role="dialog", tabindex="-1")

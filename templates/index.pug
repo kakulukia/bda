@@ -15,12 +15,16 @@ html
     script(src="{% static 'js/tether.min.js' %}")
 
 body
-  block content
+  .content-warning
+    .message Du kannst diese Seite so nicht nutzen.
+    .minimum-res Benutze bitte einen Browser mit einer Mindestauflösung von 1200x800 Pixeln.
+  .app-space
+    block content
 
 
-  -compress js
-    script(src="{% static 'js/jquery-3.1.1.js' %}")
-    script(src="{% static 'js/bootstrap.min.js' %}")
-    script(src="{% static 'js/lodash.js' %}")
-    script(src="{% static 'js/timer.js' %}")
-    block extra_script
+    -compress js
+      script(src="{% static 'js/jquery-3.1.1.js' %}")
+      script(src="{% static 'js/bootstrap.min.js' %}")
+      script(src="{% static 'js/lodash.js' %}")
+      script(src="{% static 'js/timer.js' %}")
+      block extra_script

@@ -42,7 +42,8 @@ class EntrySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(u'Der Zeitraum ist ungültig.')
 
         if attrs['year_from'] == attrs['year_to']:
-            raise serializers.ValidationError(u'Lasse bitte Einträge kürzer als ein Jahr aus, damit der Graph übersichtlich bleibt.')
+            raise serializers.ValidationError(u'Die Wohndauer bitte immer in vollen Jahren angeben, '
+                                              u'gegebenenfalls auf ein volles Jahr aufrunden.')
 
         bio = attrs['area_bio']
         if not bio.age:
@@ -54,7 +55,7 @@ class EntrySerializer(serializers.ModelSerializer):
 
         if bio.entries.filter(year_from=attrs['year_from']).exclude(id=self.context['request'].data.get('id')).exists():
             raise serializers.ValidationError(
-                u'Mehrere Einträge für das selbe Jahr sind nicht möglich. Bitte verschiebe die Änderung auf das '
-                u'nächste Jahr, oder lasse sie ggf. aus, weil die Darstellung des Graphen sonst unübersichtlich wird.')
+                u'Mehrere Einträge pro Jahr sind für eine übersichtliche grafische Darstellung der '
+                u'Flächenbiografien nicht möglich. Gegebenenfalls Veränderungen auf das folgende Jahr verschieben.')
 
         return attrs
