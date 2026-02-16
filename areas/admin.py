@@ -1,9 +1,20 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.contrib.auth.models import User
 
 # Register your models here.
 from .models import AreaBio, BioEntry
 
 admin.site.enable_nav_sidebar = False
+
+
+admin.site.unregister(User)
+
+
+@admin.register(User)
+class UserAdmin(DjangoUserAdmin):
+    list_display = DjangoUserAdmin.list_display + ('is_superuser',)
+    list_filter = tuple(dict.fromkeys(DjangoUserAdmin.list_filter + ('is_staff', 'is_superuser')))
 
 
 class BioEntryInline(admin.StackedInline):
