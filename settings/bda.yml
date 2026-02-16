@@ -1,19 +1,19 @@
 uwsgi:
-        project: bda
-        base: /home/andy
-        
-        master: true
-        processes: 5
-        vaccum: true
-        chmod-socket: 666
-        #uid: www-data
-        #gid: www-data
-        #plugins: python32
-        socket: %(base)/www/%(project).sock
-        chdir: %(base)/www/%(project)
-        pythonpath: %(base)/www/%(project)
-        home: %(base)/.virtualenvs/%(project)
-        module: %(project).wsgi:application
-        logto: %(base)/www/%(project)-uwsgi.log
-        logto2: %(base)/www/%(project)-error.log
-        #touch-reload: SITE_DIR/application.py
+  project: bda
+  base: /opt/www
+
+  master: true
+  processes: 5
+  vacuum: true
+  chmod-socket: 666
+  #uid: www-data
+  #gid: www-dat a
+  #plugins: python32
+  socket: "%(base)/%(project).sock"
+  chdir: "%(base)/%(project)"
+  pythonpath: "%(base)/%(project)"
+  home: "%(base)/.virtualenvs/%(project)"
+  module: "%(project).wsgi:application"
+  logto: "%(base)/%(project)-uwsgi.log"
+  logto2: "%(base)/%(project)-error.log"
+  #touch-reload: SITE_DIR/application.py
