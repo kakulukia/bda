@@ -5,15 +5,14 @@ from django.core.cache import cache
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
-from django.utils.html import simple_email_re
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic import TemplateView
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework_nested.viewsets import NestedViewSetMixin
 from rest_framework.authtoken.models import Token
 
 from areas.models import AreaBio, BioEntry
@@ -110,7 +109,7 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
 
         return queryset
 
-    @detail_route(methods=['get'])
+    @action(methods=['get'], detail=True)
     def compare(self, request, pk=None):
         range_param = int(request.query_params['range'])
         myself = self.get_object()
@@ -122,6 +121,13 @@ class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
 class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
     queryset = BioEntry.objects.all()
     serializer_class = EntrySerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        area_bio_pk = self.kwargs.get('area_bio_pk')
+        if area_bio_pk is not None:
+            queryset = queryset.filter(area_bio__pk=area_bio_pk)
+        return queryset
 
 
 def get_graph(request, pk, bare=False, original=False, list_display=False, stretched=True):
@@ -160,8 +166,6 @@ def send_graph(request, pk):
 
     # check email
     email = request.POST['email']
-    if not simple_email_re.match(email):
-        return HttpResponse(status=400)
 
     graph.send_to(email)
     return HttpResponse()

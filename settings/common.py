@@ -49,13 +49,12 @@ INSTALLED_APPS = [
 
     'compressor',
     'django_extensions',
-    'crispy_forms',
-    'rosetta',
+    # 'crispy_forms',
+    # 'rosetta',
     'django_countries',
 
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_swagger',
 
     'areas',
 ]

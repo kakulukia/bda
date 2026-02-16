@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import uuid
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.db import models
 from django.db.models import Max
 from django.template.defaultfilters import upper
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from areas.utils import guess_name
 
@@ -19,16 +20,17 @@ class AreaBioManager(models.Manager):
 
 class AreaBio(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='area_bios', null=True, blank=True, verbose_name=_(u'Nutzer'))
 
     name = models.CharField(verbose_name=_(u'Name'), max_length=150, null=True)
-    age = models.IntegerField(verbose_name=_(u'Age'), null=True)
-    country = models.CharField(verbose_name=_(u'City'), max_length=150, null=True)
+    age = models.IntegerField(verbose_name=_(u'Alter'), null=True)
+    country = models.CharField(verbose_name=_(u'Stadt'), max_length=150, null=True)
 
-    published = models.BooleanField(default=False)
+    published = models.BooleanField(default=False, verbose_name=_(u'Veröffentlicht'))
     objects = AreaBioManager()
-    created = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    created = models.DateTimeField(auto_now_add=True, null=True, editable=False, verbose_name=_(u'Erstellt'))
 
-    mailed_to = models.CharField(max_length=200, null=True, blank=True)
+    mailed_to = models.CharField(max_length=200, null=True, blank=True, verbose_name=_(u'Per E-Mail versendet an'))
 
     class Meta:
         verbose_name = u'Flächenbiografie'
@@ -146,7 +148,7 @@ class AreaBio(models.Model):
         return entries
 
     def get_absolute_url(self):
-        return reverse('edit-graph', args=[self.uuid])
+        return reverse('view-graph', args=[self.uuid])
 
     def median_usage(self):
         years = 0
@@ -170,17 +172,72 @@ class EntryManager(models.Manager):
 
 
 class BioEntry(models.Model):
-    living_space = models.IntegerField(verbose_name=_('Living space'))
-    number_of_people = models.IntegerField(verbose_name=_('Number of people'))
-    year_from = models.IntegerField(verbose_name=_('From'))
-    year_to = models.IntegerField(verbose_name=_('To'))
-    description = models.CharField(verbose_name=_('Reason'), max_length=35, blank=True, null=True)
+    class Location(models.TextChoices):
+        METROPOLIS = 'metropolis', _('Metropole (ab 1 Mio)')
+        BIG_CITY = 'big_city', _('Großstadt (ab 100.000)')
+        MEDIUM_CITY = 'medium_city', _('Mittelstadt (ab 20.000)')
+        SMALL_CITY = 'small_city', _('Kleinstadt (ab 5.000)')
+        VILLAGE = 'village', _('Dorf')
+        ISOLATED = 'isolated', _('Alleinlage')
+        NO_FIXED_RESIDENCE = 'no_fixed_residence', _('Ohne festen Wohnsitz')
 
-    area_bio = models.ForeignKey('areas.AreaBio', related_name='entries')
+    class Typology(models.TextChoices):
+        HOUSE = 'house', _('Haus')
+        DORMITORY = 'dormitory', _('Wohnheim')
+        ONE_ROOM = '1_room', _('1 Zimmer Wohnung')
+        TWO_ROOMS = '2_rooms', _('2 Zi')
+        THREE_ROOMS = '3_rooms', _('3 Zi')
+        FOUR_ROOMS = '4_rooms', _('4 Zi')
+        FIVE_ROOMS = '5_rooms', _('5 Zi')
+        MORE_THAN_FIVE = 'more_than_5_rooms', _('Mehr als 5 Zimmer')
+
+    class Tenure(models.TextChoices):
+        RENT = 'rent', _('Miete')
+        OWNERSHIP = 'ownership', _('Eigentum')
+
+    class OwnerCategory(models.TextChoices):
+        PRIVATE_PERSON = 'private_person', _('Privatperson')
+        COOPERATIVE = 'cooperative', _('Genossenschaft')
+        PUBLIC_HOUSING_COMPANY = 'public_housing_company', _('Wohnbaugesellschaft kommunal')
+        PRIVATE_HOUSING_COMPANY = 'private_housing_company', _('Wohnbaugesellschaft privatwirtschaftlich')
+        OTHER_PRIVATE_ACTORS = 'other_private_actors', _('Andere privatwirtschaftliche Akteure')
+
+    class ConstructionYearCategory(models.TextChoices):
+        PRE_1920 = 'pre_1920', _('vor 1920')
+        YEAR_1920_1945 = '1920_1945', _('1920-1945')
+        YEAR_1945_1960 = '1945_1960', _('1945-1960')
+        YEAR_1960_1970 = '1960_1970', _('1960-1970')
+        YEAR_1970_1980 = '1970_1980', _('1970-1980')
+        YEAR_1990_2000 = '1990_2000', _('1990-2000')
+        YEAR_2000_2010 = '2000_2010', _('2000-2010')
+        FROM_2010 = 'from_2010', _('ab 2010')
+
+    living_space = models.IntegerField(verbose_name=_('Wohnfläche'))
+    number_of_people = models.IntegerField(verbose_name=_('Personen im Haushalt'))
+    year_from = models.IntegerField(verbose_name=_('Von'))
+    year_to = models.IntegerField(verbose_name=_('Bis'))
+    description = models.CharField(verbose_name=_('Grund für den Wechsel'), max_length=35, blank=True, null=True)
+    location = models.CharField(verbose_name=_('Lage'), max_length=50, choices=Location.choices, blank=True, null=True)
+    postal_code = models.CharField(verbose_name=_('PLZ'), max_length=20, blank=True, null=True)
+    typology = models.CharField(verbose_name=_('Typologie'), max_length=30, choices=Typology.choices, blank=True, null=True)
+    tenure = models.CharField(verbose_name=_('Miete / Eigentum'), max_length=20, choices=Tenure.choices, blank=True, null=True)
+    owner_category = models.CharField(verbose_name=_('Eigentümerkategorie'), max_length=40, choices=OwnerCategory.choices, blank=True, null=True)
+    construction_year_category = models.CharField(
+        verbose_name=_('Baujahr'),
+        max_length=20,
+        choices=ConstructionYearCategory.choices,
+        blank=True,
+        null=True
+    )
+    country_if_not_germany = models.CharField(verbose_name=_('Land (falls nicht DE)'), max_length=150, blank=True, null=True)
+
+    area_bio = models.ForeignKey('areas.AreaBio', on_delete=models.CASCADE, related_name='entries')
     objects = EntryManager()
 
     class Meta:
         ordering = ['year_from']
+        verbose_name = 'Biografieeintrag'
+        verbose_name_plural = 'Biografieeinträge'
 
     def __str__(self):
         return u'{}-{}, {} in {} m²'.format(
@@ -222,6 +279,12 @@ class BioEntry(models.Model):
         if self.number_of_people:
             return int(float(100) / float(self.number_of_people))
         return 0
+
+    @property
+    def living_space_per_person(self):
+        if not self.number_of_people:
+            return None
+        return float(self.living_space) / float(self.number_of_people)
 
     def description_percentage(self):
 
