@@ -12,7 +12,7 @@ uwsgi:
         socket: "/tmp/%(project).sock"
         chdir: "%(base)/%(project)"
         pythonpath: "%(base)/%(project)"
-        home: "%(base)/.venv/%(project)"
+        home: "%(base)/.venv"
         module: "%(project).wsgi:application"
         logto: "%(base)/%(project)-uwsgi.log"
         logto2: "%(base)/%(project)-error.log"
