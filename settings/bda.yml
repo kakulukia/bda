@@ -9,7 +9,7 @@ uwsgi:
   #uid: www-data
   #gid: www-dat a
   #plugins: python32
-  socket: "%(base)/%(project).sock"
+  socket: "/tmp/%(project).sock"
   chdir: "%(base)/%(project)"
   pythonpath: "%(base)/%(project)"
   home: "%(base)/.virtualenvs/%(project)"
