@@ -14,6 +14,6 @@ uwsgi:
         pythonpath: "%(base)/%(project)"
         home: "%(base)/%(project)/.venv"
         module: "%(project).wsgi:application"
-        logto: "%(base)/%(project)-uwsgi.log"
-        logto2: "%(base)/%(project)-error.log"
+        logto: "%(base)/logs/%(project)-uwsgi.log"
+        logto2: "%(base)/logs/%(project)-error.log"
         #touch-reload: SITE_DIR/application.py
