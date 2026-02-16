@@ -9,8 +9,8 @@ uwsgi:
         #uid: www-data
         #gid: www-dat a
         #plugins: python32
-        http: localhost:8000
-        # socket: /tmp/%(project).sock
+        # http: localhost:8000
+        socket: /tmp/%(project).sock
         chdir: %(base)/%(project)
         pythonpath: %(base)/%(project)
         home: %(base)/%(project)/.venv
