@@ -9,11 +9,12 @@ uwsgi:
         #uid: www-data
         #gid: www-dat a
         #plugins: python32
-        socket: "/tmp/%(project).sock"
-        chdir: "%(base)/%(project)"
-        pythonpath: "%(base)/%(project)"
-        home: "%(base)/%(project)/.venv"
-        module: "%(project).wsgi:application"
+        http: localhost:8000
+        # socket: /tmp/%(project).sock
+        chdir: %(base)/%(project)
+        pythonpath: %(base)/%(project)
+        home: %(base)/%(project)/.venv
+        module: %(project).wsgi:application
         #logto: %(base)/logs/%(project)-uwsgi.log
         #logto2: %(base)/logs/%(project)-error.log
         #touch-reload: SITE_DIR/application.py
