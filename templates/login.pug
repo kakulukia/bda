@@ -1,0 +1,42 @@
+-extends 'index.pug'
+
+block title
+  | Anmeldung | Flächenbiografien
+
+block content
+  .app.bio-index.login-page
+    .navigation.bio-navigation
+      a.brand-link(href="/", aria-label="Wohnbiografien")
+        h1.wordmark
+          span WOHN
+          span BIO
+          span GRAF
+          span IEN
+      .brand-rule
+      .login-kicker Anmeldung
+      .navigation-spacer
+      .studio-mark
+        .studio-logo LUD°
+        .studio-text Laboratory for Architecture
+          br
+          | and Urban Density
+
+    .login-area
+      form.login-form(method="post", action="{% url 'login' %}")
+        {% csrf_token %}
+        input(type="hidden", name="next", value="{{ next }}")
+
+        h2 Zugang
+
+        -if form.errors
+          .login-error Benutzername oder Passwort ist nicht korrekt.
+
+        .login-field
+          label(for="id_username") Benutzername
+          input#id_username(type="text", name="username", value="{{ form.username.value|default_if_none:'' }}", autofocus="", autocapitalize="none", autocomplete="username", required="")
+
+        .login-field
+          label(for="id_password") Passwort
+          input#id_password(type="password", name="password", autocomplete="current-password", required="")
+
+        button.login-button(type="submit") Anmelden

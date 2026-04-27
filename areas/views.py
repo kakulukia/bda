@@ -1,5 +1,6 @@
 import re
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.http.response import HttpResponse
@@ -9,6 +10,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -52,12 +54,16 @@ class AreaBioEditView(TemplateView):
         return self.render_to_response(context)
 
 
+@method_decorator(login_required, name='dispatch')
 class BioListView(ListView):
     template_name = 'area_list.pug'
 
     def get_queryset(self):
-        queryset = AreaBio.objects.published()
-        return queryset[:77]
+        queryset = list(AreaBio.objects.published()[:77])
+        for bio in queryset:
+            bio._stretched = True
+            bio.bare = True
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(BioListView, self).get_context_data()
@@ -90,7 +96,7 @@ def add_bio(request):
     return redirect(reverse('edit-graph', args=[bio.uuid]))
 
 
-class AreaBioViewSet(NestedViewSetMixin, ModelViewSet):
+class AreaBioViewSet(ModelViewSet):
     queryset = AreaBio.objects.all()
     serializer_class = AreaBioSerializer
 
@@ -136,7 +142,7 @@ def get_graph(request, pk, bare=False, original=False, list_display=False, stret
         template_name = 'partials/naked_graph_with_name.pug'
     bio = get_object_or_404(AreaBio.objects.all(), pk=pk)
     bio._stretched = stretched
-    bio.bare = bare
+    bio.bare = True if list_display else bare
     context = {
         'graph': bio,
         'original': original,

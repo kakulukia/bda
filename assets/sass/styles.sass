@@ -2,20 +2,46 @@
   font-family: "Franziska"
   src: url("/static/fonts/Franziska.otf") format("opentype")
 
+@font-face
+  font-family: "Gravity Wide"
+  src: url("/static/fonts/ABCGravity-Wide.otf") format("opentype")
+  font-style: normal
+  font-weight: 700
+  font-display: swap
+
+@font-face
+  font-family: "Gravity Condensed"
+  src: url("/static/fonts/ABCGravity-Condensed.otf") format("opentype")
+  font-style: normal
+  font-weight: 400
+  font-display: swap
+
 //colors
 $red: #ff1236
-$yellow: #fff9a0
+$yellow: #fce903
+$area-gray: #b4b4b4
+$hover-color: $yellow
+$projection-yellow-transparent: rgba(252, 233, 3, .25)
 $bg-gray: #E4E4E3
 $bg-light-gray: #eceeef
 $lines-gray: #444
 $lines-light-gray: #ccc
 
+//fonts
+$font-heading: "Gravity Wide", "Helvetica Neue Condensed Bold", "HelveticaNeue-CondensedBold", "Arial Black", sans-serif
+$font-text: "Gravity Condensed", "Helvetica Neue", "HelveticaNeue-CondensedBold", "Arial Narrow", Arial, sans-serif
+$font-data: "Gravity Condensed", "Helvetica Neue", Arial, sans-serif
+
 [v-cloak]
   display: none
 
 body
-  font-family: "Franziska", serif
+  font-family: $font-text
   color: #292b2c
+  margin: 0
+
+html, body
+  height: 100%
 
 .app-space
   display: none
@@ -46,6 +72,344 @@ i.fa.fa-angle-right
   height: 100%
   flex-direction: row
   align-content: stretch
+
+.bio-index
+  min-height: 100vh
+  background: white
+
+  .bio-navigation
+    box-sizing: border-box
+    flex: 0 0 298px
+    min-height: 100vh
+    width: 298px
+    padding: 28px 10px 28px
+    display: flex
+    flex-direction: column
+    background: #dedede
+
+  .brand-link
+    display: block
+
+  .wordmark
+    border-bottom: 0
+    color: black
+    font-family: $font-heading
+    font-size: 55px
+    font-weight: 900
+    line-height: .78
+    margin: 0 0 22px
+    padding: 0
+    text-transform: uppercase
+    white-space: nowrap
+
+    span
+      display: block
+
+  .brand-rule
+    height: 22px
+    width: 100%
+    background: $yellow
+    margin: 0 0 30px
+
+  .controls
+    font-size: 22px
+    line-height: 1.15
+
+  .control-group
+    margin-bottom: 26px
+
+    label, .control-label
+      display: block
+      margin-bottom: 6px
+
+    select
+      background: white
+      border: 1px solid #c7c7c7
+      border-radius: 4px
+      color: #1d1d1d
+      font-size: 17px
+      height: 28px
+      padding: 1px 28px 1px 7px
+      width: 100%
+
+  .age-control
+    margin-top: 24px
+
+  .navigation-spacer
+    flex: 1 1 auto
+
+  .studio-mark
+    color: black
+    font-family: $font-heading
+    font-weight: 900
+    line-height: .95
+    padding: 0 4px
+
+  .studio-logo
+    font-size: 42px
+    margin-bottom: 12px
+
+  .studio-text
+    font-family: $font-text
+    font-size: 21px
+    font-weight: 700
+
+  .list-area
+    box-sizing: border-box
+    display: grid
+    flex: 1 1 auto
+    grid-template-columns: repeat(4, minmax(230px, 1fr))
+    grid-auto-rows: minmax(330px, 26vw)
+    column-gap: 54px
+    row-gap: 84px
+    height: 100vh
+    overflow-y: auto
+    padding: 70px 86px 80px 78px
+
+    .list-item
+      box-sizing: border-box
+      cursor: pointer
+      display: flex
+      flex-direction: column
+      height: 100%
+      margin: 0
+      min-width: 0
+      position: relative
+      width: 100%
+
+      &:hover
+        &::after
+          background-image: repeating-linear-gradient(90deg, $hover-color 0, $hover-color 12px, transparent 12px, transparent 34px), repeating-linear-gradient(90deg, $hover-color 0, $hover-color 12px, transparent 12px, transparent 34px), repeating-linear-gradient(180deg, $hover-color 0, $hover-color 12px, transparent 12px, transparent 34px), repeating-linear-gradient(180deg, $hover-color 0, $hover-color 12px, transparent 12px, transparent 34px)
+          background-position: top left, bottom left, top left, top right
+          background-repeat: repeat-x, repeat-x, repeat-y, repeat-y
+          background-size: 34px 3px, 34px 3px, 3px 34px, 3px 34px
+          content: ''
+          inset: -18px -22px
+          pointer-events: none
+          position: absolute
+          z-index: 2
+
+      .description
+        color: #111
+        font-family: $font-heading
+        font-size: 10px
+        line-height: 1.05
+        margin-top: 7px
+        text-align: center
+        text-transform: uppercase
+
+      .graph-area
+        flex: 1 1 auto
+        height: auto
+        margin: 0
+        min-height: 0
+        width: 100%
+
+        .graph-container
+          align-self: center
+          flex: 1 1 auto
+          height: auto
+          min-height: 0
+          width: 43%
+
+        .bar-container
+          width: 86%
+
+        .entry
+          &.odd
+            background: $area-gray
+          &.even
+            background: $area-gray
+
+          .persons
+            background: black
+            opacity: 1
+
+          &.future
+            background: $projection-yellow-transparent
+
+            .persons
+              background: $yellow
+              opacity: 1
+
+        .measurement
+          border-left-color: #222
+          border-right-color: #222
+          font-family: $font-data
+          font-size: 8px
+          height: 16px
+          width: 43%
+
+          hr
+            border-top-color: #222
+            top: 8px
+
+          span
+            color: #111
+            padding: 0 3px
+
+        .descriptions
+          .desc_5, .desc_10, .desc_30, .desc_60, .desc_0
+            border-top-color: #d0d0d0
+
+            .desc
+              color: #111
+              font-family: $font-data
+              font-size: 8px
+              left: -42px
+              top: -6px
+              width: 34px
+
+          .desc_0
+            border-bottom-color: #222
+
+          .middle_axis
+            border-right-color: #222
+
+        .entry-container
+          .description
+            color: #111
+            font-family: $font-data
+            font-size: 8px
+            font-weight: 700
+            line-height: 1
+            margin: 0
+            text-align: left
+            text-transform: none
+            width: 164px
+
+            .line
+              border-top-color: #bcbcbc
+              width: 42px
+
+              &.small-entry
+                width: 164px
+
+            .text
+              left: 47px
+              top: -6px
+              width: 160px
+
+              &.small-entry
+                left: 169px
+
+          .description-line
+            border-top-color: #c9c9c9
+
+  #age-slider
+    margin: 18px auto 0
+    width: 88%
+
+    .slider
+      background: transparent
+      border: 0
+      border-top: 1px solid #8e8e8e
+      height: 0
+
+      .slider-fill
+        background: $yellow
+        height: 4px
+        top: -2px
+
+      .handle
+        background: white
+        border: 1px solid #a6a6a6
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .2)
+        height: 28px
+        top: -14px
+        width: 28px
+
+        &:active
+          border-color: black
+          box-shadow: 0 0 0 2px rgba(252, 233, 3, .8)
+
+.login-page
+  .login-kicker
+    color: black
+    font-family: $font-heading
+    font-size: 20px
+    line-height: 1
+    text-transform: uppercase
+
+  .login-area
+    align-items: center
+    box-sizing: border-box
+    display: flex
+    flex: 1 1 auto
+    min-height: 100vh
+    padding: 70px 86px
+
+  .login-form
+    max-width: 420px
+    width: 100%
+
+    h2
+      border-bottom: 22px solid $yellow
+      color: black
+      font-family: $font-heading
+      font-size: 55px
+      font-weight: 900
+      line-height: .78
+      margin: 0 0 38px
+      padding: 0 0 22px
+      text-transform: uppercase
+
+  .login-error
+    border-left: 8px solid $red
+    font-size: 22px
+    line-height: 1.15
+    margin-bottom: 24px
+    padding-left: 14px
+
+  .login-field
+    margin-bottom: 24px
+
+    label
+      display: block
+      font-size: 22px
+      line-height: 1.15
+      margin-bottom: 6px
+
+    input
+      background: white
+      border: 1px solid #1d1d1d
+      border-radius: 0
+      box-sizing: border-box
+      color: #1d1d1d
+      font-family: $font-text
+      font-size: 24px
+      height: 44px
+      outline: none
+      padding: 4px 8px
+      width: 100%
+
+      &:focus
+        border-color: black
+        box-shadow: 0 0 0 4px $yellow
+
+  .login-button
+    background: $yellow
+    border: 0
+    color: black
+    cursor: pointer
+    font-family: $font-heading
+    font-size: 20px
+    line-height: 1
+    padding: 13px 18px 11px
+    text-transform: uppercase
+
+    &:hover, &:focus
+      background: black
+      color: white
+      outline: none
+
+@media only screen and (max-width: 1600px)
+  .bio-index
+    .list-area
+      column-gap: 40px
+      grid-template-columns: repeat(3, minmax(230px, 1fr))
+      padding-left: 68px
+      padding-right: 68px
 
 .graph-area
   flex-grow: 1
@@ -119,18 +483,18 @@ a, a:visited, a:hover, a:focus
         .entry
           &.odd
             background: transparent
-            border: 1px solid lightgrey
+            border: 1px solid $area-gray
           &.even
             background: transparent
-            border: 1px solid darkgrey
+            border: 1px solid $area-gray
 
         .persons
           background: transparent
-          border: 1px solid $red
+          border: 1px solid black
         .future
           .persons
             background: transparent
-            border: 1px solid orange
+            border: 1px solid $yellow
 
 .list-area
   overflow-y: scroll
@@ -218,7 +582,7 @@ a, a:visited, a:hover, a:focus
     background: transparent
     padding: 0.2em
     width: 100%
-    font-family: "Franziska", serif
+    font-family: $font-text
     -webkit-appearance: none
     -moz-appearance: none
     outline: none
@@ -405,9 +769,9 @@ a, a:visited, a:hover, a:focus
         text-align: center
         margin: 0 auto
         &.odd
-          background: lightgrey
+          background: $area-gray
         &.even
-          background: darkgrey
+          background: $area-gray
 
         &.empty
           flex-grow: 1
@@ -415,13 +779,15 @@ a, a:visited, a:hover, a:focus
         .persons
           height: 100%
           margin: 0 auto
-          background: $red
-          opacity: 0.5
+          background: black
+          opacity: 1
 
         &.future
+          background: $projection-yellow-transparent
+
           .persons
             background: $yellow
-            opacity: 0.8
+            opacity: 1
 
   .measurement
     width: 90%
@@ -472,7 +838,7 @@ span.input-group-addon
     cursor: pointer
     border: 3px solid $red
     border-radius: 0
-    font-family: "Franziska", serif
+    font-family: $font-text
     background: transparent
 
 .small-entry
@@ -598,11 +964,11 @@ h3.browse
   margin-left: 4px
   padding: 0 5px
 .bg-red
-  background: lighten($red, 20%)
+  background: black
 .bg-yellow
-  background: $yellow
+  background: $projection-yellow-transparent
 .bg-gray
-  background: $bg-gray
+  background: $area-gray
 
 .red
   color: $red

@@ -2,63 +2,38 @@
 -load static i18n
 
 block content
-  .app
+  .app.bio-index
     // navigation pane
-    .navigation
-      a(href="/")
-        h1 FLÄCHEN-BIOGRAFIEN
+    .navigation.bio-navigation
+      a.brand-link(href="/", aria-label="Wohnbiografien")
+        h1.wordmark
+          span WOHN
+          span BIO
+          span GRAF
+          span IEN
+      .brand-rule
 
-      h3.browse
-        -trans "Browse"
       .controls
-        p Stadt:
-          select(v-model="country", @change="updateGraphs")
+        .control-group
+          label(for="city-filter") Stadt:
+          select#city-filter(v-model="country", @change="updateGraphs")
             option(value="") Alle
             - for city in cities
               option {{ city }}
         -verbatim
-          p Alter: {{ minAge }} - {{ maxAge }} Jahre
-          #age-slider.fly.wrap
+          .control-group.age-control
+            .control-label Alter: {{ minAge }} - {{ maxAge }} Jahre
+            #age-slider.fly.wrap
+      .navigation-spacer
+      .studio-mark
+        .studio-logo LUD°
+        .studio-text Laboratory for Architecture
+          br
+          | and Urban Density
 
     .list-area
-      .intro-text
-        p.center
-          strong Wie viel Wohnfläche zu welchem Zeitpunkt?
-          br
-          br
-          | Wieviel Raum ist genug? 1991 lebte der »Durchschnittsbürger« auf rund 35 m²
-          |  Wohnfläche, heute sind es über 46 m², Tendenz steigend.
-          br
-          br
-          | Doch Größe wird überschätzt: Ein großzügiges und vielfältiges Raumangebot
-          |  ist keine Frage der Quadratmeterzahl, sondern einer klugen Konzeption.
-          |  Neue Wohnformen zeigen, wie eine besondere Wohnqualität mit einer
-          |  reduzierten Fläche erreicht wird.
-          br
-          br
-          strong Individuelle Flächenbiografie erstellen
-          br
-          br
-          | Auf wieviel Fläche haben Sie in den einzelnen Lebensphasen gewohnt und
-          |  was bringt der Ausblick in die Zukunft?
-          br
-          br
-          | Beschreiben Sie Ihre bisherige und künftige (geschätzte) Wohnsituation
-          |  und vergleichen Sie Ihre persönliche Flächenbiografie mit anderen
-          |  Biografien.
-          br
-          br
-          | Die Projektion in die Zukunft konfrontiert den Einzelnen mit seinem
-          |  hypothetischen, individuellen «Flächenschicksal».
-          |  An «Sollbruchstellen» – wie die erste eigene Wohnung oder der Auszug
-          |  der Kinder – können innovative Wohnformen Fläche und Kosten sparen.
-
       -for graph in object_list
-        .list-item(@click="viewGraph('{{ graph.uuid }}', '{{ graph.description }}', '{{ graph.median_usage }}')")
-          .graph-area
-            .graph-container
-              {{ graph.bare_display_stretched }}
-          .description {{ graph.description }}
+        -include 'partials/naked_graph_with_name.pug'
 
     #graphView.modal.fade(role="dialog", tabindex="-1")
       .modal-dialog

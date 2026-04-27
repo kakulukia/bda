@@ -82,6 +82,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'bda.urls'
+LOGIN_URL = '/login/'
 
 TEMPLATES = [
     {
