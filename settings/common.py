@@ -32,8 +32,19 @@ SECRET_KEY = '44c5k3p++z4&kow5(s!g#5)vu#)+l%=7n@o$z%+8cq_cyp2l_2'
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '*'
+    'wohnbiografien.de',
+    'www.wohnbiografien.de',
+    'bda.pepperz.de',
+    'localhost',
+    '127.0.0.1',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://wohnbiografien.de',
+    'https://www.wohnbiografien.de',
+]
+
+PUBLIC_BASE_URL = 'https://wohnbiografien.de'
 
 
 # Application definition

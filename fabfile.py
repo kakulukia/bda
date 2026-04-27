@@ -4,9 +4,9 @@ from fabric.state import env
 from fabric.operations import run
 from fabric.colors import green
 
-PROJECT_PATH = '/home/andy/www/bda'
-env.hosts = ['pepperz.de']
-MANAGE = '/home/andy/.virtualenvs/bda/bin/python manage.py '
+PROJECT_PATH = '/opt/www/bda'
+env.hosts = ['mamasystems.de']
+MANAGE = '/opt/www/bda/.venv/bin/python manage.py '
 
 # T A S K S
 # =========
@@ -14,19 +14,19 @@ MANAGE = '/home/andy/.virtualenvs/bda/bin/python manage.py '
 def deploy_only():
     """ Pull all updates from the remote repository. """
     with cd(PROJECT_PATH):
-        print green('updating from repository ..')
+        print(green('updating from repository ..'))
         run('git pull' )
-        print green('compressing files ..')
+        print(green('compressing files ..'))
         manage('compress --force -e pug')
 
-        print green('collectiing static files ..')
+        print(green('collectiing static files ..'))
         manage('collectstatic --noinput')
 
 
 def restart():
     """ Restart nginx and the backend worker. """
-    print green('restarting server ..')
-    run('sudo service uwsgi restart')
+    print(green('restarting server ..'))
+    run('pm2 restart bda')
 
 
 def deploy():
@@ -43,10 +43,10 @@ def migrate():
     """
     deploy_only()
     with cd(PROJECT_PATH):
-        print green('updating packages ..')
+        print(green('updating packages ..'))
         run('/home/andy/.virtualenvs/bda/bin/pip install -r requirements.txt --upgrade')
 
-        print green('migrating database ..')
+        print(green('migrating database ..'))
         manage('migrate --noinput')
 
 

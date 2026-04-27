@@ -104,7 +104,10 @@ class AreaBio(models.Model):
 
         send_mail(
             _(u'Deine Flächenbiografie'),
-            render_to_string('messages/send_graph.txt', {'name': self.name, 'graph': self}),
+            render_to_string(
+                'messages/send_graph.txt',
+                {'name': self.name, 'graph': self, 'site_url': settings.PUBLIC_BASE_URL}
+            ),
             'do-not-reply@pepperz.de',
             [email],
         )
