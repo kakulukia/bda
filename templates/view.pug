@@ -1,0 +1,29 @@
+-extends 'index.pug'
+
+block title
+  | {{ graph }} | Flächenbiografien
+
+block content
+  .app.bio-index.site-graph-page
+    .navigation.bio-navigation
+      a.brand-link(href="/", aria-label="Wohnbiografien")
+        h1.wordmark
+          span WOHN
+          span BIO
+          span GRAF
+          span IEN
+      .brand-rule
+
+      .view-title {{ graph }}
+      a.admin-link(href="/") Zur Startseite
+
+      .navigation-spacer
+      .studio-mark
+        .studio-logo LUD°
+        .studio-text Laboratory for Architecture
+          br
+          | and Urban Density
+
+    .site-graph-area
+      .graph-area
+        -include 'partials/full_graph.pug'

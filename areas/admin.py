@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from .models import AreaBio, BioEntry
 
 admin.site.enable_nav_sidebar = False
+admin.site.site_header = 'Wohnbiografien Admin'
+admin.site.site_title = 'Wohnbiografien Admin'
+admin.site.index_title = 'Website-Verwaltung'
 
 
 admin.site.unregister(User)
@@ -54,8 +57,8 @@ class BioEntryInline(admin.StackedInline):
 
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
-    list_display = ['created', '__str__', 'entries_count', 'published']
-    list_filter = ['published', 'country']
+    list_display = ['created', '__str__', 'entries_count']
+    list_filter = ['country']
     inlines = [BioEntryInline]
     actions = None
 
@@ -70,6 +73,9 @@ class AreaBioAdmin(admin.ModelAdmin):
     @admin.display(description='Anzahl Einträge')
     def entries_count(self, obj):
         return obj.entries.count()
+
+    def view_on_site(self, obj):
+        return obj.get_absolute_url()
 
     def has_add_permission(self, request):
         return False

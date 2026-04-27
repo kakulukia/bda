@@ -15,7 +15,6 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
             'country',
             'id',
             'uuid',
-            'published',
         )
 
     def validate(self, attrs):

@@ -1,16 +1,12 @@
-import re
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.http.response import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic import TemplateView
-from django.utils.decorators import method_decorator
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -23,6 +19,20 @@ from areas.serializers import AreaBioSerializer, EntrySerializer
 
 class AreaBioView(TemplateView):
     template_name = 'partials/full_graph.pug'
+
+    def get(self, request, uuid, *args, **kwargs):
+
+        graph = AreaBio.objects.get(uuid=uuid)
+        graph._stretched = False
+        graph.show_descriptions = True
+        context = {
+            'graph': graph
+        }
+        return self.render_to_response(context)
+
+
+class AreaBioSiteView(TemplateView):
+    template_name = 'view.pug'
 
     def get(self, request, uuid, *args, **kwargs):
 
@@ -59,7 +69,7 @@ class BioListView(ListView):
     template_name = 'area_list.pug'
 
     def get_queryset(self):
-        queryset = list(AreaBio.objects.published()[:77])
+        queryset = list(AreaBio.objects.complete()[:77])
         for bio in queryset:
             bio._stretched = True
             bio.bare = True
@@ -70,7 +80,7 @@ class BioListView(ListView):
 
         cities = cache.get('cities')
         if not cities:
-            unordered = AreaBio.objects.published().order_by('country').values_list(
+            unordered = AreaBio.objects.complete().order_by('country').values_list(
                 'country', flat=True)
             from collections import Counter
             cities = [item for item, count in Counter(unordered).most_common()]
@@ -104,7 +114,7 @@ class AreaBioViewSet(ModelViewSet):
         queryset = AreaBio.objects.all()
         params = self.request.query_params
         if 'minAge' in params and 'maxAge' in params:
-            queryset = AreaBio.objects.published()
+            queryset = AreaBio.objects.complete()
             maxAge = params['maxAge']
             if maxAge == 100:
                 maxAge = 130
@@ -120,7 +130,7 @@ class AreaBioViewSet(ModelViewSet):
         range_param = int(request.query_params['range'])
         myself = self.get_object()
         range_tuple = (max(0, myself.age - range_param), myself.age + range_param)
-        query = AreaBio.objects.published().filter(age__range=range_tuple).exclude(id=pk)
+        query = AreaBio.objects.complete().filter(age__range=range_tuple).exclude(id=pk)
         return Response(AreaBioSerializer(query[:30], many=True).data)
 
 
@@ -149,32 +159,6 @@ def get_graph(request, pk, bare=False, original=False, list_display=False, stret
     }
     return render(request, template_name, context)
 
-
-@csrf_exempt
-def publish_graph(request, pk):
-
-    if not request.method == 'POST':
-        return HttpResponse(status=400)
-
-    graph = get_object_or_404(AreaBio, pk=pk)
-    graph.published = True
-    graph.save()
-    return HttpResponse()
-
-
-@csrf_exempt
-def send_graph(request, pk):
-
-    if not request.method == 'POST':
-        return HttpResponse(status=400)
-
-    graph = get_object_or_404(AreaBio, pk=pk)
-
-    # check email
-    email = request.POST['email']
-
-    graph.send_to(email)
-    return HttpResponse()
 
 class PostedGraphView(View):
     template_name = 'done.pug'

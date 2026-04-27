@@ -5,7 +5,7 @@ from django.views.generic import RedirectView
 from rest_framework_nested import routers
 
 from areas.views import BioListView, AreaBioView, add_bio, AreaBioViewSet, BioEntryViewSet, get_graph, PostedGraphView, \
-    publish_graph, send_graph, AreaBioEditView
+    AreaBioEditView, AreaBioSiteView
 
 # construct API URLs
 router = routers.DefaultRouter()
@@ -33,9 +33,7 @@ urlpatterns = [
     re_path(r'^graph/add/', add_bio),
     re_path(r'^graph/done/', PostedGraphView.as_view(), name='done'),
     re_path(r'^graph/edit/(?P<uuid>[\w-]+)/$', AreaBioEditView.as_view(), name='edit-graph'),
-    re_path(r'^graph/(?P<pk>[\w-]+)/publish/$', publish_graph, name='publish-graph'),
-    re_path(r'^graph/(?P<pk>[\w-]+)/send/$', send_graph, name='send-graph'),
-
+    re_path(r'^graph/(?P<uuid>[\w-]+)/view/$', AreaBioSiteView.as_view(), name='view-graph-page'),
     re_path(r'^view-graph/(?P<uuid>[\w-]+)/$', AreaBioView.as_view(), name='view-graph'),
 
     re_path(r'^graph/(?P<pk>[\w-]+)/$', get_graph, {'stretched': False}, name='show-graph'),

@@ -135,6 +135,24 @@ i.fa.fa-angle-right
   .age-control
     margin-top: 24px
 
+  .admin-link
+    border-top: 6px solid $yellow
+    display: inline-block
+    font-family: $font-heading
+    font-size: 20px
+    line-height: 1
+    margin-top: 10px
+    padding-top: 12px
+    text-transform: uppercase
+
+    &:hover
+      border-top-color: black
+      color: black
+    &:focus
+      color: black
+      outline: 2px solid black
+      outline-offset: 4px
+
   .navigation-spacer
     flex: 1 1 auto
 
@@ -301,22 +319,21 @@ i.fa.fa-angle-right
     width: 88%
 
     .slider
-      background: transparent
+      background: #8e8e8e
       border: 0
-      border-top: 1px solid #8e8e8e
-      height: 0
+      height: 6px
 
       .slider-fill
         background: $yellow
-        height: 4px
-        top: -2px
+        height: 6px
+        top: 0
 
       .handle
         background: white
         border: 1px solid #a6a6a6
         box-shadow: 0 1px 2px rgba(0, 0, 0, .2)
         height: 28px
-        top: -14px
+        top: -11px
         width: 28px
 
         &:active
@@ -403,6 +420,32 @@ i.fa.fa-angle-right
       color: white
       outline: none
 
+.site-graph-page
+  .view-title
+    color: black
+    font-family: $font-heading
+    font-size: 20px
+    line-height: 1.05
+    margin: 0 0 18px
+    overflow-wrap: anywhere
+    text-transform: uppercase
+
+  .site-graph-area
+    align-items: stretch
+    box-sizing: border-box
+    display: flex
+    flex: 1 1 auto
+    height: 100vh
+    justify-content: center
+    overflow: hidden
+    padding: 70px 86px 48px
+
+  .graph-area
+    height: 100%
+    max-width: 880px
+    min-height: 0
+    width: 100%
+
 @media only screen and (max-width: 1600px)
   .bio-index
     .list-area
@@ -410,6 +453,11 @@ i.fa.fa-angle-right
       grid-template-columns: repeat(3, minmax(230px, 1fr))
       padding-left: 68px
       padding-right: 68px
+
+    &.site-graph-page
+      .site-graph-area
+        padding-left: 68px
+        padding-right: 68px
 
 .graph-area
   flex-grow: 1

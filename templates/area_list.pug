@@ -24,6 +24,8 @@ block content
           .control-group.age-control
             .control-label Alter: {{ minAge }} - {{ maxAge }} Jahre
             #age-slider.fly.wrap
+      -if user.is_staff
+        a.admin-link(href="/admin/") Admin
       .navigation-spacer
       .studio-mark
         .studio-logo LUD°

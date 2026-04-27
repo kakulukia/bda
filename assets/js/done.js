@@ -7,25 +7,13 @@ function focus_element(selector){
 var app = new Vue({
   el: '#app',
   data: {
-    mail_sent: false,
     range: 10,
-    open_tab: '.email',
-    bio: {
-      published: false
-    },
-    email: '',
-    sending: false
+    open_tab: undefined
 
   },
   computed: {
-    openPublish: function () {
-      return this.tabClass('.publish')
-    },
     openCompare: function () {
       return this.tabClass('.compare')
-    },
-    openEmail: function () {
-      return this.tabClass('.email')
     }
   },
   methods: {
@@ -39,8 +27,6 @@ var app = new Vue({
 
       if (whichOne == this.open_tab) return;
 
-      $('.publish').slideUp();
-      $('.email').slideUp();
       $('.compare').slideUp();
       $('.discard').slideUp();
 
@@ -68,43 +54,10 @@ var app = new Vue({
             })
           }
         });
-    },
-    publish: function () {
-      resetIntroTimer();
-
-      superagent.post('/graph/' + graph_id + '/publish/').end(function (err, res) {
-        if (err) console.log(err);
-        else {
-          app.bio.published = true;
-        }
-      });
-    },
-    sendGraph: function () {
-      resetIntroTimer();
-
-      this.sending = true;
-      superagent.post('/graph/' + graph_id + '/send/').type('form')
-        .send({email: app.email}).end(function (err, res) {
-          if (err) console.log(err);
-          else {
-            app.mail_sent = true;
-            app.sending = false;
-            app.show('.publish');
-          }
-      });
     }
   },
   filters: {
 
-  },
-
-  // When this module is ready run this
-  created: function () {
-    // initialize data
-    superagent.get('/api/area-bios/' + graph_id + '/').end(function (err, res) {
-      // Calling the end function will send the request
-      app.bio = JSON.parse(res.text);
-    });
   }
 
 });

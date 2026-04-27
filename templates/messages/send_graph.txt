@@ -1,7 +1,0 @@
-Hallo {{ name }},
-
-besten Dank für die erstellte Flächenbiografie die unter folgendem Link verfügbar ist:
-{{ site_url }}{% url 'edit-graph' graph.uuid %}
-
-Schöne Grüße vom Team der Neuen Standards
-www.neuestandards.de

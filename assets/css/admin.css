@@ -1,0 +1,139 @@
+:root {
+  --primary: #000;
+  --secondary: #000;
+  --accent: #fce903;
+  --primary-fg: #fff;
+  --body-fg: #292b2c;
+  --body-bg: #fff;
+  --body-quiet-color: #666;
+  --body-loud-color: #000;
+  --header-color: #fff;
+  --header-branding-color: #fce903;
+  --header-link-color: #fff;
+  --breadcrumbs-bg: #dedede;
+  --breadcrumbs-fg: #000;
+  --link-fg: #000;
+  --link-hover-color: #000;
+  --link-selected-fg: #000;
+  --hairline-color: #d8d8d8;
+  --border-color: #c7c7c7;
+  --button-bg: #000;
+  --button-fg: #fff;
+  --button-hover-bg: #292b2c;
+  --default-button-bg: #fce903;
+  --default-button-hover-bg: #e0cf00;
+  --delete-button-bg: #ff1236;
+  --delete-button-hover-bg: #d90024;
+}
+
+#header {
+  background: #000;
+  border-bottom: 6px solid #fce903;
+  color: #fff;
+}
+
+#branding h1,
+#branding h1 a:link,
+#branding h1 a:visited {
+  color: #fce903;
+  font-weight: 700;
+}
+
+#user-tools,
+#user-tools a,
+#user-tools a:visited {
+  color: #fff;
+}
+
+#user-tools a:hover,
+#user-tools a:focus {
+  color: #fce903;
+}
+
+div.breadcrumbs {
+  background: #dedede;
+  color: #000;
+}
+
+div.breadcrumbs a,
+div.breadcrumbs a:visited {
+  color: #000;
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+  background: #000;
+  color: #fff;
+}
+
+.module caption a,
+.module caption a:visited {
+  color: #fff;
+}
+
+a:link,
+a:visited {
+  color: #000;
+}
+
+a:hover,
+a:focus {
+  color: #000;
+  text-decoration-color: #fce903;
+  text-decoration-thickness: 3px;
+}
+
+.object-tools a,
+.object-tools a:link,
+.object-tools a:visited,
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+a.button {
+  background: #000;
+  color: #fff;
+}
+
+.object-tools a:hover,
+.object-tools a:focus,
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover,
+.submit-row input:hover,
+a.button:hover {
+  background: #292b2c;
+}
+
+input[type=submit].default,
+.submit-row input.default {
+  background: #fce903;
+  color: #000;
+}
+
+input[type=submit].default:hover,
+.submit-row input.default:hover {
+  background: #e0cf00;
+}
+
+input,
+textarea,
+select,
+.form-row p,
+form .aligned p.help,
+form .aligned div.help {
+  border-color: #c7c7c7;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 3px #fce903;
+}
+
+.selector-chosen h2 {
+  background: #000 !important;
+  color: #fff;
+}

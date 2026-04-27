@@ -44,8 +44,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.wohnbiografien.de',
 ]
 
-PUBLIC_BASE_URL = 'https://wohnbiografien.de'
-
 
 # Application definition
 
@@ -208,12 +206,6 @@ SWAGGER_SETTINGS = {
         }
     },
 }
-
-EMAIL_HOST = 'pepperz.de'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'do-not-reply@pepperz.de'
-EMAIL_HOST_PASSWORD = 'q4nfgtui5le4567kt'
-EMAIL_USE_TLS = True
 
 # TODO: das muessen wir aktivieren und mit rumspielen, wenn wir mal genuegend Daten haben
 # REST_FRAMEWORK = {

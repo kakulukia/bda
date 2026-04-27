@@ -19,42 +19,6 @@ block content
             i.fa.fa-angle-double-left.red
             |  Weiter bearbeiten
 
-        a(href="#", @click="show('.email')")
-          h4
-            i.fa.fa-angle-right.red(:class="openEmail")
-            |  Per Email zusenden
-        .email
-          .send-mail(v-show='!mail_sent')
-            p.
-              Trage Deine Mailadresse ein, um Dir Deine Flächenbiograpie
-              zur späteren Bearbeitung zuzusenden.
-            .input-group
-              span.input-group-addon
-                i.fa.fa-envelope
-              input.textInput.form-control(maxlength='150', name='email', autocomplete="off",
-              type='text', v-model='email', @keyup.enter="sendGraph")
-            .buttons
-              a.button.sending-mail(href="#", @click="sendGraph")
-                span(v-show="!sending") Zusenden
-                span(v-show="sending")
-                  i.fa.fa-spin.fa-cog
-          .mail-sent(v-show='mail_sent')
-            p Deine Flächenbiografie wurde versendet.
-
-        a(href="#", @click="show('.publish')")
-          h4
-            i.fa.fa-angle-right.red(:class='openPublish')
-            |  Zur Sammlung hinzufügen
-        .publish
-          .unpublished(v-show="!bio.published")
-            p Deine Flächenbiografie wird veröffentlicht und für Vergleiche bereitegestellt.
-            .buttons
-              a.button(href="#", onclick="$('.publish').slideUp(); app.open_tab=undefined;") Doch nicht
-              a.button(href="#", @click="publish") Okay
-          .published(v-show="bio.published")
-            p Deine Flächenbiografie wurde veröffentlicht.
-
-
         a(href="#", @click="show('.compare')")
           h4
             i.fa.fa-angle-right.red(:class="openCompare")
@@ -78,16 +42,6 @@ block content
             |  Zurück zur Startseite
         .discard
           p Hier geht es zurück zur Startseite.
-          p
-            span(v-show="!bio.published") Deine Flächenbiografie wird nicht
-              a(href='#', @click="show('.publish')")
-                |  veröffentlicht
-              | werden.
-          p(v-if="!mail_sent")
-            a(href="#", @click="show('.email')") Sende Dir Deine Flächenbiographie vorher zu
-            | , um sie Dir später noch mal ansehen zu können
-            span(v-show="!bio.published"), alle Daten gehen sonst verlohren.
-            span(v-show="bio.published") .
           .buttons
             a.button(href="#", onclick="$('.discard').slideUp(); app.open_tab=undefined;") Noch nicht
             a.button(href="/") Okay

@@ -2,7 +2,6 @@
 import uuid
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.db import models
 from django.db.models import Max
 from django.template.defaultfilters import upper
@@ -10,12 +9,20 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from areas.utils import guess_name
-
 
 class AreaBioManager(models.Manager):
-    def published(self):
-        return self.filter(published=True)
+    def complete(self):
+        return (
+            self.filter(
+                name__isnull=False,
+                age__isnull=False,
+                country__isnull=False,
+                entries__isnull=False,
+            )
+            .exclude(name='')
+            .exclude(country='')
+            .distinct()
+        )
 
 
 class AreaBio(models.Model):
@@ -26,11 +33,8 @@ class AreaBio(models.Model):
     age = models.IntegerField(verbose_name=_(u'Alter'), null=True)
     country = models.CharField(verbose_name=_(u'Stadt'), max_length=150, null=True)
 
-    published = models.BooleanField(default=False, verbose_name=_(u'Veröffentlicht'))
     objects = AreaBioManager()
     created = models.DateTimeField(auto_now_add=True, null=True, editable=False, verbose_name=_(u'Erstellt'))
-
-    mailed_to = models.CharField(max_length=200, null=True, blank=True, verbose_name=_(u'Per E-Mail versendet an'))
 
     class Meta:
         verbose_name = u'Flächenbiografie'
@@ -97,21 +101,6 @@ class AreaBio(models.Model):
     def show_60(self):
         return 'gray' if self.height() + 7 < 60 else ''
 
-    def send_to(self, email):
-        self.mailed_to = email
-        self.save()
-
-
-        send_mail(
-            _(u'Deine Flächenbiografie'),
-            render_to_string(
-                'messages/send_graph.txt',
-                {'name': self.name, 'graph': self, 'site_url': settings.PUBLIC_BASE_URL}
-            ),
-            'do-not-reply@pepperz.de',
-            [email],
-        )
-
     def to_many_entries(self, exclude=None, add=0):
         years = 0
         qs = self.entries.all()
@@ -151,7 +140,7 @@ class AreaBio(models.Model):
         return entries
 
     def get_absolute_url(self):
-        return reverse('view-graph', args=[self.uuid])
+        return reverse('view-graph-page', args=[self.uuid])
 
     def median_usage(self):
         years = 0
