@@ -83,6 +83,3 @@ class AreaBioAdmin(admin.ModelAdmin):
         elif 'age' in form.changed_data:
             obj._preferred_birth_year_source = 'age'
         super().save_model(request, obj, form, change)
-
-    def has_add_permission(self, request):
-        return False
