@@ -1,3 +1,4 @@
+-load l10n
 .graph-container
   -include 'partials/bare_graph.pug'
   .descriptions
@@ -10,8 +11,7 @@
       .desc 30 Jahre
     .desc_60(class="{{ graph.show_60 }}")
       .desc 60 Jahre
-    .middle_axis(style="height: {{ graph.axis_height }}%")
+    .middle_axis(style="height: {{ graph.axis_height|unlocalize }}%")
 .measurement
   hr
   span {{ graph.max_space }} m²
-

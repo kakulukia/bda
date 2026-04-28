@@ -57,7 +57,7 @@ class BioEntryInline(admin.StackedInline):
 
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
-    list_display = ['created', '__str__', 'entries_count']
+    list_display = ['created', 'birth_year', '__str__', 'entries_count']
     list_filter = ['country']
     inlines = [BioEntryInline]
     actions = None
@@ -76,6 +76,13 @@ class AreaBioAdmin(admin.ModelAdmin):
 
     def view_on_site(self, obj):
         return obj.get_absolute_url()
+
+    def save_model(self, request, obj, form, change):
+        if 'birth_year' in form.changed_data and 'age' not in form.changed_data:
+            obj._preferred_birth_year_source = 'birth_year'
+        elif 'age' in form.changed_data:
+            obj._preferred_birth_year_source = 'age'
+        super().save_model(request, obj, form, change)
 
     def has_add_permission(self, request):
         return False

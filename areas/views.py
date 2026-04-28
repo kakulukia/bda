@@ -1,20 +1,16 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.shortcuts import redirect, get_object_or_404, render
-from django.urls import reverse
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.utils.text import slugify
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.generic import ListView
 from django.views.generic import TemplateView
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from rest_framework_nested.viewsets import NestedViewSetMixin
-from rest_framework.authtoken.models import Token
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from areas.models import AreaBio, BioEntry
-from areas.serializers import AreaBioSerializer, EntrySerializer
+from areas.models import AreaBio
+from areas.serializers import AreaBioSerializer
+from areas.svg import render_area_bio_svg
 
 
 class AreaBioView(TemplateView):
@@ -42,25 +38,6 @@ class AreaBioSiteView(TemplateView):
         context = {
             'graph': graph
         }
-        return self.render_to_response(context)
-
-
-class AreaBioEditView(TemplateView):
-    template_name = 'detail.pug'
-
-    def get(self, request, uuid, *args, **kwargs):
-
-        bio = AreaBio.objects.get(uuid=uuid)
-        user = request.user
-
-        if user.is_anonymous:
-            user = User.objects.get(username__exact='andy')
-
-        context = {
-            'token': Token.objects.get_or_create(user=user)[0].key,
-            'bio': bio,
-        }
-
         return self.render_to_response(context)
 
 
@@ -92,21 +69,7 @@ class BioListView(ListView):
         return context
 
 
-def add_bio(request):
-
-    bio_uuid = request.session.get('bio_id')
-    if not bio_uuid or True:
-        bio = AreaBio()
-        bio.save()
-        request.session['bio_uuid'] = str(bio.uuid)
-        bio_uuid = request.session.get('bio_uuid')
-
-    bio = AreaBio.objects.get(uuid=bio_uuid)
-
-    return redirect(reverse('edit-graph', args=[bio.uuid]))
-
-
-class AreaBioViewSet(ModelViewSet):
+class AreaBioViewSet(ReadOnlyModelViewSet):
     queryset = AreaBio.objects.all()
     serializer_class = AreaBioSerializer
 
@@ -125,26 +88,6 @@ class AreaBioViewSet(ModelViewSet):
 
         return queryset
 
-    @action(methods=['get'], detail=True)
-    def compare(self, request, pk=None):
-        range_param = int(request.query_params['range'])
-        myself = self.get_object()
-        range_tuple = (max(0, myself.age - range_param), myself.age + range_param)
-        query = AreaBio.objects.complete().filter(age__range=range_tuple).exclude(id=pk)
-        return Response(AreaBioSerializer(query[:30], many=True).data)
-
-
-class BioEntryViewSet(NestedViewSetMixin, ModelViewSet):
-    queryset = BioEntry.objects.all()
-    serializer_class = EntrySerializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        area_bio_pk = self.kwargs.get('area_bio_pk')
-        if area_bio_pk is not None:
-            queryset = queryset.filter(area_bio__pk=area_bio_pk)
-        return queryset
-
 
 def get_graph(request, pk, bare=False, original=False, list_display=False, stretched=True):
     template_name = 'partials/naked_graph.pug' if bare else 'partials/full_graph.pug'
@@ -160,11 +103,13 @@ def get_graph(request, pk, bare=False, original=False, list_display=False, stret
     return render(request, template_name, context)
 
 
-class PostedGraphView(View):
-    template_name = 'done.pug'
-
-    def post(self, request):
-        bio = AreaBio.objects.get(uuid=request.POST['graph_uuid'])
-        bio._stretched = False
-        context = {'graph': bio}
-        return render(request, self.template_name, context=context)
+def export_graph_svg(request, uuid):
+    graph = get_object_or_404(AreaBio.objects.all(), uuid=uuid)
+    filename_slug = slugify(str(graph)) or 'wohnbiografie'
+    filename = f'wohnbiografie-{filename_slug}-{graph.uuid}.svg'
+    response = HttpResponse(
+        render_area_bio_svg(graph),
+        content_type='image/svg+xml; charset=utf-8',
+    )
+    response['Content-Disposition'] = f'inline; filename="{filename}"'
+    return response

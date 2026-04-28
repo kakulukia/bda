@@ -1,7 +1,7 @@
 -extends 'index.pug'
 
 block title
-  | {{ graph }} | Flächenbiografien
+  | {{ graph }} | Wohnbiografien
 
 block content
   .app.bio-index.site-graph-page
@@ -16,6 +16,7 @@ block content
 
       .view-title {{ graph }}
       a.admin-link(href="/") Zur Startseite
+      a.admin-link(href="{% url 'export-graph-svg' graph.uuid %}") SVG Export
 
       .navigation-spacer
       .studio-mark

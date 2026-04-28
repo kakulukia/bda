@@ -1,7 +1,8 @@
+-load l10n
 .bar-container
   -for entry in graph.normalized_entries
     .entry-container(id="entry-{{ graph.id }}-{{ entry.id }}",
-                     style='height: {{ entry.years }}%;')
+                     style='height: {{ entry.years|unlocalize }}%;')
       .entry(class="{% cycle 'odd' 'even' %} {{ entry.future }}",
              style='height: 100%; width: {{ entry.percentage }}%;')
         .persons(style='width: {{ entry.person_percentage }}%') &nbsp;
@@ -15,4 +16,3 @@
         .description-line(style="width: 50%", class="{{ entry.small_entry }}")
           .line-dot(class="{{ entry.small_entry }}")
   .entry.empty
-
