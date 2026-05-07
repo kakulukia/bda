@@ -1,37 +1,42 @@
 # coding=utf-8
-from fabric.context_managers import cd
-from fabric.state import env
-from fabric.operations import run
 from fabric.colors import green
+from fabric.context_managers import cd
+from fabric.operations import run
+from fabric.state import env
 
-PROJECT_PATH = '/opt/www/bda'
-env.hosts = ['mamasystems.de']
-MANAGE = '/opt/www/bda/.venv/bin/python manage.py '
+PROJECT_PATH = "/opt/www/bda"
+env.hosts = ["mamasystems.de"]
+MANAGE = "/opt/www/bda/.venv/bin/python manage.py "
 
 # T A S K S
 # =========
 
-def deploy_only():
-    """ Pull all updates from the remote repository. """
-    with cd(PROJECT_PATH):
-        print(green('updating from repository ..'))
-        run('git pull' )
-        print(green('compressing files ..'))
-        manage('compress --force -e pug')
 
-        print(green('collectiing static files ..'))
-        manage('collectstatic --noinput')
+def deploy_only():
+    """Pull all updates from the remote repository."""
+    with cd(PROJECT_PATH):
+        print(green("updating from repository .."))
+        run("git pull")
+
+
+def clean():
+    with cd(PROJECT_PATH):
+        print(green("compressing files .."))
+        manage("compress --force -e pug")
+
+        print(green("collectiing static files .."))
+        manage("collectstatic --noinput")
 
 
 def restart():
-    """ Restart nginx and the backend worker. """
-    print(green('restarting server ..'))
-    run('pm2 restart bda')
+    """Restart nginx and the backend worker."""
+    print(green("restarting server .."))
+    run("pm2 restart bda")
 
 
 def deploy():
     deploy_only()
-
+    clean()
     restart()
 
 
@@ -42,14 +47,15 @@ def migrate():
     Static files are also collected.
     """
     deploy_only()
+
     with cd(PROJECT_PATH):
-        print(green('updating packages ..'))
-        run('poetry install')
+        print(green("updating packages .."))
+        run("poetry install")
 
-        print(green('migrating database ..'))
-        manage('migrate --noinput')
+        print(green("migrating database .."))
+        manage("migrate --noinput")
 
-
+    clean()
     restart()
 
 
@@ -64,40 +70,41 @@ class Colors:
         and invisible work with the main class
         i.e. colors.bold
     """
-    reset = '\033[0m'
-    bold = '\033[01m'
-    disable = '\033[02m'
-    underline = '\033[04m'
-    reverse = '\033[07m'
-    strike_through = '\033[09m'
-    invisible = '\033[08m'
+
+    reset = "\033[0m"
+    bold = "\033[01m"
+    disable = "\033[02m"
+    underline = "\033[04m"
+    reverse = "\033[07m"
+    strike_through = "\033[09m"
+    invisible = "\033[08m"
 
     class FG:
-        black = '\033[30m'
-        red = '\033[31m'
-        green = '\033[32m'
-        orange = '\033[33m'
-        blue = '\033[34m'
-        purple = '\033[35m'
-        cyan = '\033[36m'
-        light_grey = '\033[37m'
-        dark_grey = '\033[90m'
-        light_red = '\033[91m'
-        light_green = '\033[92m'
-        yellow = '\033[93m'
-        light_blue = '\033[94m'
-        pink = '\033[95m'
-        light_cyan = '\033[96m'
+        black = "\033[30m"
+        red = "\033[31m"
+        green = "\033[32m"
+        orange = "\033[33m"
+        blue = "\033[34m"
+        purple = "\033[35m"
+        cyan = "\033[36m"
+        light_grey = "\033[37m"
+        dark_grey = "\033[90m"
+        light_red = "\033[91m"
+        light_green = "\033[92m"
+        yellow = "\033[93m"
+        light_blue = "\033[94m"
+        pink = "\033[95m"
+        light_cyan = "\033[96m"
 
     class BG:
-        black = '\033[40m'
-        red = '\033[41m'
-        green = '\033[42m'
-        orange = '\033[43m'
-        blue = '\033[44m'
-        purple = '\033[45m'
-        cyan = '\033[46m'
-        light_grey = '\033[47m'
+        black = "\033[40m"
+        red = "\033[41m"
+        green = "\033[42m"
+        orange = "\033[43m"
+        blue = "\033[44m"
+        purple = "\033[45m"
+        cyan = "\033[46m"
+        light_grey = "\033[47m"
 
 
 def manage(command):
