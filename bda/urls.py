@@ -1,6 +1,7 @@
-from django.urls import include, path, re_path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.http import HttpResponseRedirect
+from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from rest_framework import routers
 
@@ -14,8 +15,8 @@ router.register(r'area-bios', AreaBioViewSet, basename='area-bios')
 urlpatterns = [
 
     # ADMIN
-    re_path(r'^admin/', admin.site.urls),
-    re_path(r'^su/', include('loginas.urls')),
+    path('admin/', include('loginas.urls')),
+    path('admin/', admin.site.urls),
     path('favicon.ico', RedirectView.as_view(url='static/favicon.ico')),
     path('login/', auth_views.LoginView.as_view(template_name='login.pug'), name='login'),
 

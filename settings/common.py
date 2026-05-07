@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+
+from django.urls import reverse_lazy
+
 # import pug loader for translation
 
 ADMINS = (
@@ -82,6 +85,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'bda.urls'
 LOGIN_URL = '/login/'
+LOGINAS_REDIRECT_URL = '/admin/'
+LOGINAS_LOGOUT_REDIRECT_URL = '/admin/'
+LOGOUT_URL = reverse_lazy('loginas-logout')
 
 TEMPLATES = [
     {
