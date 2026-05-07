@@ -553,6 +553,18 @@ django = ">=1.8"
 tornado = "*"
 
 [[package]]
+name = "django-loginas"
+version = "0.3.14"
+description = "An app to add a \"Log in as user\" button in the Django user admin page."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django_loginas-0.3.14-py2.py3-none-any.whl", hash = "sha256:f682ad64420e5c32a5ae7051d203a82c10cf32353d5d29ff36947b2639840668"},
+    {file = "django_loginas-0.3.14.tar.gz", hash = "sha256:080bb6b714cee854739cc7242f2faf9e23f098691bd42ef3fd62e9bc9c5492ad"},
+]
+
+[[package]]
 name = "django-rest-framework"
 version = "0.1.0"
 description = "alias."
@@ -1180,4 +1192,4 @@ python-discovery = ">=1.2.2"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13.3"
-content-hash = "f235bcd0b7031426c457d6ff27675a1554bbea1b7feace4e03638fc2850920e9"
+content-hash = "c18a7dacef3c12c8246cd88f8fef1865bb74fc881d568b98cfe976b0ebf3e308"
