@@ -25,8 +25,8 @@ class BioEntryInline(admin.StackedInline):
     extra = 0
     fields = [
         (
-            'year_from',
-            'year_to',
+            'age_from',
+            'age_to',
             'living_space',
             'number_of_people',
             'display_living_space_per_person',
@@ -43,7 +43,7 @@ class BioEntryInline(admin.StackedInline):
         ),
     ]
     readonly_fields = ['display_living_space_per_person']
-    ordering = ['year_from']
+    ordering = ['age_from']
 
     @admin.display(description='Platz pro person')
     def display_living_space_per_person(self, obj):
@@ -57,7 +57,7 @@ class BioEntryInline(admin.StackedInline):
 
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
-    list_display = ['created', 'birth_year', '__str__', 'user', 'entries_count']
+    list_display = ['created', '__str__', 'user', 'entries_count']
     list_filter = ['country', 'user']
     @admin.display(description='Nutzer')
     def user_display(self, obj):
@@ -89,8 +89,4 @@ class AreaBioAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.user = request.user
-        if 'birth_year' in form.changed_data and 'age' not in form.changed_data:
-            obj._preferred_birth_year_source = 'birth_year'
-        elif 'age' in form.changed_data:
-            obj._preferred_birth_year_source = 'age'
         super().save_model(request, obj, form, change)

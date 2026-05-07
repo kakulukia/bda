@@ -89,19 +89,17 @@ def _build_segments(graph):
     if graph.age is None:
         return []
 
-    birth_year = graph.get_birth_year()
     current_age = min(max(graph.age, 0), YEARS_MAX)
-    entries = list(graph.entries.order_by('year_from'))
+    entries = list(graph.entries.order_by('age_from'))
     segments = []
     latest_entry = None
     latest_age_to = 0
 
     for entry_index, entry in enumerate(entries):
-        age_from = max(entry.year_from - birth_year, 0)
+        age_from = entry.age_from
         if entry_index == 0:
             age_from = 0
-        year_to = _effective_year_to(entry, entries[entry_index + 1:])
-        age_to = min(year_to - birth_year, YEARS_MAX)
+        age_to = min(_effective_age_to(entry, entries[entry_index + 1:]), YEARS_MAX)
         if age_to <= age_from:
             continue
 
@@ -126,7 +124,7 @@ def _build_segments(graph):
                 )
             )
 
-    if latest_entry and current_age < YEARS_MAX and latest_age_to < YEARS_MAX:
+    if latest_entry and current_age < YEARS_MAX and latest_age_to >= current_age and latest_age_to < YEARS_MAX:
         projection_from = max(current_age, latest_age_to)
         if projection_from < YEARS_MAX:
             segments.append(
@@ -151,15 +149,15 @@ def _segment(entry, age_from, age_to, future, show_description):
     }
 
 
-def _effective_year_to(entry, following_entries):
-    if entry.year_to > entry.year_from:
-        return entry.year_to
+def _effective_age_to(entry, following_entries):
+    if entry.age_to > entry.age_from:
+        return entry.age_to
 
     for following_entry in following_entries:
-        if following_entry.year_from > entry.year_from:
-            return following_entry.year_from
+        if following_entry.age_from > entry.age_from:
+            return following_entry.age_from
 
-    return entry.year_from
+    return entry.age_from
 
 
 def _segment_rects(segment, center_x, graph_top, chart_right):

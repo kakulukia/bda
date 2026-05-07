@@ -1,4 +1,5 @@
 -extends 'index.pug'
+-load static
 
 block title
   | {{ graph }} | Wohnbiografien
@@ -7,11 +8,7 @@ block content
   .app.bio-index.site-graph-page
     .navigation.bio-navigation
       a.brand-link(href="/", aria-label="Wohnbiografien")
-        h1.wordmark
-          span WOHN
-          span BIO
-          span GRAF
-          span IEN
+        img.wordmark(src="{% static 'img/Wohnbiograpfien_schriftzug.svg' %}", alt="Wohnbiografien")
       .brand-rule
 
       .view-title {{ graph }}
@@ -20,7 +17,7 @@ block content
 
       .navigation-spacer
       .studio-mark
-        .studio-logo LUD°
+        img.studio-logo(src="{% static 'img/LUD_Logo.svg' %}", alt="LUD°")
         .studio-text Laboratory for Architecture
           br
           | and Urban Density

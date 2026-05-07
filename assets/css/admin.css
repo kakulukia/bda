@@ -103,7 +103,7 @@ input[type="submit"]:hover,
 input[type="button"]:hover,
 .submit-row input:hover,
 a.button:hover {
-  background: #292b2c;
+  background-color: #292b2c;
 }
 
 input[type="submit"].default,

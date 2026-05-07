@@ -1,10 +1,7 @@
-from datetime import date
-from unittest.mock import patch
-
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from areas.models import AreaBio, BioEntry, calculate_age, calculate_birth_year
+from areas.models import AreaBio, BioEntry
 from areas.svg import FUTURE_FILL, FUTURE_TOTAL_FILL, PERSON_FILL, TOTAL_FILL, _build_segments, render_area_bio_svg
 
 
@@ -97,8 +94,8 @@ class AdminThemeTests(TestCase):
         )
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=bio.birth_year,
-            year_to=bio.birth_year + 1,
+            age_from=0,
+            age_to=1,
             living_space=80,
             number_of_people=2,
             description='Umzug',
@@ -108,7 +105,6 @@ class AdminThemeTests(TestCase):
         response = self.client.get(f'/admin/areas/areabio/{bio.pk}/change/', HTTP_HOST='localhost')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Geburtsjahr')
         self.assertContains(response, 'Stadt')
         self.assertContains(response, 'Wohnfläche')
         self.assertContains(response, 'Personen im Haushalt')
@@ -167,8 +163,8 @@ class AdminThemeTests(TestCase):
         )
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=bio.birth_year,
-            year_to=bio.birth_year + 1,
+            age_from=0,
+            age_to=1,
             living_space=120,
             number_of_people=3,
             description='Geburt',
@@ -261,132 +257,41 @@ class FrontendEditingDisabledTests(TestCase):
         self.assertEqual(compare_response.status_code, 404)
 
 
-class AreaBioBirthYearTests(TestCase):
-    def test_birth_year_is_calculated_when_age_is_saved(self):
-        with patch('areas.models.timezone.localdate', return_value=date(2026, 4, 27)):
-            bio = AreaBio.objects.create(
-                name='Andy',
-                age=45,
-                country='Berlin',
-            )
-
-        self.assertEqual(bio.birth_year, 1981)
-
-        with patch('areas.models.timezone.localdate', return_value=date(2030, 4, 27)):
-            bio.name = 'Andreas'
-            bio.save()
-
-        bio.refresh_from_db()
-        self.assertEqual(bio.birth_year, 1981)
-
-        with patch('areas.models.timezone.localdate', return_value=date(2030, 4, 27)):
-            bio.age = 50
-            bio.save()
-
-        bio.refresh_from_db()
-        self.assertEqual(bio.birth_year, 1981)
-
-        with patch('areas.models.timezone.localdate', return_value=date(2030, 4, 27)):
-            bio.age = 52
-            bio.save()
-
-        bio.refresh_from_db()
-        self.assertEqual(bio.birth_year, 1978)
-
-    def test_age_is_calculated_when_only_birth_year_is_saved(self):
-        with patch('areas.models.timezone.localdate', return_value=date(2026, 4, 27)):
-            bio = AreaBio.objects.create(
-                name='Andy',
-                birth_year=1981,
-                country='Berlin',
-            )
-
-        self.assertEqual(bio.age, 45)
-        self.assertEqual(bio.birth_year, 1981)
-
-    def test_age_is_optional_for_admin_birth_year_entry(self):
-        self.assertTrue(AreaBio._meta.get_field('age').blank)
-
-    def test_one_year_difference_between_age_and_birth_year_is_kept(self):
-        with patch('areas.models.timezone.localdate', return_value=date(2026, 4, 27)):
-            bio = AreaBio.objects.create(
-                name='Andy',
-                age=45,
-                birth_year=1980,
-                country='Berlin',
-            )
-
-        self.assertEqual(bio.age, 45)
-        self.assertEqual(bio.birth_year, 1980)
-
-    def test_birth_year_is_recalculated_when_difference_is_too_large_and_age_changed(self):
-        with patch('areas.models.timezone.localdate', return_value=date(2026, 4, 27)):
-            bio = AreaBio.objects.create(
-                name='Andy',
-                age=45,
-                birth_year=1975,
-                country='Berlin',
-            )
-
-        self.assertEqual(bio.age, 45)
-        self.assertEqual(bio.birth_year, 1981)
-
-    def test_age_is_recalculated_when_difference_is_too_large_and_birth_year_changed(self):
-        with patch('areas.models.timezone.localdate', return_value=date(2026, 4, 27)):
-            bio = AreaBio.objects.create(
-                name='Andy',
-                age=45,
-                birth_year=1981,
-                country='Berlin',
-            )
-
-            bio.birth_year = 1970
-            bio.save()
-
-        bio.refresh_from_db()
-        self.assertEqual(bio.age, 56)
-        self.assertEqual(bio.birth_year, 1970)
-
-    def test_age_and_birth_year_helpers_use_current_year(self):
-        with patch('areas.models.timezone.localdate', return_value=date(2026, 4, 27)):
-            self.assertEqual(calculate_birth_year(45), 1981)
-            self.assertEqual(calculate_age(1981), 45)
-
+class AreaBioModelTests(TestCase):
     def test_normalized_entries_extend_zero_year_changes_to_next_entry(self):
         bio = AreaBio.objects.create(
             name='Andy',
             age=15,
             country='Berlin',
         )
-        birth_year = bio.birth_year
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year,
-            year_to=birth_year + 1,
+            age_from=0,
+            age_to=1,
             living_space=120,
             number_of_people=3,
             description='Geburt',
         )
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 1,
-            year_to=birth_year + 2,
+            age_from=1,
+            age_to=2,
             living_space=124,
             number_of_people=3,
             description='Umzug',
         )
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 2,
-            year_to=birth_year + 2,
+            age_from=2,
+            age_to=2,
             living_space=124,
             number_of_people=4,
             description='Schwester',
         )
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 3,
-            year_to=birth_year + 7,
+            age_from=3,
+            age_to=7,
             living_space=123,
             number_of_people=4,
             description='Haus',
@@ -394,10 +299,10 @@ class AreaBioBirthYearTests(TestCase):
 
         entries = list(bio.normalized_entries())
 
-        self.assertEqual((entries[2].year_from, entries[2].year_to), (birth_year + 2, birth_year + 3))
+        self.assertEqual((entries[2].age_from, entries[2].age_to), (2, 3))
         self.assertNotIn(
-            (birth_year + 2, birth_year + 3, 0),
-            [(entry.year_from, entry.year_to, entry.living_space) for entry in entries],
+            (2, 3, 0),
+            [(entry.age_from, entry.age_to, entry.living_space) for entry in entries],
         )
 
 
@@ -408,11 +313,10 @@ class AreaBioSvgTests(TestCase):
             age=12,
             country='Berlin',
         )
-        birth_year = bio.birth_year
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 10,
-            year_to=birth_year + 15,
+            age_from=10,
+            age_to=15,
             living_space=100,
             number_of_people=4,
             description='Testphase',
@@ -441,27 +345,26 @@ class AreaBioSvgTests(TestCase):
             age=15,
             country='Berlin',
         )
-        birth_year = bio.birth_year
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 9,
-            year_to=birth_year + 10,
+            age_from=9,
+            age_to=10,
             living_space=124,
             number_of_people=3,
             description='Umzug',
         )
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 10,
-            year_to=birth_year + 10,
+            age_from=10,
+            age_to=10,
             living_space=124,
             number_of_people=4,
             description='Schwester',
         )
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 11,
-            year_to=birth_year + 15,
+            age_from=11,
+            age_to=15,
             living_space=123,
             number_of_people=4,
             description='Haus',
@@ -484,11 +387,10 @@ class AreaBioSvgTests(TestCase):
             age=45,
             country='Berlin',
         )
-        birth_year = bio.birth_year
         BioEntry.objects.create(
             area_bio=bio,
-            year_from=birth_year + 8,
-            year_to=birth_year + 9,
+            age_from=8,
+            age_to=9,
             living_space=120,
             number_of_people=3,
             description='Geburt',

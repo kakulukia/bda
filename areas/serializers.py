@@ -10,12 +10,11 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'name',
             'age',
-            'birth_year',
             'country',
             'id',
             'uuid',
         )
-        read_only_fields = ('birth_year',)
+
 
     def validate(self, attrs):
         attrs['country'] = attrs['country'].capitalize()

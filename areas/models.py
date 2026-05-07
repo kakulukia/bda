@@ -7,19 +7,6 @@ from django.db.models import Max
 from django.template.defaultfilters import upper
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
-
-
-def calculate_birth_year(age):
-    if age is None:
-        return None
-    return timezone.localdate().year - age
-
-
-def calculate_age(birth_year):
-    if birth_year is None:
-        return None
-    return timezone.localdate().year - birth_year
 
 
 class AreaBioManager(models.Manager):
@@ -43,7 +30,6 @@ class AreaBio(models.Model):
 
     name = models.CharField(verbose_name=u'Name', max_length=150, null=True)
     age = models.IntegerField(verbose_name=u'Alter', null=True, blank=True)
-    birth_year = models.IntegerField(verbose_name=u'Geburtsjahr', null=True, blank=True)
     country = models.CharField(verbose_name=u'Stadt', max_length=150, null=True)
 
     objects = AreaBioManager()
@@ -59,71 +45,6 @@ class AreaBio(models.Model):
 
     def __unicode__(self):
         return self.__str__()
-
-    def save(self, *args, **kwargs):
-        changed_fields = self.normalize_age_and_birth_year(self._birth_year_preferred_field())
-        update_fields = kwargs.get('update_fields')
-        if update_fields is not None and changed_fields:
-            kwargs['update_fields'] = set(update_fields) | changed_fields
-
-        super().save(*args, **kwargs)
-
-    def normalize_age_and_birth_year(self, preferred_field=None):
-        changed_fields = set()
-
-        if self.age is None and self.birth_year is None:
-            return changed_fields
-
-        if self.age is None:
-            self.age = calculate_age(self.birth_year)
-            changed_fields.add('age')
-            return changed_fields
-
-        if self.birth_year is None:
-            self.birth_year = calculate_birth_year(self.age)
-            changed_fields.add('birth_year')
-            return changed_fields
-
-        if preferred_field is None:
-            return changed_fields
-
-        if abs(self.birth_year - calculate_birth_year(self.age)) <= 1:
-            return changed_fields
-
-        if preferred_field == 'birth_year':
-            self.age = calculate_age(self.birth_year)
-            changed_fields.add('age')
-        else:
-            self.birth_year = calculate_birth_year(self.age)
-            changed_fields.add('birth_year')
-
-        return changed_fields
-
-    def _birth_year_preferred_field(self):
-        preferred_field = getattr(self, '_preferred_birth_year_source', None)
-        if preferred_field:
-            return preferred_field
-        if self._state.adding or not self.pk:
-            if self.birth_year is not None and self.age is None:
-                return 'birth_year'
-            return 'age'
-
-        stored_values = type(self).objects.filter(pk=self.pk).values('age', 'birth_year').first()
-        if not stored_values:
-            return 'age'
-
-        age_changed = stored_values['age'] != self.age
-        birth_year_changed = stored_values['birth_year'] != self.birth_year
-        if not age_changed and not birth_year_changed:
-            return None
-        if birth_year_changed and not age_changed:
-            return 'birth_year'
-        return 'age'
-
-    def get_birth_year(self):
-        if self.birth_year is not None:
-            return self.birth_year
-        return calculate_birth_year(self.age)
 
     def max_space(self, stretched=False):
         if hasattr(self, '_max_space'):
@@ -165,7 +86,7 @@ class AreaBio(models.Model):
 
         self._height = 0
         for entry in self.normalized_entries():
-            self._height += entry.year_to - entry.year_from
+            self._height += entry.age_to - entry.age_from
 
         self._height = max(self._height, 10)
         return self._height
@@ -191,47 +112,45 @@ class AreaBio(models.Model):
         return years > self.age
 
     def normalized_entries(self):
-
         entries = []
         remaining_years = 80
-        last_year = self.get_birth_year() if self.age is not None else 0
+        last_age = 0
         source_entries = list(self.entries.all())
         for entry_index, entry in enumerate(source_entries):
-            effective_year_to = self._effective_year_to(entry, source_entries[entry_index + 1:])
-            if last_year and entry.year_from > last_year:
+            effective_age_to = self._effective_age_to(entry, source_entries[entry_index + 1:])
+            if entry.age_from > last_age:
                 space = BioEntry(
                     living_space=0,
                     number_of_people=0,
-                    year_from=last_year,
-                    year_to=entry.year_from
+                    age_from=last_age,
+                    age_to=entry.age_from,
                 )
                 entries.append(space)
 
-            if effective_year_to > entry.year_to:
-                entry.year_to = effective_year_to
+            if effective_age_to > entry.age_to:
+                entry.age_to = effective_age_to
 
-            # fix the years
             if entry.num_years > remaining_years:
-                entry.year_to = entry.year_from + remaining_years
+                entry.age_to = entry.age_from + remaining_years
 
             entries.append(entry)
-            last_year = entry.year_to
+            last_age = entry.age_to
             remaining_years -= entry.num_years
             if remaining_years <= 0:
-                break  # out of this loop because we hit the wall
+                break
 
         return entries
 
     @staticmethod
-    def _effective_year_to(entry, following_entries):
-        if entry.year_to > entry.year_from:
-            return entry.year_to
+    def _effective_age_to(entry, following_entries):
+        if entry.age_to > entry.age_from:
+            return entry.age_to
 
         for following_entry in following_entries:
-            if following_entry.year_from > entry.year_from:
-                return following_entry.year_from
+            if following_entry.age_from > entry.age_from:
+                return following_entry.age_from
 
-        return entry.year_to
+        return entry.age_from
 
     def get_absolute_url(self):
         return reverse('view-graph-page', args=[self.uuid])
@@ -254,7 +173,7 @@ class EntryManager(models.Manager):
     use_for_related_fields = True
 
     def reversed(self):
-        return self.order_by('-year_from')
+        return self.order_by('-age_from')
 
 
 class BioEntry(models.Model):
@@ -300,8 +219,8 @@ class BioEntry(models.Model):
 
     living_space = models.IntegerField(verbose_name='Wohnfläche')
     number_of_people = models.IntegerField(verbose_name='Personen im Haushalt')
-    year_from = models.IntegerField(verbose_name='Von')
-    year_to = models.IntegerField(verbose_name='Bis')
+    age_from = models.IntegerField(verbose_name='Von (Alter)')
+    age_to = models.IntegerField(verbose_name='Bis (Alter)')
     description = models.CharField(verbose_name='Grund für den Wechsel', max_length=35, blank=True, null=True)
     location = models.CharField(verbose_name='Lage', max_length=50, choices=Location.choices, blank=True, null=True)
     postal_code = models.CharField(verbose_name='PLZ', max_length=20, blank=True, null=True)
@@ -321,25 +240,29 @@ class BioEntry(models.Model):
     objects = EntryManager()
 
     class Meta:
-        ordering = ['year_from']
+        ordering = ['age_from']
         verbose_name = 'Biografieeintrag'
         verbose_name_plural = 'Biografieeinträge'
 
     def __str__(self):
         return u'{}-{}, {} in {} m²'.format(
-            self.year_from, self.year_to, self.number_of_people, self.living_space)
+            self.age_from, self.age_to, self.number_of_people, self.living_space)
 
     def __unicode__(self):
         return self.__str__()
 
     def future(self):
-        if self.year_from >= timezone.localdate().year:
-            return 'future'
-        return ''
+        try:
+            current_age = self.area_bio.age
+        except Exception:
+            return ''
+        if current_age is None or self.age_from is None:
+            return ''
+        return 'future' if self.age_from >= current_age else ''
 
     @property
     def num_years(self):
-        return self.year_to - self.year_from
+        return self.age_to - self.age_from
 
     @property
     def years(self):
@@ -349,7 +272,7 @@ class BioEntry(models.Model):
         return float(diff) / 0.8
 
     def small_entry(self):
-        return 'small-entry' if not bool(self.year_to - self.year_from) else ''
+        return 'small-entry' if not bool(self.age_to - self.age_from) else ''
 
     def percentage(self, stretched=False):
         if not self.living_space:
@@ -373,13 +296,10 @@ class BioEntry(models.Model):
         return float(self.living_space) / float(self.number_of_people)
 
     def description_percentage(self):
-
         bar_length = (100 - self.percentage()) / 2 + 5
         return bar_length
 
     def age(self):
-        if self.area_bio.age:
-            calculated = self.year_from - self.area_bio.get_birth_year()
-            age = max(calculated, 0)
-            return age if age else 'Baby'
-        return ''
+        if self.age_from is None:
+            return ''
+        return self.age_from or 'Baby'
