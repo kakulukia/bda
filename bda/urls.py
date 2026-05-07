@@ -15,6 +15,7 @@ urlpatterns = [
 
     # ADMIN
     re_path(r'^admin/', admin.site.urls),
+    re_path(r'^su/', include('loginas.urls')),
     path('favicon.ico', RedirectView.as_view(url='static/favicon.ico')),
     path('login/', auth_views.LoginView.as_view(template_name='login.pug'), name='login'),
 

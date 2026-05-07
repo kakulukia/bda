@@ -1,5 +1,5 @@
 # coding=utf-8
-from fabric.context_managers import cd, prefix
+from fabric.context_managers import cd
 from fabric.state import env
 from fabric.operations import run
 from fabric.colors import green

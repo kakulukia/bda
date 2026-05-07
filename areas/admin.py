@@ -57,8 +57,17 @@ class BioEntryInline(admin.StackedInline):
 
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
-    list_display = ['created', 'birth_year', '__str__', 'entries_count']
-    list_filter = ['country']
+    list_display = ['created', 'birth_year', '__str__', 'user', 'entries_count']
+    list_filter = ['country', 'user']
+    @admin.display(description='Nutzer')
+    def user_display(self, obj):
+        return str(obj.user) if obj.user else '-'
+
+    def get_readonly_fields(self, request, obj=None):
+        return ['user_display'] if obj else []
+
+    def get_exclude(self, request, obj=None):
+        return ['user']
     inlines = [BioEntryInline]
     actions = None
 
@@ -78,6 +87,8 @@ class AreaBioAdmin(admin.ModelAdmin):
         return obj.get_absolute_url()
 
     def save_model(self, request, obj, form, change):
+        if not change:
+            obj.user = request.user
         if 'birth_year' in form.changed_data and 'age' not in form.changed_data:
             obj._preferred_birth_year_source = 'birth_year'
         elif 'age' in form.changed_data:

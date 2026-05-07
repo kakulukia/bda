@@ -55,7 +55,7 @@ def render_area_bio_svg(graph):
         '.axis-light{stroke:#c7c7c7;stroke-width:.25;}',
         ']]></style>',
         '</defs>',
-        f'<rect width="100%" height="100%" fill="#ffffff"/>',
+        '<rect width="100%" height="100%" fill="#ffffff"/>',
         f'<text class="title" x="{_fmt(LEFT_MARGIN)}" y="12">{escape(str(graph))}</text>',
     ]
 
