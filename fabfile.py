@@ -50,7 +50,7 @@ def migrate():
 
     with cd(PROJECT_PATH):
         print(green("updating packages .."))
-        run("poetry install")
+        run("uv sync")
 
         print(green("migrating database .."))
         manage("migrate --noinput")
