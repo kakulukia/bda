@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     # 'crispy_forms',
     # 'rosetta',
     'django_countries',
+    'django_browser_reload',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -80,7 +81,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'livereload.middleware.LiveReloadScript',
 ]
 
 ROOT_URLCONF = 'bda.urls'
@@ -149,6 +149,11 @@ TIME_ZONE = 'CET'
 USE_I18N = False
 USE_L10N = False
 USE_TZ = True
+
+LIFE_EXPECTANCY_BY_GENDER = {
+    'female': 83,
+    'male': 78,
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/

@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.http.response import HttpResponse
@@ -5,40 +7,11 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.text import slugify
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
-from django.views.generic import TemplateView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from areas.models import AreaBio
 from areas.serializers import AreaBioSerializer
 from areas.svg import render_area_bio_svg
-
-
-class AreaBioView(TemplateView):
-    template_name = 'partials/full_graph.pug'
-
-    def get(self, request, uuid, *args, **kwargs):
-
-        graph = AreaBio.objects.get(uuid=uuid)
-        graph._stretched = False
-        graph.show_descriptions = True
-        context = {
-            'graph': graph
-        }
-        return self.render_to_response(context)
-
-
-class AreaBioSiteView(TemplateView):
-    template_name = 'view.pug'
-
-    def get(self, request, uuid, *args, **kwargs):
-
-        graph = AreaBio.objects.get(uuid=uuid)
-        graph._stretched = False
-        graph.show_descriptions = True
-        context = {
-            'graph': graph
-        }
-        return self.render_to_response(context)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -53,7 +26,7 @@ class BioListView(ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        context = super(BioListView, self).get_context_data()
+        context = super(BioListView, self).get_context_data(**kwargs)
 
         cities = cache.get('cities')
         if not cities:
@@ -66,6 +39,23 @@ class BioListView(ListView):
             cache.set('cities', cities, 60*60)
 
         context['cities'] = cities
+
+        graph_uuid = self.request.GET.get('graph')
+        if graph_uuid:
+            graph = get_object_or_404(AreaBio.objects.all(), uuid=graph_uuid)
+            context['initial_graph'] = graph
+            context['initial_graph_export_url'] = graph.get_export_svg_url()
+            context['initial_graph_json'] = json.dumps({
+                'uuid': str(graph.uuid),
+                'title': str(graph),
+                'median': graph.median_usage(),
+                'export_url': graph.get_export_svg_url(),
+                'admin_url': graph.get_admin_url(),
+            })
+        else:
+            context['initial_graph_json'] = json.dumps({})
+            context['initial_graph_export_url'] = '#'
+
         return context
 
 

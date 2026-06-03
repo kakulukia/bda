@@ -8,6 +8,8 @@ from django.template.defaultfilters import upper
 from django.template.loader import render_to_string
 from django.urls import reverse
 
+from areas.rendering import build_timeline_entries, graph_end_age as shared_graph_end_age, graph_life_expectancy
+
 
 class AreaBioManager(models.Manager):
     def complete(self):
@@ -25,12 +27,23 @@ class AreaBioManager(models.Manager):
 
 
 class AreaBio(models.Model):
+    class Gender(models.TextChoices):
+        FEMALE = 'female', 'Weiblich'
+        MALE = 'male', 'Männlich'
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='area_bios', null=True, blank=True, verbose_name=u'Nutzer')
 
     name = models.CharField(verbose_name=u'Name', max_length=150, null=True)
     age = models.IntegerField(verbose_name=u'Alter', null=True, blank=True)
     country = models.CharField(verbose_name=u'Stadt', max_length=150, null=True)
+    gender = models.CharField(
+        verbose_name=u'Geschlecht',
+        max_length=10,
+        choices=Gender.choices,
+        null=True,
+        help_text=u'Wird für die Lebenserwartungs-Projektion verwendet.',
+    )
 
     objects = AreaBioManager()
     created = models.DateTimeField(auto_now_add=True, null=True, editable=False, verbose_name=u'Erstellt')
@@ -80,6 +93,12 @@ class AreaBio(models.Model):
             desc += u', {}'.format(self.country)
         return upper(desc)
 
+    def life_expectancy(self):
+        return graph_life_expectancy(self)
+
+    def graph_end_age(self):
+        return shared_graph_end_age(self)
+
     def height(self):
         if hasattr(self, '_height'):
             return self._height
@@ -112,48 +131,16 @@ class AreaBio(models.Model):
         return years > self.age
 
     def normalized_entries(self):
-        entries = []
-        remaining_years = 80
-        last_age = 0
-        source_entries = list(self.entries.all())
-        for entry_index, entry in enumerate(source_entries):
-            effective_age_to = self._effective_age_to(entry, source_entries[entry_index + 1:])
-            if entry.age_from > last_age:
-                space = BioEntry(
-                    living_space=0,
-                    number_of_people=0,
-                    age_from=last_age,
-                    age_to=entry.age_from,
-                )
-                entries.append(space)
-
-            if effective_age_to > entry.age_to:
-                entry.age_to = effective_age_to
-
-            if entry.num_years > remaining_years:
-                entry.age_to = entry.age_from + remaining_years
-
-            entries.append(entry)
-            last_age = entry.age_to
-            remaining_years -= entry.num_years
-            if remaining_years <= 0:
-                break
-
-        return entries
-
-    @staticmethod
-    def _effective_age_to(entry, following_entries):
-        if entry.age_to > entry.age_from:
-            return entry.age_to
-
-        for following_entry in following_entries:
-            if following_entry.age_from > entry.age_from:
-                return following_entry.age_from
-
-        return entry.age_from
+        return build_timeline_entries(self, include_gaps=True, split_current_age=False, project_to_end_age=False)
 
     def get_absolute_url(self):
-        return reverse('view-graph-page', args=[self.uuid])
+        return '{}?graph={}'.format(reverse('index'), self.uuid)
+
+    def get_export_svg_url(self):
+        return reverse('export-graph-svg', args=[self.uuid])
+
+    def get_admin_url(self):
+        return reverse('admin:areas_areabio_change', args=[self.pk])
 
     def median_usage(self):
         years = 0

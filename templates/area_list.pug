@@ -33,34 +33,70 @@ block content
       -for graph in object_list
         -include 'partials/naked_graph_with_name.pug'
 
-    #graphView.modal.fade(role="dialog", tabindex="-1")
+    #graphView.modal.fade(
+      role="dialog",
+      tabindex="-1",
+      v-cloak,
+      :class="{show: graphModalOpen}"
+    )
       .modal-dialog
         .modal-content
           .modal-body
-            .title(v-text="currentGraph")
-            .subtitle wohnt auf durchschnittlich
-              span(v-text="' ' + currentMedian")
-              | m² im Jahr
-            button.close(type="button", data-dismiss="modal", aria-label="Close")
+            button.close(type="button", aria-label="Close", @click="closeGraph")
               span(aria-hidden="true") &times;
-            .graph-area
-            #legend
-              div(v-show='false')
-                | Kurze Lebensabschnitte (Alter)
-                .entries
-            #main-legend Legende
-              .entries
-                span.marker.bg-gray &nbsp;
-                |  gesamte Wohnfläche
-                br
-                span.marker.bg-red &nbsp;
-                |  Wohnfläche pro Person
-                br
-                span.marker.bg-yellow &nbsp;
-                |  künftige Wohnfläche
+            .graph-modal-layout
+              .graph-sidebar
+                .title(v-text="currentGraph")
+                .subtitle wohnt auf durchschnittlich
+                  span(v-text="' ' + currentMedian")
+                  | m² im Jahr
+                #main-legend Legende
+                  .entries
+                    span.marker.bg-gray &nbsp;
+                    |  gesamte Wohnfläche
+                    br
+                    span.marker.bg-red &nbsp;
+                    |  Wohnfläche pro Person
+                    br
+                    span.marker.bg-yellow &nbsp;
+                    |  künftige Wohnfläche
+                    br
+                    span.marker.bg-yellow-solid &nbsp;
+                    |  künftige Wohnfläche pro Person
+                  a.graph-export(
+                    href="{{ initial_graph_export_url }}",
+                    v-bind:href="currentExportUrl",
+                    target="_blank",
+                    rel="noopener"
+                  ) SVG Export
+                  a.graph-edit(
+                    href="{{ initial_graph.admin_url|default:'#' }}",
+                    v-bind:href="currentAdminUrl || '#'",
+                    target="_blank",
+                    rel="noopener",
+                    v-if="currentAdminUrl"
+                  ) Bearbeiten
+              .graph-panel(
+                ref="graphPanel",
+                @mouseenter="beginGraphZoom",
+                @mousemove="moveGraphZoom",
+                @mouseleave="endGraphZoom",
+                @click="toggleGraphZoom"
+              )
+                .graph-area(:class="{zoomed: graphZoomed}")
+                  img.graph-image(
+                    ref="graphImage",
+                    v-if="currentExportUrl && currentExportUrl !== '#'",
+                    :src="currentExportUrl",
+                    :alt="currentGraph",
+                    :style="graphImageStyle",
+                    @load="handleGraphImageLoad"
+                  )
+    .modal-backdrop.fade(v-cloak, v-show="graphModalOpen", :class="{show: graphModalOpen}", @click="closeGraph")
+    script#initial-graph-state(type="application/json")
+      | {{ initial_graph_json|safe }}
 
 block extra_script
   script(src="{% static 'js/omni-slider.js' %}")
   script(src="{% static 'js/vue.js' %}")
-  script(src="{% static 'js/superagent.js' %}")
   script(src="{% static 'js/area_list.js' %}")

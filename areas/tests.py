@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from areas.models import AreaBio, BioEntry
 from areas.svg import FUTURE_FILL, FUTURE_TOTAL_FILL, PERSON_FILL, TOTAL_FILL, _build_segments, render_area_bio_svg
@@ -131,7 +131,7 @@ class AdminThemeTests(TestCase):
         response = self.client.get(f'/admin/areas/areabio/{bio.pk}/change/', HTTP_HOST='localhost')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'href="/graph/{bio.uuid}/view/"')
+        self.assertContains(response, f'href="/?graph={bio.uuid}"')
         self.assertContains(response, f'href="/graph/{bio.uuid}/export.svg"')
         self.assertContains(response, 'SVG Export')
 
@@ -143,20 +143,29 @@ class AdminThemeTests(TestCase):
             age=33,
             country='Berlin',
         )
+        self.client.force_login(user)
 
-        response = self.client.get(f'/graph/{bio.uuid}/view/', HTTP_HOST='localhost')
+        response = self.client.get(f'/?graph={bio.uuid}', HTTP_HOST='localhost')
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Jessica, 33, Berlin')
-        self.assertContains(response, 'Zur Startseite')
         self.assertContains(response, 'SVG Export')
+        self.assertContains(response, 'Bearbeiten')
         self.assertContains(response, f'href="/graph/{bio.uuid}/export.svg"')
-        self.assertContains(response, 'class="app bio-index site-graph-page"')
-        self.assertContains(response, 'href="/" class="admin-link"')
-        self.assertNotContains(response, 'Bearbeiten')
+        self.assertContains(response, f'"admin_url": "/admin/areas/areabio/{bio.pk}/change/"')
+        self.assertNotContains(response, 'download=""')
+        self.assertContains(response, 'class="app bio-index"')
+        self.assertContains(response, 'id="initial-graph-state"')
+        self.assertContains(response, 'class="graph-image"')
+        rendered = response.content.decode('utf-8')
+        self.assertLess(rendered.index('Legende'), rendered.index('SVG Export'))
+        self.assertLess(rendered.index('SVG Export'), rendered.index('Bearbeiten'))
+        self.assertNotContains(response, 'bar-container')
 
-    def test_graph_template_uses_valid_css_decimal_points(self):
+    def test_frontend_popup_uses_export_image_source(self):
+        user = User.objects.create_user(username='user', password='password')
         bio = AreaBio.objects.create(
+            user=user,
             name='Jessica',
             age=33,
             country='Berlin',
@@ -169,12 +178,30 @@ class AdminThemeTests(TestCase):
             number_of_people=3,
             description='Geburt',
         )
+        self.client.force_login(user)
 
-        response = self.client.get(f'/graph/{bio.uuid}/view/', HTTP_HOST='localhost')
+        response = self.client.get(f'/?graph={bio.uuid}', HTTP_HOST='localhost')
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'height: 1.25%;')
-        self.assertNotContains(response, 'height: 1,25%;')
+        self.assertContains(response, f'"/graph/{bio.uuid}/export.svg"')
+        self.assertContains(response, 'class="graph-image"')
+
+    def test_removed_frontend_detail_routes_are_not_available(self):
+        bio = AreaBio.objects.create(
+            name='Jessica',
+            age=33,
+            country='Berlin',
+        )
+
+        paths = [
+            f'/graph/{bio.uuid}/view/',
+            f'/view-graph/{bio.uuid}/',
+        ]
+
+        for path in paths:
+            with self.subTest(path=path):
+                response = self.client.get(path, HTTP_HOST='localhost')
+                self.assertEqual(response.status_code, 404)
 
     def test_svg_export_view_renders_inline_svg(self):
         user = User.objects.create_user(username='user', password='password')
@@ -305,18 +332,79 @@ class AreaBioModelTests(TestCase):
             [(entry.age_from, entry.age_to, entry.living_space) for entry in entries],
         )
 
+    def test_complete_manager_includes_graphs_without_gender(self):
+        complete_bio = AreaBio.objects.create(
+            name='Andy',
+            age=15,
+            country='Berlin',
+            gender=AreaBio.Gender.MALE,
+        )
+        BioEntry.objects.create(
+            area_bio=complete_bio,
+            age_from=0,
+            age_to=15,
+            living_space=120,
+            number_of_people=3,
+            description='Geburt',
+        )
+        incomplete_bio = AreaBio.objects.create(
+            name='Jess',
+            age=15,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=incomplete_bio,
+            age_from=0,
+            age_to=15,
+            living_space=120,
+            number_of_people=3,
+            description='Geburt',
+        )
 
+        complete_ids = set(AreaBio.objects.complete().values_list('pk', flat=True))
+
+        self.assertIn(complete_bio.pk, complete_ids)
+        self.assertIn(incomplete_bio.pk, complete_ids)
+
+    def test_complete_manager_still_excludes_incomplete_graphs(self):
+        complete_bio = AreaBio.objects.create(
+            name='Andy',
+            age=15,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=complete_bio,
+            age_from=0,
+            age_to=15,
+            living_space=120,
+            number_of_people=3,
+            description='Geburt',
+        )
+        incomplete_bio = AreaBio.objects.create(
+            name='Jess',
+            age=15,
+            country='Berlin',
+        )
+
+        complete_ids = set(AreaBio.objects.complete().values_list('pk', flat=True))
+
+        self.assertIn(complete_bio.pk, complete_ids)
+        self.assertNotIn(incomplete_bio.pk, complete_ids)
+
+
+@override_settings(LIFE_EXPECTANCY_BY_GENDER={'female': 83, 'male': 78})
 class AreaBioSvgTests(TestCase):
     def test_svg_renderer_uses_scaled_geometry_and_labels(self):
         bio = AreaBio.objects.create(
             name='Julia',
             age=12,
             country='Berlin',
+            gender=AreaBio.Gender.FEMALE,
         )
         BioEntry.objects.create(
             area_bio=bio,
-            age_from=10,
-            age_to=15,
+            age_from=0,
+            age_to=12,
             living_space=100,
             number_of_people=4,
             description='Testphase',
@@ -326,18 +414,54 @@ class AreaBioSvgTests(TestCase):
 
         self.assertIn('<svg', svg)
         self.assertIn('@font-face', svg)
-        self.assertIn('100 Jahre', svg)
+        self.assertIn('fill:#000;', svg)
         self.assertIn('100 m²', svg)
         self.assertIn('25 m²', svg)
         self.assertIn(f'fill="{TOTAL_FILL}" data-kind="total" data-age-from="0.00" data-age-to="12.00"', svg)
         self.assertIn(f'fill="{PERSON_FILL}" data-kind="personal" data-age-from="0.00" data-age-to="12.00"', svg)
-        self.assertIn(f'fill="{FUTURE_TOTAL_FILL}" data-kind="total" data-age-from="12.00" data-age-to="15.00"', svg)
-        self.assertIn(f'fill="{FUTURE_FILL}" data-kind="personal" data-age-from="12.00" data-age-to="15.00"', svg)
+        self.assertIn(f'fill="{FUTURE_TOTAL_FILL}" data-kind="total" data-age-from="12.00" data-age-to="83.00"', svg)
+        self.assertIn(f'fill="{FUTURE_FILL}" data-kind="personal" data-age-from="12.00" data-age-to="83.00"', svg)
         self.assertIn('data-kind="description" data-age="0.00"', svg)
+        self.assertNotIn('data-kind="axis-grid" data-age="0.00"', svg)
         self.assertNotIn('data-kind="description" data-age="12.00"', svg)
-        self.assertIn('width="100.00" height="60.00"', svg)
+        self.assertIn('width="100.00" height="355.00"', svg)
         self.assertIn('width="25.00" height="60.00"', svg)
-        self.assertIn('data-kind="x-axis-total" x1="55.00" y1="525.00" x2="155.00" y2="525.00"', svg)
+        self.assertNotIn('data-kind="x-axis-total"', svg)
+        self.assertNotIn('data-kind="x-axis-personal"', svg)
+        self.assertIn('x2="50.00"', svg)
+        self.assertNotIn('data-kind="axis-grid" data-age="12.00"', svg)
+        self.assertNotIn('data-kind="axis-grid" data-age="83.00"', svg)
+        self.assertNotIn('83 Jahre', svg)
+        self.assertLess(
+            svg.index('data-kind="axis-tick"'),
+            svg.index(f'fill="{TOTAL_FILL}" data-kind="total" data-age-from="0.00"'),
+        )
+        self.assertIn('ges. 100 m² / max. 25 m²', svg)
+
+    def test_svg_renderer_stops_future_projection_after_actual_age_for_older_people(self):
+        bio = AreaBio.objects.create(
+            name='Julia',
+            age=90,
+            country='Berlin',
+            gender=AreaBio.Gender.FEMALE,
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=0,
+            age_to=90,
+            living_space=100,
+            number_of_people=4,
+            description='Testphase',
+        )
+
+        svg = render_area_bio_svg(bio)
+
+        self.assertNotIn('90 Jahre', svg)
+        self.assertIn('data-kind="total" data-age-from="0.00" data-age-to="90.00"', svg)
+        self.assertIn('data-kind="personal" data-age-from="0.00" data-age-to="90.00"', svg)
+        self.assertNotIn(FUTURE_TOTAL_FILL, svg)
+        self.assertNotIn(FUTURE_FILL, svg)
+        self.assertIn('ges. 100 m² / max. 25 m²', svg)
 
     def test_svg_renderer_extends_zero_year_changes_to_next_entry(self):
         bio = AreaBio.objects.create(

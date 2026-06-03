@@ -11,11 +11,14 @@ class AreaBioSerializer(serializers.HyperlinkedModelSerializer):
             'name',
             'age',
             'country',
+            'gender',
             'id',
             'uuid',
         )
 
 
     def validate(self, attrs):
-        attrs['country'] = attrs['country'].capitalize()
+        country = attrs.get('country')
+        if country:
+            attrs['country'] = country.capitalize()
         return attrs

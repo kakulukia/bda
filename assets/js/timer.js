@@ -1,34 +1,61 @@
+function getModal(id) {
+  return document.getElementById(id);
+}
+
+function isModalShown(element) {
+  return Boolean(element && element.classList.contains('show'));
+}
+
+function showModal(element) {
+  if (!element) {
+    return;
+  }
+
+  element.style.display = 'block';
+  element.classList.add('show');
+  document.body.classList.add('modal-open');
+}
+
+function hideModal(element) {
+  if (!element) {
+    return;
+  }
+
+  element.classList.remove('show');
+  element.style.display = 'none';
+
+  if (!document.querySelector('.modal.show')) {
+    document.body.classList.remove('modal-open');
+  }
+}
+
 function openIntro() {
-  // console.log((parseInt(localStorage.introTimer) - new Date().getTime()) / 1000);
-  if (!localStorage.introTimer || (parseInt(localStorage.introTimer) < new Date().getTime())){
-    if (window.location.pathname != '/') {
+  if (!localStorage.introTimer || (parseInt(localStorage.introTimer, 10) < new Date().getTime())) {
+    if (window.location.pathname !== '/') {
       window.location = '/';
+      return;
     }
-    else {
-      this.resetIntroTimer();
-      if (($("#newBio").data('bs.modal') || {})._isShown) {
-        $('#newBio').modal('hide');
-      }
-      if (($("#graphView").data('bs.modal') || {})._isShown) {
-        $('#graphView').modal('hide');
-      }
-      if (($("errorDialog").data('bs.modal') || {})._isShown) {
-        $('#errorDialog').modal('hide');
-      }
-      if (!($("#intro").data('bs.modal') || {})._isShown) {
-        $('#intro').modal('show');
-      }
+
+    resetIntroTimer();
+    hideModal(getModal('newBio'));
+    hideModal(getModal('graphView'));
+    hideModal(getModal('errorDialog'));
+
+    var intro = getModal('intro');
+    if (!isModalShown(intro)) {
+      showModal(intro);
     }
   }
 }
+
 function resetIntroTimer() {
-  // console.log('resetting timer ..');
   localStorage.introTimer = new Date().getTime() + 60 * 5 * 1000;
-  // localStorage.introTimer = new Date().getTime() + 10 * 1000;
 }
-function runTimer(){
+
+function runTimer() {
   setTimeout(runTimer, 5000);
   openIntro();
 }
+
 resetIntroTimer();
 runTimer();

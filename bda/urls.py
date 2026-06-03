@@ -5,7 +5,7 @@ from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from rest_framework import routers
 
-from areas.views import BioListView, AreaBioView, AreaBioViewSet, get_graph, AreaBioSiteView, export_graph_svg
+from areas.views import BioListView, AreaBioViewSet, get_graph, export_graph_svg
 
 # construct API URLs
 router = routers.DefaultRouter()
@@ -27,9 +27,8 @@ urlpatterns = [
 
     # VIEWS
     path('', BioListView.as_view(), name='index'),
-    re_path(r'^graph/(?P<uuid>[\w-]+)/view/$', AreaBioSiteView.as_view(), name='view-graph-page'),
+    path('__reload__/', include('django_browser_reload.urls')),
     re_path(r'^graph/(?P<uuid>[\w-]+)/export\.svg$', export_graph_svg, name='export-graph-svg'),
-    re_path(r'^view-graph/(?P<uuid>[\w-]+)/$', AreaBioView.as_view(), name='view-graph'),
 
     re_path(r'^graph/(?P<pk>\d+)/$', get_graph, {'stretched': False}, name='show-graph'),
     re_path(r'^graph/(?P<pk>\d+)/bare/$', get_graph, {'bare': True}, name='show-bare-graph'),

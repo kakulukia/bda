@@ -6,6 +6,8 @@ from xml.sax.saxutils import escape
 
 from django.conf import settings
 
+from areas.rendering import build_svg_axis_ages, build_svg_description_ages, build_timeline_entries
+
 
 TOTAL_FILL = '#b4b4b4'
 PERSON_FILL = '#000000'
@@ -13,7 +15,6 @@ FUTURE_FILL = '#fce903'
 FUTURE_TOTAL_FILL = '#fefac0'
 LINE_FILL = '#444444'
 
-YEARS_MAX = 100
 MM_PER_YEAR = 5
 MM_PER_SQUARE_METER = 1
 
@@ -23,14 +24,16 @@ BOTTOM_MARGIN = 30
 LEFT_MARGIN = 45
 MIN_X_EXTENT = 60
 DESCRIPTION_GAP = 4
+Y_AXIS_TICK_LENGTH = 5
 
 
 def render_area_bio_svg(graph):
     segments = _build_segments(graph)
+    graph_end_age = graph.graph_end_age()
     max_living_space = max([segment['living_space'] for segment in segments] + [0])
     max_person_space = max([segment['person_space'] for segment in segments] + [0])
     x_extent = max(max_living_space / 2, max_person_space / 2, MIN_X_EXTENT)
-    graph_height = YEARS_MAX * MM_PER_YEAR
+    graph_height = graph_end_age * MM_PER_YEAR
     width = LEFT_MARGIN + x_extent * 2 + RIGHT_MARGIN
     height = TOP_MARGIN + graph_height + BOTTOM_MARGIN
     center_x = LEFT_MARGIN + x_extent
@@ -40,45 +43,65 @@ def render_area_bio_svg(graph):
     parts = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         (
-            f'<svg xmlns="http://www.w3.org/2000/svg" width="{_fmt(width)}mm" '
-            f'height="{_fmt(height)}mm" viewBox="0 0 {_fmt(width)} {_fmt(height)}" '
-            'role="img" aria-labelledby="title desc">'
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{_fmt(width)}mm" '
+        f'height="{_fmt(height)}mm" viewBox="0 0 {_fmt(width)} {_fmt(height)}" '
+        'role="img" aria-labelledby="title desc">'
         ),
         f'<title id="title">{escape(str(graph))}</title>',
         '<desc id="desc">Wohnbiografie als maßstäbliches SVG-Diagramm.</desc>',
         '<defs>',
         '<style><![CDATA[',
         _font_css(),
-        '.label{font-family:"Gravity Condensed",Arial,sans-serif;font-size:4px;font-weight:700;fill:#292b2c;}',
-        '.title{font-family:"Gravity Wide",Arial,sans-serif;font-size:7px;font-weight:700;fill:#000;}',
+        '.label{font-family:"Gravity Condensed",Arial,sans-serif;font-size:4px;font-weight:700;fill:#000;}',
         '.axis{stroke:#444;stroke-width:.3;}',
-        '.axis-light{stroke:#c7c7c7;stroke-width:.25;}',
+        '.axis-grid{stroke:#c7c7c7;stroke-width:.25;}',
+        '.axis-tick{stroke:#444;stroke-width:.3;}',
         ']]></style>',
         '</defs>',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
-        f'<text class="title" x="{_fmt(LEFT_MARGIN)}" y="12">{escape(str(graph))}</text>',
     ]
 
-    for age in _axis_ages(segments, graph.age):
-        y = _age_to_y(age, graph_top)
-        line_class = 'axis' if age in (0, YEARS_MAX) else 'axis-light'
+    axis_ages = build_svg_axis_ages(graph, segments)
+    for age in build_svg_description_ages(segments):
+        y = _age_to_y(age, graph_top, graph_end_age)
         parts.append(
-            f'<line class="{line_class}" x1="{_fmt(LEFT_MARGIN)}" y1="{_fmt(y)}" '
+            f'<line class="axis-grid" data-kind="axis-grid" data-age="{_fmt(age)}" '
+            f'x1="{_fmt(center_x)}" y1="{_fmt(y)}" '
             f'x2="{_fmt(width - RIGHT_MARGIN)}" y2="{_fmt(y)}"/>'
         )
-        parts.append(
-            f'<text class="label" text-anchor="end" x="{_fmt(LEFT_MARGIN - 2)}" '
-            f'y="{_fmt(y + 1.3)}">{_age_label(age)}</text>'
-        )
+
+    chart_right = width - RIGHT_MARGIN
+    description_lines = []
+    description_texts = []
+    for segment in segments:
+        if segment.description:
+            description_line, description_text = _description_parts(segment, center_x, graph_top, chart_right, graph_end_age)
+            description_lines.append(description_line)
+            description_texts.append(description_text)
+
+    parts.extend(description_lines)
 
     parts.append(
         f'<line class="axis" x1="{_fmt(center_x)}" y1="{_fmt(graph_top)}" '
         f'x2="{_fmt(center_x)}" y2="{_fmt(graph_bottom)}"/>'
     )
 
-    chart_right = width - RIGHT_MARGIN
+    for age in axis_ages:
+        y = _age_to_y(age, graph_top, graph_end_age)
+        parts.append(
+            f'<line class="axis-tick" data-kind="axis-tick" data-age="{_fmt(age)}" '
+            f'x1="{_fmt(LEFT_MARGIN)}" y1="{_fmt(y)}" '
+            f'x2="{_fmt(LEFT_MARGIN + Y_AXIS_TICK_LENGTH)}" y2="{_fmt(y)}"/>'
+        )
+        parts.append(
+            f'<text class="label" text-anchor="end" x="{_fmt(LEFT_MARGIN - 2)}" '
+            f'y="{_fmt(y + 1.3)}">{_age_label(age)}</text>'
+        )
+
     for segment in segments:
-        parts.extend(_segment_rects(segment, center_x, graph_top, chart_right))
+        parts.extend(_segment_rects(segment, center_x, graph_top, chart_right, graph_end_age))
+
+    parts.extend(description_texts)
 
     parts.extend(_x_axis_labels(center_x, graph_bottom, max_living_space, max_person_space))
     parts.append('</svg>')
@@ -86,124 +109,54 @@ def render_area_bio_svg(graph):
 
 
 def _build_segments(graph):
-    if graph.age is None:
-        return []
-
-    current_age = min(max(graph.age, 0), YEARS_MAX)
-    entries = list(graph.entries.order_by('age_from'))
-    segments = []
-    latest_entry = None
-    latest_age_to = 0
-
-    for entry_index, entry in enumerate(entries):
-        age_from = entry.age_from
-        if entry_index == 0:
-            age_from = 0
-        age_to = min(_effective_age_to(entry, entries[entry_index + 1:]), YEARS_MAX)
-        if age_to <= age_from:
-            continue
-
-        latest_entry = entry
-        latest_age_to = max(latest_age_to, age_to)
-        split_points = [age_from, age_to]
-        if age_from < current_age < age_to:
-            split_points.insert(1, current_age)
-
-        for split_index in range(len(split_points) - 1):
-            split_from = split_points[split_index]
-            split_to = split_points[split_index + 1]
-            if split_to <= split_from:
-                continue
-            segments.append(
-                _segment(
-                    entry,
-                    split_from,
-                    split_to,
-                    split_from >= current_age,
-                    show_description=split_index == 0,
-                )
-            )
-
-    if latest_entry and current_age < YEARS_MAX and latest_age_to >= current_age and latest_age_to < YEARS_MAX:
-        projection_from = max(current_age, latest_age_to)
-        if projection_from < YEARS_MAX:
-            segments.append(
-                _segment(latest_entry, projection_from, YEARS_MAX, True, show_description=False)
-            )
-
-    return segments
+    return build_timeline_entries(graph, include_gaps=False, split_current_age=True, project_to_end_age=True)
 
 
-def _segment(entry, age_from, age_to, future, show_description):
-    living_space = max(entry.living_space or 0, 0) * MM_PER_SQUARE_METER
-    person_space = 0
-    if entry.number_of_people:
-        person_space = living_space / entry.number_of_people
-    return {
-        'age_from': age_from,
-        'age_to': age_to,
-        'living_space': living_space,
-        'person_space': person_space,
-        'future': future,
-        'description': entry.description if show_description else '',
-    }
-
-
-def _effective_age_to(entry, following_entries):
-    if entry.age_to > entry.age_from:
-        return entry.age_to
-
-    for following_entry in following_entries:
-        if following_entry.age_from > entry.age_from:
-            return following_entry.age_from
-
-    return entry.age_from
-
-
-def _segment_rects(segment, center_x, graph_top, chart_right):
-    y = _age_to_y(segment['age_to'], graph_top)
-    height = (segment['age_to'] - segment['age_from']) * MM_PER_YEAR
-    fill = FUTURE_TOTAL_FILL if segment['future'] else TOTAL_FILL
-    person_fill = FUTURE_FILL if segment['future'] else PERSON_FILL
+def _segment_rects(segment, center_x, graph_top, chart_right, graph_end_age):
+    y = _age_to_y(segment.age_to, graph_top, graph_end_age)
+    height = (segment.age_to - segment.age_from) * MM_PER_YEAR
+    fill = FUTURE_TOTAL_FILL if segment.is_future else TOTAL_FILL
+    person_fill = FUTURE_FILL if segment.is_future else PERSON_FILL
     parts = [
         _rect(
-            center_x - segment['living_space'] / 2,
+            center_x - segment.living_space / 2,
             y,
-            segment['living_space'],
+            segment.living_space,
             height,
             fill,
             'total',
             segment,
         )
     ]
-    if segment['person_space']:
+    if segment.person_space:
         parts.append(
             _rect(
-                center_x - segment['person_space'] / 2,
+                center_x - segment.person_space / 2,
                 y,
-                segment['person_space'],
+                segment.person_space,
                 height,
                 person_fill,
                 'personal',
                 segment,
             )
         )
-    if segment['description']:
-        parts.extend(_description_label(segment, center_x, graph_top, chart_right))
     return parts
 
 
-def _description_label(segment, center_x, graph_top, chart_right):
-    y = _age_to_y(segment['age_from'], graph_top)
-    line_start = min(center_x + segment['living_space'] / 2 + 1, chart_right)
+def _description_parts(segment, center_x, graph_top, chart_right, graph_end_age):
+    y = _age_to_y(segment.age_from, graph_top, graph_end_age)
+    line_start = min(center_x + segment.living_space / 2 + 1, chart_right)
     line_end = chart_right
     label_x = line_end + DESCRIPTION_GAP
-    return [
-        f'<line class="axis-light" data-kind="description-line" data-age="{_fmt(segment["age_from"])}" '
-        f'x1="{_fmt(line_start)}" y1="{_fmt(y)}" x2="{_fmt(line_end)}" y2="{_fmt(y)}"/>',
-        f'<text class="label" data-kind="description" data-age="{_fmt(segment["age_from"])}" '
-        f'x="{_fmt(label_x)}" y="{_fmt(y + 1.3)}">{escape(segment["description"])}</text>',
-    ]
+    line = (
+        f'<line class="axis-grid" data-kind="description-line" data-age="{_fmt(segment.age_from)}" '
+        f'x1="{_fmt(line_start)}" y1="{_fmt(y)}" x2="{_fmt(line_end)}" y2="{_fmt(y)}"/>'
+    )
+    text = (
+        f'<text class="label" data-kind="description" data-age="{_fmt(segment.age_from)}" '
+        f'x="{_fmt(label_x)}" y="{_fmt(y + 1.3)}">{escape(segment.description)}</text>'
+    )
+    return line, text
 
 
 def _rect(x, y, width, height, fill, kind, segment):
@@ -214,40 +167,21 @@ def _rect(x, y, width, height, fill, kind, segment):
     )
 
 
-def _axis_ages(segments, current_age):
-    ages = {0, YEARS_MAX}
-    if current_age:
-        ages.add(min(max(current_age, 0), YEARS_MAX))
-    for segment in segments:
-        ages.add(segment['age_from'])
-        ages.add(segment['age_to'])
-    return sorted(ages)
-
-
 def _x_axis_labels(center_x, graph_bottom, max_living_space, max_person_space):
     if not max_living_space and not max_person_space:
         return []
 
     y = graph_bottom
-    parts = [
-        f'<line class="axis" data-kind="x-axis-total" x1="{_fmt(center_x - max_living_space / 2)}" y1="{_fmt(y)}" '
-        f'x2="{_fmt(center_x + max_living_space / 2)}" y2="{_fmt(y)}"/>',
+    label = f'ges. {_space_label(max_living_space)} / max. {_space_label(max_person_space)}'
+
+    return [
         f'<text class="label" text-anchor="middle" x="{_fmt(center_x)}" '
-        f'y="{_fmt(y + 5)}">{_space_label(max_living_space)}</text>',
+        f'y="{_fmt(y + 5)}">{label}</text>',
     ]
-    if round(max_person_space, 2) != round(max_living_space, 2):
-        y_person = y + 11
-        parts.extend([
-            f'<line class="axis-light" data-kind="x-axis-personal" x1="{_fmt(center_x - max_person_space / 2)}" y1="{_fmt(y_person)}" '
-            f'x2="{_fmt(center_x + max_person_space / 2)}" y2="{_fmt(y_person)}"/>',
-            f'<text class="label" text-anchor="middle" x="{_fmt(center_x)}" '
-            f'y="{_fmt(y_person + 5)}">{_space_label(max_person_space)}</text>',
-        ])
-    return parts
 
 
-def _age_to_y(age, graph_top):
-    return graph_top + (YEARS_MAX - age) * MM_PER_YEAR
+def _age_to_y(age, graph_top, graph_end_age):
+    return graph_top + (graph_end_age - age) * MM_PER_YEAR
 
 
 def _age_label(age):

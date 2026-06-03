@@ -58,7 +58,7 @@ class BioEntryInline(admin.StackedInline):
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
     list_display = ['created', '__str__', 'user', 'entries_count']
-    list_filter = ['country', 'user']
+    list_filter = ['country', 'gender', 'user']
     @admin.display(description='Nutzer')
     def user_display(self, obj):
         return str(obj.user) if obj.user else '-'
