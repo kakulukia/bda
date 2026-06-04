@@ -1,6 +1,6 @@
 -load l10n
 .bar-container
-  -for entry in graph.normalized_entries
+  -for entry in graph.bare_entries
     .entry-container(id="entry-{{ graph.id }}-{{ entry.id }}",
                      style='height: {{ entry.years|unlocalize }}%;')
       .entry(class="{% cycle 'odd' 'even' %} {{ entry.future }}",

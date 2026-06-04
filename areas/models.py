@@ -133,6 +133,9 @@ class AreaBio(models.Model):
     def normalized_entries(self):
         return build_timeline_entries(self, include_gaps=True, split_current_age=False, project_to_end_age=False)
 
+    def bare_entries(self):
+        return build_timeline_entries(self, include_gaps=True, split_current_age=False, project_to_end_age=True)
+
     def get_absolute_url(self):
         return '{}?graph={}'.format(reverse('index'), self.uuid)
 

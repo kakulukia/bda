@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.models import User
+from django.forms.models import BaseInlineFormSet
 
 # Register your models here.
 from .models import AreaBio, BioEntry
@@ -55,6 +56,44 @@ class BioEntryInline(admin.StackedInline):
         return '{:.2f} m²/person'.format(value)
 
 
+class BioEntryInlineFormSet(BaseInlineFormSet):
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        if index is not None and index < self.initial_form_count():
+            return kwargs
+
+        copied_initial = self._get_copied_initial()
+        if copied_initial:
+            kwargs['initial'] = {**kwargs.get('initial', {}), **copied_initial}
+        return kwargs
+
+    def _get_copied_initial(self):
+        if not getattr(self.instance, 'pk', None):
+            return {}
+
+        last_entry = self.instance.entries.order_by('-age_from', '-age_to', '-pk').first()
+        if not last_entry:
+            return {}
+
+        return {
+            'age_from': last_entry.age_to,
+            'age_to': None,
+            'living_space': last_entry.living_space,
+            'number_of_people': last_entry.number_of_people,
+            'description': '',
+            'location': last_entry.location,
+            'postal_code': last_entry.postal_code,
+            'typology': last_entry.typology,
+            'tenure': last_entry.tenure,
+            'owner_category': last_entry.owner_category,
+            'construction_year_category': last_entry.construction_year_category,
+            'country_if_not_germany': last_entry.country_if_not_germany,
+        }
+
+
+BioEntryInline.formset = BioEntryInlineFormSet
+
+
 @admin.register(AreaBio)
 class AreaBioAdmin(admin.ModelAdmin):
     list_display = ['created', '__str__', 'user', 'entries_count']
@@ -85,6 +124,19 @@ class AreaBioAdmin(admin.ModelAdmin):
 
     def view_on_site(self, obj):
         return obj.get_absolute_url()
+
+    def response_change(self, request, obj):
+        if '_continue' in request.POST:
+            request.session['areas_areabio_scroll_to_last_inline'] = True
+        return super().response_change(request, obj)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['scroll_to_last_inline_after_save'] = request.session.pop(
+            'areas_areabio_scroll_to_last_inline',
+            False,
+        )
+        return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 
     def save_model(self, request, obj, form, change):
         if not change:

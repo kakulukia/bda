@@ -1,6 +1,10 @@
 from django.contrib.auth.models import User
+from django.contrib.admin.sites import site
+from django.test.client import RequestFactory
 from django.test import TestCase, override_settings
+from django.contrib.sessions.middleware import SessionMiddleware
 
+from areas.admin import AreaBioAdmin, BioEntryInline
 from areas.models import AreaBio, BioEntry
 from areas.svg import FUTURE_FILL, FUTURE_TOTAL_FILL, PERSON_FILL, TOTAL_FILL, _build_segments, render_area_bio_svg
 
@@ -332,6 +336,30 @@ class AreaBioModelTests(TestCase):
             [(entry.age_from, entry.age_to, entry.living_space) for entry in entries],
         )
 
+    def test_bare_entries_include_future_projection_for_startpage_graphs(self):
+        bio = AreaBio.objects.create(
+            name='Andy',
+            age=15,
+            country='Berlin',
+            gender=AreaBio.Gender.MALE,
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=0,
+            age_to=20,
+            living_space=123,
+            number_of_people=4,
+            description='Haus',
+        )
+
+        entries = list(bio.bare_entries())
+
+        self.assertIn(
+            (20, 78, 123),
+            [(entry.age_from, entry.age_to, entry.living_space) for entry in entries],
+        )
+        self.assertTrue(any(entry.is_projection for entry in entries))
+
     def test_complete_manager_includes_graphs_without_gender(self):
         complete_bio = AreaBio.objects.create(
             name='Andy',
@@ -390,6 +418,74 @@ class AreaBioModelTests(TestCase):
 
         self.assertIn(complete_bio.pk, complete_ids)
         self.assertNotIn(incomplete_bio.pk, complete_ids)
+
+
+class BioEntryInlineAdminTests(TestCase):
+    def test_empty_inline_prefills_from_last_entry(self):
+        user = User.objects.create_superuser(
+            username='admin',
+            password='password',
+            email='admin@example.com',
+        )
+        bio = AreaBio.objects.create(
+            user=user,
+            name='Andy',
+            age=15,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=0,
+            age_to=12,
+            living_space=80,
+            number_of_people=2,
+            description='Umzug',
+            location=BioEntry.Location.BIG_CITY,
+            typology=BioEntry.Typology.TWO_ROOMS,
+            tenure=BioEntry.Tenure.RENT,
+        )
+
+        request = RequestFactory().get('/')
+        request.user = user
+
+        inline = BioEntryInline(AreaBio, site)
+        formset_class = inline.get_formset(request, bio)
+        formset = formset_class(instance=bio)
+        empty_form = formset.empty_form
+
+        self.assertEqual(empty_form.initial['age_from'], 12)
+        self.assertIsNone(empty_form.initial['age_to'])
+        self.assertEqual(empty_form.initial['living_space'], 80)
+        self.assertEqual(empty_form.initial['number_of_people'], 2)
+        self.assertEqual(empty_form.initial['description'], '')
+        self.assertEqual(empty_form.initial['location'], BioEntry.Location.BIG_CITY)
+        self.assertEqual(empty_form.initial['typology'], BioEntry.Typology.TWO_ROOMS)
+        self.assertEqual(empty_form.initial['tenure'], BioEntry.Tenure.RENT)
+
+    def test_change_view_only_requests_scroll_after_save_and_continue(self):
+        user = User.objects.create_superuser(
+            username='admin',
+            password='password',
+            email='admin@example.com',
+        )
+        bio = AreaBio.objects.create(
+            user=user,
+            name='Andy',
+            age=15,
+            country='Berlin',
+        )
+
+        request = RequestFactory().get('/')
+        request.user = user
+        SessionMiddleware(lambda req: None).process_request(request)
+        request.session.save()
+        request.session['areas_areabio_scroll_to_last_inline'] = True
+
+        admin = AreaBioAdmin(AreaBio, site)
+        response = admin.change_view(request, str(bio.pk))
+
+        self.assertTrue(response.context_data['scroll_to_last_inline_after_save'])
+        self.assertNotIn('areas_areabio_scroll_to_last_inline', request.session)
 
 
 @override_settings(LIFE_EXPECTANCY_BY_GENDER={'female': 83, 'male': 78})

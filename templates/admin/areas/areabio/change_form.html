@@ -1,5 +1,54 @@
 {% extends "admin/change_form.html" %}
 
+{% block extrahead %}
+{{ block.super }}
+<script>
+document.addEventListener('click', function (event) {
+  var addLink = event.target.closest('.inline-group .add-row a');
+  if (!addLink) {
+    return;
+  }
+
+  window.setTimeout(function () {
+    var inlineEntries = document.querySelectorAll('.inline-group .inline-related:not(.empty-form)');
+    if (!inlineEntries.length) {
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      return;
+    }
+
+    var lastEntry = inlineEntries[inlineEntries.length - 1];
+    var target = lastEntry.querySelector('input[name$="-age_to"], select[name$="-age_to"], textarea[name$="-age_to"]');
+    if (!target) {
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      return;
+    }
+
+    target.scrollIntoView({ block: 'center' });
+    target.focus({ preventScroll: true });
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  }, 0);
+});
+</script>
+{% if scroll_to_last_inline_after_save %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var inlineEntries = document.querySelectorAll('.inline-group .inline-related:not(.empty-form)');
+  if (!inlineEntries.length) {
+    return;
+  }
+  var lastEntry = inlineEntries[inlineEntries.length - 1];
+  var target = lastEntry.querySelector('input[name$="-age_to"], select[name$="-age_to"], textarea[name$="-age_to"]');
+  if (!target) {
+    return;
+  }
+  target.scrollIntoView({ block: 'center' });
+  target.focus({ preventScroll: true });
+  window.scrollTo(0, document.documentElement.scrollHeight);
+});
+</script>
+{% endif %}
+{% endblock %}
+
 {% block object-tools-items %}
 {{ block.super }}
 {% if original %}
