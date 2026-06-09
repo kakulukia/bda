@@ -2,6 +2,7 @@
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Max
 from django.template.defaultfilters import upper
@@ -149,12 +150,15 @@ class AreaBio(models.Model):
         years = 0
         used = 0
 
-        if not self.entries.all():
-            return 0
-
         for entry in self.entries.all():
+            people = entry.number_of_people or 0
+            if entry.num_years <= 0 or people <= 0:
+                continue
             years += entry.num_years
-            used += entry.num_years * entry.living_space / entry.number_of_people
+            used += entry.num_years * (entry.living_space or 0) / people
+
+        if not years:
+            return 0
 
         return int(round(float(used) / years))
 
@@ -240,6 +244,20 @@ class BioEntry(models.Model):
 
     def __unicode__(self):
         return self.__str__()
+
+    def clean(self):
+        super().clean()
+        errors = {}
+
+        if self.living_space is not None and self.living_space <= 0:
+            errors['living_space'] = 'Wohnfläche muss größer als 0 sein.'
+        if self.number_of_people is not None and self.number_of_people <= 0:
+            errors['number_of_people'] = 'Personen im Haushalt muss größer als 0 sein.'
+        if self.age_from is not None and self.age_to is not None and self.age_to <= self.age_from:
+            errors['age_to'] = 'Bis-Alter muss größer als Von-Alter sein.'
+
+        if errors:
+            raise ValidationError(errors)
 
     def future(self):
         try:

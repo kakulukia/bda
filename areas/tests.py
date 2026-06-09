@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import site
+from django.core.exceptions import ValidationError
 from django.test.client import RequestFactory
 from django.test import TestCase, override_settings
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -46,6 +47,44 @@ class HomePageLoginAccessTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'href="/admin/"')
+
+    def test_home_page_renders_bios_with_invalid_median_entries(self):
+        user = User.objects.create_user(username='user', password='password')
+        zero_people_bio = AreaBio.objects.create(
+            user=user,
+            name='Zero People',
+            age=30,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=zero_people_bio,
+            age_from=0,
+            age_to=10,
+            living_space=100,
+            number_of_people=0,
+            description='Geburt',
+        )
+        zero_years_bio = AreaBio.objects.create(
+            user=user,
+            name='Zero Years',
+            age=30,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=zero_years_bio,
+            age_from=20,
+            age_to=20,
+            living_space=100,
+            number_of_people=3,
+            description='Umzug',
+        )
+        self.client.force_login(user)
+
+        response = self.client.get('/', HTTP_HOST='localhost')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ZERO PEOPLE, 30, BERLIN')
+        self.assertContains(response, 'ZERO YEARS, 30, BERLIN')
 
 
 class AdminThemeTests(TestCase):
@@ -289,6 +328,63 @@ class FrontendEditingDisabledTests(TestCase):
 
 
 class AreaBioModelTests(TestCase):
+    def test_bio_entry_validation_rejects_zero_values_and_empty_age_range(self):
+        bio = AreaBio.objects.create(
+            name='Franzi',
+            age=24,
+            country='München',
+        )
+        entry = BioEntry(
+            area_bio=bio,
+            age_from=20,
+            age_to=20,
+            living_space=0,
+            number_of_people=0,
+            description='Wohnungssuche',
+        )
+
+        with self.assertRaises(ValidationError) as context:
+            entry.full_clean()
+
+        errors = context.exception.message_dict
+        self.assertEqual(errors['living_space'], ['Wohnfläche muss größer als 0 sein.'])
+        self.assertEqual(errors['number_of_people'], ['Personen im Haushalt muss größer als 0 sein.'])
+        self.assertEqual(errors['age_to'], ['Bis-Alter muss größer als Von-Alter sein.'])
+
+    def test_median_usage_returns_zero_without_valid_people_count(self):
+        bio = AreaBio.objects.create(
+            name='Zero People',
+            age=30,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=0,
+            age_to=10,
+            living_space=100,
+            number_of_people=0,
+            description='Geburt',
+        )
+
+        self.assertEqual(bio.median_usage(), 0)
+
+    def test_median_usage_returns_zero_without_measurable_years(self):
+        bio = AreaBio.objects.create(
+            name='Zero Years',
+            age=30,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=20,
+            age_to=20,
+            living_space=100,
+            number_of_people=3,
+            description='Umzug',
+        )
+
+        self.assertEqual(bio.median_usage(), 0)
+
     def test_normalized_entries_extend_zero_year_changes_to_next_entry(self):
         bio = AreaBio.objects.create(
             name='Andy',
@@ -421,6 +517,47 @@ class AreaBioModelTests(TestCase):
 
 
 class BioEntryInlineAdminTests(TestCase):
+    def test_inline_formset_rejects_zero_values_and_empty_age_range(self):
+        user = User.objects.create_superuser(
+            username='admin',
+            password='password',
+            email='admin@example.com',
+        )
+        bio = AreaBio.objects.create(
+            user=user,
+            name='Franzi',
+            age=24,
+            country='München',
+        )
+        request = RequestFactory().get('/')
+        request.user = user
+
+        inline = BioEntryInline(AreaBio, site)
+        formset_class = inline.get_formset(request, bio)
+        prefix = formset_class.get_default_prefix()
+        formset = formset_class(
+            data={
+                f'{prefix}-TOTAL_FORMS': '1',
+                f'{prefix}-INITIAL_FORMS': '0',
+                f'{prefix}-MIN_NUM_FORMS': '0',
+                f'{prefix}-MAX_NUM_FORMS': '1000',
+                f'{prefix}-0-id': '',
+                f'{prefix}-0-age_from': '20',
+                f'{prefix}-0-age_to': '20',
+                f'{prefix}-0-living_space': '0',
+                f'{prefix}-0-number_of_people': '0',
+                f'{prefix}-0-description': 'Wohnungssuche',
+            },
+            instance=bio,
+            prefix=prefix,
+        )
+
+        self.assertFalse(formset.is_valid())
+        errors = formset.forms[0].errors
+        self.assertEqual(errors['living_space'], ['Wohnfläche muss größer als 0 sein.'])
+        self.assertEqual(errors['number_of_people'], ['Personen im Haushalt muss größer als 0 sein.'])
+        self.assertEqual(errors['age_to'], ['Bis-Alter muss größer als Von-Alter sein.'])
+
     def test_empty_inline_prefills_from_last_entry(self):
         user = User.objects.create_superuser(
             username='admin',
