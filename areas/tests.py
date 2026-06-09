@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import site
 from django.core.exceptions import ValidationError
@@ -264,12 +265,27 @@ class AdminThemeTests(TestCase):
 
 
 class FrontendEditingDisabledTests(TestCase):
-    def test_area_bio_list_api_remains_available_for_frontend_filters(self):
+    def test_area_bio_list_api_rejects_anonymous_users(self):
         bio = AreaBio.objects.create(
             name='Jessica',
             age=33,
             country='Berlin',
         )
+
+        response = self.client.get('/api/area-bios/', HTTP_HOST='localhost')
+
+        self.assertEqual(response.status_code, 403)
+        self.assertNotContains(response, str(bio.uuid), status_code=403)
+
+    def test_area_bio_list_api_remains_available_for_authenticated_frontend_filters(self):
+        user = User.objects.create_user(username='user', password='password')
+        bio = AreaBio.objects.create(
+            user=user,
+            name='Jessica',
+            age=33,
+            country='Berlin',
+        )
+        self.client.force_login(user)
 
         response = self.client.get('/api/area-bios/', HTTP_HOST='localhost')
 
@@ -295,11 +311,14 @@ class FrontendEditingDisabledTests(TestCase):
                 self.assertEqual(response.status_code, 404)
 
     def test_removed_frontend_editing_api_is_not_available(self):
+        user = User.objects.create_user(username='user', password='password')
         bio = AreaBio.objects.create(
+            user=user,
             name='Jessica',
             age=33,
             country='Berlin',
         )
+        self.client.force_login(user)
 
         post_response = self.client.post(
             '/api/area-bios/',
@@ -325,6 +344,14 @@ class FrontendEditingDisabledTests(TestCase):
         self.assertEqual(put_response.status_code, 405)
         self.assertEqual(entries_response.status_code, 404)
         self.assertEqual(compare_response.status_code, 404)
+
+
+class AuthTokenRemovedTests(TestCase):
+    def test_rest_framework_auth_tokens_are_not_installed_or_registered_in_admin(self):
+        admin_app_labels = {model._meta.app_label for model in site._registry}
+
+        self.assertFalse(apps.is_installed('rest_framework.authtoken'))
+        self.assertNotIn('authtoken', admin_app_labels)
 
 
 class AreaBioModelTests(TestCase):

@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.text import slugify
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from areas.models import AreaBio
@@ -62,6 +63,7 @@ class BioListView(ListView):
 class AreaBioViewSet(ReadOnlyModelViewSet):
     queryset = AreaBio.objects.all()
     serializer_class = AreaBioSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = AreaBio.objects.all()
