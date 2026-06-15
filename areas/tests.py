@@ -8,7 +8,15 @@ from django.contrib.sessions.middleware import SessionMiddleware
 
 from areas.admin import AreaBioAdmin, BioEntryInline
 from areas.models import AreaBio, BioEntry
-from areas.svg import FUTURE_FILL, FUTURE_TOTAL_FILL, PERSON_FILL, TOTAL_FILL, _build_segments, render_area_bio_svg
+from areas.svg import (
+    FUTURE_FILL,
+    FUTURE_TOTAL_FILL,
+    LABEL_FONT_SIZE,
+    PERSON_FILL,
+    TOTAL_FILL,
+    _build_segments,
+    render_area_bio_svg,
+)
 
 
 class HomePageLoginAccessTests(TestCase):
@@ -674,6 +682,7 @@ class AreaBioSvgTests(TestCase):
 
         self.assertIn('<svg', svg)
         self.assertIn('@font-face', svg)
+        self.assertIn(f'font-size:{LABEL_FONT_SIZE:.2f}px', svg)
         self.assertIn('fill:#000;', svg)
         self.assertIn('100 m²', svg)
         self.assertIn('25 m²', svg)
@@ -688,6 +697,12 @@ class AreaBioSvgTests(TestCase):
         self.assertIn('width="25.00" height="60.00"', svg)
         self.assertNotIn('data-kind="x-axis-total"', svg)
         self.assertNotIn('data-kind="x-axis-personal"', svg)
+        self.assertIn('data-kind="area-measure-total-label"', svg)
+        self.assertIn('>100 m²</text>', svg)
+        self.assertIn('data-kind="area-measure-personal-line"', svg)
+        self.assertIn('x1="92.50" y1="454.60" x2="117.50" y2="454.60"', svg)
+        self.assertIn('data-kind="area-measure-personal-label"', svg)
+        self.assertIn('>25 m²</text>', svg)
         self.assertIn('x2="50.00"', svg)
         self.assertNotIn('data-kind="axis-grid" data-age="12.00"', svg)
         self.assertNotIn('data-kind="axis-grid" data-age="83.00"', svg)
@@ -696,7 +711,9 @@ class AreaBioSvgTests(TestCase):
             svg.index('data-kind="axis-tick"'),
             svg.index(f'fill="{TOTAL_FILL}" data-kind="total" data-age-from="0.00"'),
         )
-        self.assertIn('ges. 100 m² / max. 25 m²', svg)
+        self.assertNotIn('ges. 100 m² / max. 25 m²', svg)
+        self.assertNotIn('ges.', svg)
+        self.assertNotIn('max.', svg)
 
     def test_svg_renderer_stops_future_projection_after_actual_age_for_older_people(self):
         bio = AreaBio.objects.create(
@@ -721,7 +738,9 @@ class AreaBioSvgTests(TestCase):
         self.assertIn('data-kind="personal" data-age-from="0.00" data-age-to="90.00"', svg)
         self.assertNotIn(FUTURE_TOTAL_FILL, svg)
         self.assertNotIn(FUTURE_FILL, svg)
-        self.assertIn('ges. 100 m² / max. 25 m²', svg)
+        self.assertIn('data-kind="area-measure-total-label"', svg)
+        self.assertIn('data-kind="area-measure-personal-line"', svg)
+        self.assertNotIn('ges. 100 m² / max. 25 m²', svg)
 
     def test_svg_renderer_extends_zero_year_changes_to_next_entry(self):
         bio = AreaBio.objects.create(
@@ -764,6 +783,50 @@ class AreaBioSvgTests(TestCase):
         self.assertEqual(segments[0]['age_from'], 0)
         for previous_segment, next_segment in zip(segments, segments[1:]):
             self.assertEqual(previous_segment['age_to'], next_segment['age_from'])
+
+    def test_svg_renderer_offsets_duplicate_description_ages(self):
+        bio = AreaBio.objects.create(
+            name='Andy',
+            age=15,
+            country='Berlin',
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=9,
+            age_to=10,
+            living_space=100,
+            number_of_people=2,
+            description='Umzug',
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=10,
+            age_to=10,
+            living_space=100,
+            number_of_people=4,
+            description='Schwester',
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=10,
+            age_to=11,
+            living_space=100,
+            number_of_people=3,
+            description='Haus',
+        )
+        BioEntry.objects.create(
+            area_bio=bio,
+            age_from=11,
+            age_to=15,
+            living_space=100,
+            number_of_people=3,
+            description='Spaeter',
+        )
+
+        svg = render_area_bio_svg(bio)
+
+        self.assertIn('data-kind="description" data-age="10.00" x="169.00" y="51.73">Schwester</text>', svg)
+        self.assertIn('data-kind="description" data-age="10.00" x="169.00" y="57.04">Haus</text>', svg)
 
     def test_svg_renderer_extends_first_entry_to_birth(self):
         bio = AreaBio.objects.create(

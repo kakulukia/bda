@@ -49,7 +49,7 @@ block content
                 .title(v-text="currentGraph")
                 .subtitle wohnt auf durchschnittlich
                   span(v-text="' ' + currentMedian")
-                  | m² im Jahr
+                  | m²
                 #main-legend Legende
                   .entries
                     span.marker.bg-gray &nbsp;
@@ -59,10 +59,10 @@ block content
                     |  Wohnfläche pro Person
                     br
                     span.marker.bg-yellow &nbsp;
-                    |  künftige Wohnfläche
+                    |  Projektion Wohnfläche
                     br
                     span.marker.bg-yellow-solid &nbsp;
-                    |  künftige Wohnfläche pro Person
+                    |  Projektion Wohnfläche pro Person
                   a.graph-export(
                     href="{{ initial_graph_export_url }}",
                     v-bind:href="currentExportUrl",

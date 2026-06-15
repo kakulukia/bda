@@ -26,6 +26,14 @@ MIN_X_EXTENT = 60
 DESCRIPTION_GAP = 4
 Y_AXIS_TICK_LENGTH = 5
 
+# Client asked to treat the previous 4px rendering as 11.3pt and scale it to 15pt.
+LABEL_FONT_SCALE = 15 / 11.3
+LABEL_FONT_SIZE = 4 * LABEL_FONT_SCALE
+LABEL_BASELINE_OFFSET = 1.3 * LABEL_FONT_SCALE
+X_AXIS_TOTAL_LABEL_OFFSET = 5 * LABEL_FONT_SCALE
+X_AXIS_PERSONAL_LINE_OFFSET = 11 * LABEL_FONT_SCALE
+X_AXIS_PERSONAL_LABEL_OFFSET = 16 * LABEL_FONT_SCALE
+
 
 def render_area_bio_svg(graph):
     segments = _build_segments(graph)
@@ -52,10 +60,11 @@ def render_area_bio_svg(graph):
         '<defs>',
         '<style><![CDATA[',
         _font_css(),
-        '.label{font-family:"Gravity Condensed",Arial,sans-serif;font-size:4px;font-weight:700;fill:#000;}',
+        f'.label{{font-family:"Gravity Condensed",Arial,sans-serif;font-size:{_fmt(LABEL_FONT_SIZE)}px;font-weight:700;fill:#000;}}',
         '.axis{stroke:#444;stroke-width:.3;}',
         '.axis-grid{stroke:#c7c7c7;stroke-width:.25;}',
         '.axis-tick{stroke:#444;stroke-width:.3;}',
+        '.area-measure{stroke:#000;stroke-width:.3;}',
         ']]></style>',
         '</defs>',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
@@ -73,9 +82,20 @@ def render_area_bio_svg(graph):
     chart_right = width - RIGHT_MARGIN
     description_lines = []
     description_texts = []
+    description_offsets = {}
     for segment in segments:
         if segment.description:
-            description_line, description_text = _description_parts(segment, center_x, graph_top, chart_right, graph_end_age)
+            offset_index = description_offsets.get(segment.age_from, 0)
+            description_offsets[segment.age_from] = offset_index + 1
+            description_y_offset = offset_index * LABEL_FONT_SIZE
+            description_line, description_text = _description_parts(
+                segment,
+                center_x,
+                graph_top,
+                chart_right,
+                graph_end_age,
+                description_y_offset,
+            )
             description_lines.append(description_line)
             description_texts.append(description_text)
 
@@ -95,7 +115,7 @@ def render_area_bio_svg(graph):
         )
         parts.append(
             f'<text class="label" text-anchor="end" x="{_fmt(LEFT_MARGIN - 2)}" '
-            f'y="{_fmt(y + 1.3)}">{_age_label(age)}</text>'
+            f'y="{_fmt(y + LABEL_BASELINE_OFFSET)}">{_age_label(age)}</text>'
         )
 
     for segment in segments:
@@ -143,8 +163,8 @@ def _segment_rects(segment, center_x, graph_top, chart_right, graph_end_age):
     return parts
 
 
-def _description_parts(segment, center_x, graph_top, chart_right, graph_end_age):
-    y = _age_to_y(segment.age_from, graph_top, graph_end_age)
+def _description_parts(segment, center_x, graph_top, chart_right, graph_end_age, y_offset=0):
+    y = _age_to_y(segment.age_from, graph_top, graph_end_age) + y_offset
     line_start = min(center_x + segment.living_space / 2 + 1, chart_right)
     line_end = chart_right
     label_x = line_end + DESCRIPTION_GAP
@@ -154,7 +174,7 @@ def _description_parts(segment, center_x, graph_top, chart_right, graph_end_age)
     )
     text = (
         f'<text class="label" data-kind="description" data-age="{_fmt(segment.age_from)}" '
-        f'x="{_fmt(label_x)}" y="{_fmt(y + 1.3)}">{escape(segment.description)}</text>'
+        f'x="{_fmt(label_x)}" y="{_fmt(y + LABEL_BASELINE_OFFSET)}">{escape(segment.description)}</text>'
     )
     return line, text
 
@@ -171,13 +191,23 @@ def _x_axis_labels(center_x, graph_bottom, max_living_space, max_person_space):
     if not max_living_space and not max_person_space:
         return []
 
-    y = graph_bottom
-    label = f'ges. {_space_label(max_living_space)} / max. {_space_label(max_person_space)}'
+    total_label_y = graph_bottom + X_AXIS_TOTAL_LABEL_OFFSET
+    personal_line_y = graph_bottom + X_AXIS_PERSONAL_LINE_OFFSET
+    personal_label_y = graph_bottom + X_AXIS_PERSONAL_LABEL_OFFSET
 
-    return [
-        f'<text class="label" text-anchor="middle" x="{_fmt(center_x)}" '
-        f'y="{_fmt(y + 5)}">{label}</text>',
+    parts = [
+        f'<text class="label" data-kind="area-measure-total-label" text-anchor="middle" '
+        f'x="{_fmt(center_x)}" y="{_fmt(total_label_y)}">{_space_label(max_living_space)}</text>',
     ]
+    if max_person_space:
+        parts.extend([
+            f'<line class="area-measure" data-kind="area-measure-personal-line" '
+            f'x1="{_fmt(center_x - max_person_space / 2)}" y1="{_fmt(personal_line_y)}" '
+            f'x2="{_fmt(center_x + max_person_space / 2)}" y2="{_fmt(personal_line_y)}"/>',
+            f'<text class="label" data-kind="area-measure-personal-label" text-anchor="middle" '
+            f'x="{_fmt(center_x)}" y="{_fmt(personal_label_y)}">{_space_label(max_person_space)}</text>',
+        ])
+    return parts
 
 
 def _age_to_y(age, graph_top, graph_end_age):
